@@ -3,7 +3,7 @@ all: shared
 qmake:
 	if [ ! -d "./build" ]; then mkdir -p ./build;  fi
 	if [ ! -d "./lib/serial/include" ]; then git submodule init && git submodule update;  fi
-	qmake -makefile -o ./build/Makefile mbn_tool.pro 
+	qmake -makefile -o ./build/Makefile libopenpst.pro 
 	$(MAKE) -C build
 
 shared:
@@ -18,6 +18,7 @@ shared:
 	    ./lib/serial/src/impl/list_ports/list_ports_linux.cc \
 	    ./src/android/adb_device_manager.cpp \
 	    ./src/lg/laf_serial.cpp \
+	    ./src/qualcomm/hdlc.cpp \
 	    ./src/qualcomm/hdlc_encoder.cpp \
 	    ./src/qualcomm/dm_efs_manager.cpp \
 	    ./src/qualcomm/dm_efs_node.cpp \
