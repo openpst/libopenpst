@@ -1,6 +1,14 @@
-all: as_so
+all: shared
 
-as_so:
+qmake:
+	if [ ! -d "./build" ]; then mkdir -p ./build;  fi
+	if [ ! -d "./lib/serial/include" ]; then git submodule init && git submodule update;  fi
+	qmake -makefile -o ./build/Makefile mbn_tool.pro 
+	$(MAKE) -C build
+
+shared:
+	if [ ! -d "./build" ]; then mkdir -p ./build;  fi
+	if [ ! -d "./lib/serial/include" ]; then git submodule init && git submodule update;  fi
 	$(CXX) \
 		-I"./lib/serial/include" \
 		-I"./include" \
@@ -25,5 +33,10 @@ as_so:
 	    ./src/util/sleep.cpp \
 		-o ./build/libopenpst.so  
 
+#travis:
+#	/opt/qt54/bin/qt54-env.sh 
+#	/opt/qt54/bin/qmake -makefile -o ./build/Makefile OpenPST.pro 
+
 clean:
 	rm -rf build/*
+	rm -rf lib/serial/build/*
