@@ -94,7 +94,7 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
     size_t dataSize = 0;
     uint8_t* data = nullptr;
 
-    hdlc_response(buf, bytesRead, &data, dataSize);
+    encoder.decode(buf, bytesRead, &data, dataSize);
 
     memcpy(buf, data, dataSize);
 
@@ -127,7 +127,7 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
         return bytesWritten;
     }
 
-    hdlc_request(data);
+    encoder.encode(data);
 
     size_t bytesWritten = Serial::write(data);
 
@@ -161,7 +161,7 @@ size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape
         return bytesRead;
     }
 
-    hdlc_response(buffer);
+    encoder.decode(buffer);
 
     hexdump_rx(&buffer[0], buffer.size());
 

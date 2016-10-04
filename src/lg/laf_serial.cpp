@@ -58,7 +58,7 @@ void LafSerial::sendHello()
 	header.command = LAF_CMD_HELO;
 	header.arg0 = 0x01000001;
 
-	uint16_t crc = crc16((char*)&header, (sizeof(header)));
+	uint16_t crc = encoder.crc16((char*)&header, (sizeof(header)));
 	header.crc = crc;
 
 	write((uint8_t*)&header, sizeof(header));
@@ -74,7 +74,7 @@ void LafSerial::sendReset()
 	header.arg0 = LAF_CMD_CONTROL_RESET;
 	header.magic = LAF_CTRL_MAGIC;
 
-	uint16_t crc = crc16((char*)&header, (sizeof(header)));
+	uint16_t crc = encoder.crc16((char*)&header, (sizeof(header)));
 	header.crc = crc;
 
 	write((uint8_t*)&header, sizeof(header));
@@ -90,7 +90,7 @@ void LafSerial::sendPowerOff()
 	header.arg0 = LAF_CMD_CONTROL_POWER_OFF;
 	header.magic = LAF_CTRL_MAGIC;
 
-	uint16_t crc = crc16((char*)&header, (sizeof(header)));
+	uint16_t crc = encoder.crc16((char*)&header, (sizeof(header)));
 	header.crc = crc;
 
 	write((uint8_t*)&header, sizeof(header));
@@ -122,7 +122,7 @@ std::string LafSerial::sendCommand(std::string command) {
 		packet->header.size = command.size() + 1;
 		packet->header.crc = 0x000000;
 
-		uint16_t crc = crc16((char*)packet, (sizeof(header) + command.size() + 1));
+		uint16_t crc = encoder.crc16((char*)packet, (sizeof(header) + command.size() + 1));
 		packet->header.crc = crc;
 
 		// printf("LAF PACKET REQUEST\n");

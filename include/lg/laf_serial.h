@@ -15,15 +15,19 @@
 
 #include "definitions.h"
 #include "serial/generic_serial.h"
+#include "qualcomm/hdlc_encoder.h"
 #include "lg/laf.h"
 #include "util/hexdump.h"
 
 using OpenPST::Serial::GenericSerial;
+using OpenPST::QC::HdlcEncoder;
 
 namespace OpenPST {
     namespace LG {
         class LafSerial : public GenericSerial {
-	        public:
+            protected:
+                HdlcEncoder encoder;
+            public:
 		        /**
 		        * @brief LafSerial
 		        *

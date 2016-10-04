@@ -15,7 +15,6 @@
 #include "definitions.h"
 #include "serial/generic_serial.h"
 #include "util/hexdump.h"
-#include "qualcomm/hdlc.h"
 #include "qualcomm/hdlc_encoder.h"
 
 using OpenPST::Serial::GenericSerial;
