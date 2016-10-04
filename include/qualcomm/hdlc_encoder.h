@@ -7,8 +7,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-#ifndef _QC_HDLC_ENCODER_H
-#define _QC_HDLC_ENCODER_H
+#pragma once
 
 #include "definitions.h"
 #include <iostream>
@@ -124,5 +123,3 @@ namespace OpenPST {
         };
     }
 }
-
-#endif // _QC_HDLC_ENCODER_H

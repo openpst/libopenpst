@@ -7,9 +7,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _QC_DLOAD_H
-#define _QC_DLOAD_H
+#pragma once
 
 /*
 * Most of this is from Josuah Hill's DLOAD tool for iPhone
@@ -169,5 +167,3 @@ PACKED(typedef struct dload_sw_version_rx_t { // 0x0D
 PACKED(typedef struct dload_power_down_tx_t { // 0x0E
     uint8_t command;
 } dload_power_down_tx_t);
-
-#endif // _QC_DLOAD_H

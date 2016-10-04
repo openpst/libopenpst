@@ -9,10 +9,7 @@
 * @author Gassan Idriss <ghassani@gmail.com>
 * @author Matteson Raab <mraabhimself@gmail.com>
 */
-
-
-#ifndef _SERIAL_QCDM_SERIAL_H
-#define _SERIAL_QCDM_SERIAL_H
+#pragma once
 
 #include "definitions.h"
 #include "serial/serial.h"
@@ -238,5 +235,3 @@ namespace OpenPST {
 		};
 	}
 }
-
-#endif /* _SERIAL_QCDM_SERIAL_H */

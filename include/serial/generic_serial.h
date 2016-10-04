@@ -8,9 +8,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _SERIAL_GENERIC_SERIAL_H_
-#define _SERIAL_GENERIC_SERIAL_H_
+#pragma once
 
 #include "definitions.h"
 #include "serial/serial.h"
@@ -72,5 +70,3 @@ namespace OpenPST {
         };
     }
 }
-
-#endif /* _SERIAL_GENERIC_SERIAL_H_ */

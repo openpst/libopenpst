@@ -7,10 +7,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _INCLUDE_DEFINITIONS_H
-#define _INCLUDE_DEFINITIONS_H
-
+#pragma once
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 	#include "win_stdint.h"
@@ -31,6 +28,3 @@
 
 #define LOGE(...) fprintf(stderr, __VA_ARGS__); 
 #define LOGI(...) fprintf(stdout, __VA_ARGS__); 
-
-
-#endif //_INCLUDE_DEFINITIONS_H

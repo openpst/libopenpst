@@ -1,5 +1,4 @@
-#ifndef _GPT_H
-#define _GPT_H_
+#pragma once
 
 #include "include/definitions.h"
 #include "stdint.h"
@@ -43,4 +42,3 @@ PACKED(typedef struct GptEntry {
 	wchar_t partitionName[36];
 }) GptEntry;
 
-#endif // _GPT_H_

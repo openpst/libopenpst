@@ -8,9 +8,7 @@
 * @author Gassan Idriss <ghassani@gmail.com>
 * @author Matteson Raab <mraabhimself@gmail.com>
 */
-
-#ifndef _QC_DIAG_H
-#define _QC_DIAG_H
+#pragma once
 
 #include "definitions.h"
 
@@ -494,5 +492,3 @@ PACKED(typedef struct QcdmTestStruct {
     QcdmSubsysHeader header;
     uint8_t processorId;
 }) QcdmTestStruct;
-
-#endif // _QC_DIAG_H

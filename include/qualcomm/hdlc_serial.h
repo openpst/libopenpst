@@ -8,9 +8,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _SERIAL_HDLC_SERIAL_H
-#define _SERIAL_HDLC_SERIAL_H
+#pragma once
 
 #include "definitions.h"
 #include "serial/generic_serial.h"
@@ -97,5 +95,3 @@ namespace OpenPST {
 		};
 	}
 }
-
-#endif /* _SERIAL_HDLC_SERIAL_H */

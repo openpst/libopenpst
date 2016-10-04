@@ -8,9 +8,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _QC_DM_EFS_NODE_H_
-#define _QC_DM_EFS_NODE_H_
+#pragma once
 
 #include "definitions.h"
 #include <iostream>
@@ -83,5 +81,3 @@ namespace OpenPST {
 		};
 	}
 }
-
-#endif // _QC_DM_EFS_NODE_H_

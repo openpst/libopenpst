@@ -8,9 +8,7 @@
 * @author Gassan Idriss <ghassani@gmail.com>
 * @author Matteson Raab <mraabhimself@gmail.com>
 */
-
-#ifndef _QC_DIAG_EFS_H
-#define _QC_DIAG_EFS_H
+#pragma once
 
 #include "qualcomm/dm.h"
 
@@ -901,5 +899,3 @@ PACKED(typedef struct QcdmEfsFsImageCloseResponse{
     uint16_t sequence;
     int32_t error;
 }) QcdmEfsFsImageCloseResponse;
-
-#endif // _QC_DIAG_EFS_H

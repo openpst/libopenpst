@@ -8,9 +8,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _SERIAL_SAHARA_SERIAL_H_
-#define _SERIAL_SAHARA_SERIAL_H_
+#pragma once
 
 #include "definitions.h"
 #include "serial/generic_serial.h"
@@ -344,5 +342,3 @@ namespace OpenPST {
 		};
 	}
 }
-
-#endif /* _SERIAL_SAHARA_SERIAL_H_ */

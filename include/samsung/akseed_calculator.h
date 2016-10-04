@@ -7,9 +7,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _SAMSUNG_AKSEED_CALCULATOR_H
-#define _SAMSUNG_AKSEED_CALCULATOR_H
+#pragma once
 
 #include "definitions.h"
 #include <string>
@@ -44,6 +42,3 @@ namespace OpenPST {
 		};
 	}
 }
-
-#endif // _SAMSUNG_AKSEED_H
-

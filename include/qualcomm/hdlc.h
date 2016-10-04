@@ -7,9 +7,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _UTIL_HDLC_H
-#define _UTIL_HDLC_H
+#pragma once
 
 #include "definitions.h"
 #include <iostream>
@@ -71,5 +69,3 @@ int hdlc_response(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize);
 int hdlc_request(std::vector<uint8_t> &data);
 int hdlc_response(std::vector<uint8_t> &data);
 uint16_t crc16(const char *buffer, size_t len);
-
-#endif // _UTIL_HDLC_H

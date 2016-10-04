@@ -9,9 +9,7 @@
 * @author Gassan Idriss <ghassani@gmail.com>
 * @author Matteson Raab <mraabhimself@gmail.com>
 */
-
-#ifndef _SERIAL_LAF_SERIAL_H
-#define _SERIAL_LAF_SERIAL_H
+#pragma once
 
 #include "definitions.h"
 #include "serial/generic_serial.h"
@@ -78,5 +76,3 @@ namespace OpenPST {
 
 	};
 }
-
-#endif /* _SERIAL_LAF_SERIAL_H */

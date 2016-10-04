@@ -8,9 +8,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _QC_STREAMING_DLOAD_H
-#define _QC_STREAMING_DLOAD_H
+#pragma once
 
 #include "definitions.h"
 
@@ -415,8 +413,3 @@ PACKED(typedef struct { // 0x35
     uint32_t lsb;
     uint32_t msb;
 }) StreamingDloadQfpromReadResponse;
-
-
-
-#endif // _QC_STREAMING_DLOAD_H
-

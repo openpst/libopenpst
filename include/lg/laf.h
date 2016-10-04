@@ -1,5 +1,14 @@
-#ifndef _LAF_H
-#define _LAF_H
+/**
+* LICENSE PLACEHOLDER
+*
+* @file laf.h
+* @package OpenPST
+* @brief LAF definitions and structures
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+* @author Matteson Raab <mraabhimself@gmail.com>
+*/
+#pragma once
 
 #include "definitions.h"
 
@@ -88,4 +97,3 @@ enum LafProperties {
 	LAF_PROP_TARGET_OPERATOR = 0x440E,
 	LAF_PROP_USB_VERSION = 0x4003,
 };
-#endif // _LAF_H

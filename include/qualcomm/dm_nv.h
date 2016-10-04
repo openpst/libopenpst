@@ -8,9 +8,7 @@
 * @author Gassan Idriss <ghassani@gmail.com>
 * @author Matteson Raab <mraabhimself@gmail.com>
 */
-
-#ifndef _QC_DIAG_NV_H
-#define _QC_DIAG_NV_H
+#pragma once
 
 enum NV_ITEM {
 	NV_ESN_I = 0,
@@ -6353,6 +6351,3 @@ enum DIAG_DS_QCMIP {
     DS_QCMIP_PREF_MOBILE_IP = 0x1,
     DS_QCMIP_MOBILE_IP = 0x2
 };
-
-#endif // _QC_DIAG_NV_H
-

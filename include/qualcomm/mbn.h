@@ -7,9 +7,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _QC_MBN_H
-#define _QC_MBN_H
+#pragma once
 
 #include "definitions.h"
 
@@ -117,5 +115,3 @@ enum MbnImageId {
     kMbnImageWdt            = 0x1E,
     kMbnImageMba            = 0x1F
 };
-
-#endif // _QC_MBN_H

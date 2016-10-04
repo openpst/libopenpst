@@ -8,9 +8,7 @@
 * @author Gassan Idriss <ghassani@gmail.com>
 * @author https://github.com/posixninja/DLOADTool
 */
-
-#ifndef _UTIL_HEXDUMP_H
-#define _UTIL_HEXDUMP_H
+#pragma once
 
 #include "definitions.h"
 #include <iostream>
@@ -59,4 +57,3 @@ void hexdump(unsigned char *data, unsigned int amount, FILE* file);
 void hexdump(unsigned char *data, unsigned int amount, QString& out, bool toHtml);
 #endif
 
-#endif

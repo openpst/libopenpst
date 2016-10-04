@@ -8,9 +8,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _QC_DM_EFS_MANAGER_H_
-#define _QC_DM_EFS_MANAGER_H_
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -560,5 +558,3 @@ namespace OpenPST {
 
 	}
 }
-
-#endif // _QC_DM_EFS_MANAGER_H_

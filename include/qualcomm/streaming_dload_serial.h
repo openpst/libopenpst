@@ -8,9 +8,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _SERIAL_STREAMING_DLOAD_SERIAL_H
-#define _SERIAL_STREAMING_DLOAD_SERIAL_H
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -303,5 +301,3 @@ namespace OpenPST {
 		};
 	}
 }
-
-#endif // _SERIAL_STREAMING_DLOAD_SERIAL_H 

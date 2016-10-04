@@ -7,9 +7,7 @@
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
-
-#ifndef _QC_SAHARA_H
-#define _QC_SAHARA_H
+#pragma once
 
 #include "definitions.h"
 
@@ -406,6 +404,3 @@ PACKED(typedef struct {
     uint8_t    name[20];
     uint8_t    filename[20];
 }) SaharaMemoryTableEntry;
-
-
-#endif // _QC_SAHARA_H
