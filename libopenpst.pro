@@ -2,35 +2,37 @@
 # PLACEHOLDER
 #-------------------------------------------------
 
+equals(LIBOPENPST_DIR, ""):	LIBOPENPST_DIR = $$PWD
+
 CONFIG += C++11
 
-TARGET = libopenpst
+TARGET = openpst
 
 TEMPLATE = lib
 
-INCLUDEPATH += $$PWD/include $$PWD/lib/serial/include
+INCLUDEPATH += $$LIBOPENPST_DIR/include $$LIBOPENPST_DIR/lib/serial/include
 
-DEPENDPATH += $$PWD/
+DEPENDPATH += $$LIBOPENPST_DIR/
 
-VPATH += $$PWD/
+VPATH += $$LIBOPENPST_DIR/
 
 SOURCES += \
-    $$PWD/lib/serial/src/serial.cc \
-    $$PWD/lib/serial/src/impl/unix.cc \
-    $$PWD/lib/serial/src/impl/list_ports/list_ports_linux.cc \
-    $$PWD/src/android/adb_device_manager.cpp \
-    $$PWD/src/lg/laf_serial.cpp \
-    $$PWD/src/qualcomm/hdlc.cpp \
-    $$PWD/src/qualcomm/hdlc_encoder.cpp \
-    $$PWD/src/qualcomm/dm_efs_manager.cpp \
-    $$PWD/src/qualcomm/dm_efs_node.cpp \
-    $$PWD/src/qualcomm/hdlc_serial.cpp \
-    $$PWD/src/qualcomm/qcdm_serial.cpp \
-    $$PWD/src/qualcomm/sahara_serial.cpp \
-    $$PWD/src/qualcomm/streaming_dload_serial.cpp \
-    $$PWD/src/samsung/akseed_calculator.cpp \
-    $$PWD/src/serial/generic_serial.cpp \
-    $$PWD/src/util/convert.cpp \
-    $$PWD/src/util/endian.cpp \
-    $$PWD/src/util/hexdump.cpp \
-    $$PWD/src/util/sleep.cpp
+    $$LIBOPENPST_DIR/lib/serial/src/serial.cc \
+    $$LIBOPENPST_DIR/lib/serial/src/impl/unix.cc \
+    $$LIBOPENPST_DIR/lib/serial/src/impl/list_ports/list_ports_linux.cc \
+    $$LIBOPENPST_DIR/src/android/adb_device_manager.cpp \
+    $$LIBOPENPST_DIR/src/lg/laf_serial.cpp \
+    $$LIBOPENPST_DIR/src/qualcomm/hdlc.cpp \
+    $$LIBOPENPST_DIR/src/qualcomm/hdlc_encoder.cpp \
+    $$LIBOPENPST_DIR/src/qualcomm/dm_efs_manager.cpp \
+    $$LIBOPENPST_DIR/src/qualcomm/dm_efs_node.cpp \
+    $$LIBOPENPST_DIR/src/qualcomm/hdlc_serial.cpp \
+    $$LIBOPENPST_DIR/src/qualcomm/qcdm_serial.cpp \
+    $$LIBOPENPST_DIR/src/qualcomm/sahara_serial.cpp \
+    $$LIBOPENPST_DIR/src/qualcomm/streaming_dload_serial.cpp \
+    $$LIBOPENPST_DIR/src/samsung/akseed_calculator.cpp \
+    $$LIBOPENPST_DIR/src/serial/generic_serial.cpp \
+    $$LIBOPENPST_DIR/src/util/convert.cpp \
+    $$LIBOPENPST_DIR/src/util/endian.cpp \
+    $$LIBOPENPST_DIR/src/util/hexdump.cpp \
+    $$LIBOPENPST_DIR/src/util/sleep.cpp
