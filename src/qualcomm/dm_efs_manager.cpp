@@ -35,10 +35,10 @@ DmEfsManager::~DmEfsManager()
 /**
 * @brief setSubsystemCommand - Set the command code used to access the DM subsystem
 *
-* @param uint32_t command
+* @param uint16_t command
 * @return void
 */
-void DmEfsManager::setSubsystemCommand(uint32_t command)
+void DmEfsManager::setSubsystemCommand(uint16_t command)
 {
     subsystemCommand = command;
 }
@@ -46,9 +46,9 @@ void DmEfsManager::setSubsystemCommand(uint32_t command)
 /**
 * @brief setSubsystemCommand - Get the command code used to access the DM subsystem
 *
-* @return uint32_t
+* @return uint16_t
 */
-uint32_t DmEfsManager::getSubsystemCommand()
+uint16_t DmEfsManager::getSubsystemCommand()
 {
     return subsystemCommand;
 }
@@ -56,10 +56,10 @@ uint32_t DmEfsManager::getSubsystemCommand()
 /**
 * @brief setSubsystemId - Set the id used to access the EFS subsystem
 *
-* @param uint32_t command
+* @param uint8_t command
 * @return void
 */
-void DmEfsManager::setSubsystemId(uint32_t id)
+void DmEfsManager::setSubsystemId(uint8_t id)
 {
     subsystemId = id;
 }
@@ -67,9 +67,9 @@ void DmEfsManager::setSubsystemId(uint32_t id)
 /**
 * @brief getSubsystemId - Get the id used to access the EFS subsystem
 *
-* @return uint32_t
+* @return uint8_t
 */
-uint32_t DmEfsManager::getSubsystemId()
+uint8_t DmEfsManager::getSubsystemId()
 {
     return subsystemId;
 }
@@ -371,13 +371,15 @@ std::string DmEfsManager::readSimlink(std::string path)
 		);
 
 	} catch (...) {
-		delete packet, response;
+		delete packet;
+		delete response;
 		throw;
 	}
 
 	if (isError(response->error)) {
 		DmEfsManagerResponseError e = DmEfsManagerResponseError(getErrorString(response->error), response->error);
-		delete packet, response;
+		delete packet;
+		delete response;
 		throw e;
 	}
 	

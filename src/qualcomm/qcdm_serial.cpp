@@ -293,7 +293,7 @@ std::string QcdmSerial::getErrorString(uint8_t responseCommand)
 		case kDiagBadLen:		return "Bad Length";
 		case kDiagBadMode:		return "Bad Mode";
 		case kDiagBadSpcMode:	return "Bad SPC Mode";
-		default:					return "Unknown Error";
+		default:				return "Unknown Error";
 	}
 
 }

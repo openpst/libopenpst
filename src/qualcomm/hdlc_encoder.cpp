@@ -53,7 +53,7 @@ int  HdlcEncoder::decode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outS
     uint8_t* buffer = new uint8_t[inSize]();
 
     int o = 0;
-    for (int i = 0; i < inSize; i++) {
+    for (int i = 0; i < (int)inSize; i++) {
         if (in[i] == HDLC_CONTROL_CHAR) {
             continue;
         } else if (in[i] == HDLC_ESC_CHAR) {

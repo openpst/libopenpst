@@ -47,6 +47,7 @@ namespace OpenPST {
 					kDmEfsSuccess = 1,
 				}; 
 
+
 				/**
 				* @brief DmEfsManager - Constructor
 				* @param QcdmSerial port
@@ -61,32 +62,32 @@ namespace OpenPST {
 				/**
 				* @brief setSubsystemCommand - Set the command code used to access the DM subsystem
 				*
-				* @param uint32_t command
+				* @param uint16_t command
 				* @return void
 				*/
-				void setSubsystemCommand(uint32_t command);
+				void setSubsystemCommand(uint16_t command);
 
 				/**
 				* @brief setSubsystemCommand - Get the command code used to access the DM subsystem
 				*
-				* @return uint32_t
+				* @return uint16_t
 				*/
-				uint32_t getSubsystemCommand();
+				uint16_t getSubsystemCommand();
 
 				/**
 				* @brief setSubsystemId - Set the id used to access the EFS subsystem
 				*
-				* @param uint32_t command
+				* @param uint8_t command
 				* @return void
 				*/
-				void setSubsystemId(uint32_t code);
+				void setSubsystemId(uint8_t code);
 
 				/**
 				* @brief getSubsystemId - Get the id used to access the EFS subsystem
 				*
-				* @return uint32_t
+				* @return uint8_t
 				*/
-				uint32_t getSubsystemId();
+				uint8_t getSubsystemId();
 
 				/**
 				* @brief hello - Send the hello and recieve configuration parameters

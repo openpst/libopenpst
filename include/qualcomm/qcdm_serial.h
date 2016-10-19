@@ -210,7 +210,7 @@ namespace OpenPST {
 			uint8_t code;
 		public:
 			QcdmSerialResponseError(std::string message, uint8_t code = 0) : QcdmSerialError(message), _what(message), code(code)  {}
-			QcdmSerialResponseError(const QcdmSerialResponseError& second) : QcdmSerialError(second), _what(second._what), code(code) {}
+			QcdmSerialResponseError(const QcdmSerialResponseError& second) : QcdmSerialError(second), _what(second._what), code(second.code) {}
 			virtual ~QcdmSerialResponseError() throw() {}
 			virtual const char* what() const throw () {		
 				return _what.c_str();

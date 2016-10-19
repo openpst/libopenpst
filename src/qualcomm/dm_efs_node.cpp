@@ -18,15 +18,15 @@ using namespace OpenPST::QC;
 * @param QcdmSerial port
 */
 DmEfsNode::DmEfsNode(std::string path, QcdmEfsReadDirResponse* data) :
-    path(path),
     name(data->name),
+    path(path),
     error(data->error),
     type(data->entryType),
     mode(data->mode),
     size(data->size),
     atime(data->atime),
     mtime(data->mtime),
-    ctime(data->ctime)
+    ctime(data->ctime)			
 {
 }
 
@@ -42,8 +42,8 @@ DmEfsNode::~DmEfsNode()
 * @brief Copy Constructor
 */
 DmEfsNode::DmEfsNode(const DmEfsNode& org) :
-    path(org.path),
     name(org.name),
+	path(org.path),
     error(org.error),
     type(org.type),
     mode(org.mode),

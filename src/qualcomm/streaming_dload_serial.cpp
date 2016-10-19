@@ -639,7 +639,7 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* res
             memcpy((uint8_t*)&state.lastLog, packet, responseSize);
         } else if (response[0] == kStreamingDloadError) {
             StreamingDloadErrorResponse* packet = (StreamingDloadErrorResponse*)response;
-            LOGE("Received Error Response %02X - %s\n", packet->code, getNamedError(packet->code));
+            LOGE("Received Error Response %02X - %s\n", packet->code, getNamedError(packet->code).c_str());
             memcpy((uint8_t*)&state.lastError, packet, responseSize);
         } else {
             LOGE("Unexpected Response\n");

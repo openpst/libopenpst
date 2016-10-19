@@ -157,9 +157,7 @@ SaharaState SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t mi
 
 void SaharaSerial::switchMode(uint32_t mode)
 {
-    size_t rxSize;
     SaharaSwitchModeRequest packet = {};
-    SaharaState ret = {};
     std::vector<uint8_t> buffer;
 
     LOGD("Requesting Mode Switch to %s (0x%02x)\n", getNamedMode(mode).c_str(), mode);
@@ -184,7 +182,6 @@ std::vector<uint8_t> SaharaSerial::sendClientCommand(uint32_t command)
 {
     size_t rxSize;
     size_t dataSize;
-    size_t totalRead = 0;
     SaharaClientCommandRequest packet = {};
     SaharaClientCommandResponse resp = {};
     SaharaClientCommandExecuteDataRequest execDataPacket = {};
@@ -291,7 +288,6 @@ size_t SaharaSerial::sendImage(std::string filePath, SaharaReadDataRequest initi
 
 SaharaReadDataRequest SaharaSerial::sendImage(std::ifstream& file, uint32_t offset, size_t size)
 {
-    SaharaReadDataRequest nextOffset = {};
     std::vector<uint8_t> buffer(size);
 
     file.seekg(0, file.end);
@@ -465,8 +461,6 @@ void SaharaSerial::close()
 void SaharaSerial::validateResponse(uint32_t expectedResponseCommand, SaharaHeader* data, size_t dataSize)
 {
     std::stringstream ss; 
-    SaharaEndImageTransferResponse* error;
-
     if (!isValidResponse(expectedResponseCommand, data, dataSize)) {
         ss << "Devices responded with an error: " << 
             getNamedErrorStatus(reinterpret_cast<SaharaEndImageTransferResponse*>(data)->status);
@@ -484,7 +478,7 @@ bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, SaharaHeade
     } else if (isErrorResponse(data, dataSize)) {
         LOGD("Error Response");
         return false;
-    } else if (NULL == expectedResponseCommand || data->command == expectedResponseCommand) {
+    } else if (!expectedResponseCommand || data->command == expectedResponseCommand) {
         return true;
     }
 

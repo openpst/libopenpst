@@ -12,7 +12,8 @@ shared:
 	$(CXX) \
 		-I"./lib/serial/include" \
 		-I"./include" \
-	    -std=gnu++11 -Wall -g3 -shared -fPIC  \
+	    -std=gnu++11 -g3 -shared -fPIC  \
+	    -Wall -Wformat=0 -Wno-conversion-null \
 	    ./lib/serial/src/serial.cc \
 	    ./lib/serial/src/impl/unix.cc \
 	    ./lib/serial/src/impl/list_ports/list_ports_linux.cc \
