@@ -28,7 +28,7 @@ uint8_t buffer[BUFFER_SIZE] = {};
 * @param serial::Timeout - Timeout, defaults to 1000ms
 */
 LafSerial::LafSerial(std::string port, int baudrate, serial::Timeout timeout) :
-    GenericSerial(port, baudrate, timeout)
+	GenericSerial(port, baudrate, timeout)
 {
 
 }

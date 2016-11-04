@@ -21,58 +21,58 @@ using OpenPST::Serial::GenericSerial;
 using OpenPST::QC::HdlcEncoder;
 
 namespace OpenPST {
-    namespace LG {
-        class LafSerial : public GenericSerial {
-            protected:
-                HdlcEncoder encoder;
-            public:
-		        /**
-		        * @brief LafSerial
-		        *
-		        * @param std::string port
-		        * @param int baudrate
-		        * @param serial::Timeout - Timeout, defaults to 1000ms
-		        */
-		        LafSerial(std::string port, int baudrate, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+	namespace LG {
+		class LafSerial : public GenericSerial {
+			protected:
+				HdlcEncoder encoder;
+			public:
+				/**
+				* @brief LafSerial
+				*
+				* @param std::string port
+				* @param int baudrate
+				* @param serial::Timeout - Timeout, defaults to 1000ms
+				*/
+				LafSerial(std::string port, int baudrate, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
 
-		        /**
-		        * @brief ~LafSerial
-		        */
-		        ~LafSerial();
+				/**
+				* @brief ~LafSerial
+				*/
+				~LafSerial();
 
-		        /**
-		        * @brief enterLaf
-		        */
-		        void enterLaf();
+				/**
+				* @brief enterLaf
+				*/
+				void enterLaf();
 
-		        /**
-		        * @brief sendHello
-		        */
-		        void sendHello();
+				/**
+				* @brief sendHello
+				*/
+				void sendHello();
 
-		        /**
-		        * @brief sendReset
-		        */
-		        void sendReset();
+				/**
+				* @brief sendReset
+				*/
+				void sendReset();
 
-		        /**
-		        * @brief sendPowerOff
-		        */
-		        void sendPowerOff();
+				/**
+				* @brief sendPowerOff
+				*/
+				void sendPowerOff();
 
-		        /**
-		        * @brief sendCommand
-		        *
-		        * @return response - Command Response String
-		        */
-		        std::string sendCommand(std::string command);
+				/**
+				* @brief sendCommand
+				*
+				* @return response - Command Response String
+				*/
+				std::string sendCommand(std::string command);
 
-		        /**
-		        * @brief getProperty
-		        */
-		        std::string getProperty(LafProperties property);
+				/**
+				* @brief getProperty
+				*/
+				std::string getProperty(LafProperties property);
 
-	        private:
+			private:
 
 	};
 }

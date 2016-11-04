@@ -8,8 +8,7 @@
 * @author Gassan Idriss <ghassani@gmail.com>
 */
 
-#ifndef _ANDROID_ADB_ADB_DEVICE_MANAGER_H
-#define _ANDROID_ADB_ADB_DEVICE_MANAGER_H
+#pragma once
 
 #include "definitions.h"
 #include <iostream>
@@ -81,4 +80,3 @@ namespace OpenPST {
         };
     }
 }
-#endif // _ANDROID_ADB_ADB_DEVICE_MANAGER_H

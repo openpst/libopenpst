@@ -21,7 +21,7 @@ using namespace OpenPST::QC;
 * @param serial::Timeout - Timeout, defaults to 1000ms
 */
 HdlcSerial::HdlcSerial(std::string port, int baudrate, serial::Timeout timeout) :
-    GenericSerial(port, baudrate, timeout)
+	GenericSerial(port, baudrate, timeout)
 {
 
 }
@@ -48,26 +48,26 @@ HdlcSerial::~HdlcSerial()
 */
 size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 {
-    if (!encapsulate) {
-        size_t bytesWritten = Serial::write(data, size);
-        if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
-        return bytesWritten;
-    }
+	if (!encapsulate) {
+		size_t bytesWritten = Serial::write(data, size);
+		if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
+		return bytesWritten;
+	}
 
-    size_t packetSize = 0;
-    uint8_t* packet   = NULL;
+	size_t packetSize = 0;
+	uint8_t* packet   = NULL;
 
-    encoder.encode(data, size, &packet, packetSize);
+	encoder.encode(data, size, &packet, packetSize);
 
-    size_t bytesWritten = Serial::write(packet, packetSize);
-    
-    hexdump_tx(packet, bytesWritten);
+	size_t bytesWritten = Serial::write(packet, packetSize);
+	
+	hexdump_tx(packet, bytesWritten);
 
-    if (packet != NULL) {
-        delete packet;
-    }
+	if (packet != NULL) {
+		delete packet;
+	}
 
-    return bytesWritten;    
+	return bytesWritten;    
 }
 
 /**
@@ -84,27 +84,27 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 */
 size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 {
-    size_t bytesRead = Serial::read(buf, size);
+	size_t bytesRead = Serial::read(buf, size);
 
-    if (!unescape || !bytesRead) {
-        if (bytesRead) hexdump_rx(&buf[0], bytesRead);
-        return bytesRead;
-    }
+	if (!unescape || !bytesRead) {
+		if (bytesRead) hexdump_rx(&buf[0], bytesRead);
+		return bytesRead;
+	}
 
-    size_t dataSize = 0;
-    uint8_t* data = nullptr;
+	size_t dataSize = 0;
+	uint8_t* data = nullptr;
 
-    encoder.decode(buf, bytesRead, &data, dataSize);
+	encoder.decode(buf, bytesRead, &data, dataSize);
 
-    memcpy(buf, data, dataSize);
+	memcpy(buf, data, dataSize);
 
-    hexdump_rx(buf, dataSize);
+	hexdump_rx(buf, dataSize);
 
-    if (data != nullptr) {
-        delete data;
-    }
+	if (data != nullptr) {
+		delete data;
+	}
 
-    return dataSize;
+	return dataSize;
 }
 
 /**
@@ -121,19 +121,19 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 */
 size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 {
-    if (!encapsulate) {
-        size_t bytesWritten = Serial::write(data);
-        if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
-        return bytesWritten;
-    }
+	if (!encapsulate) {
+		size_t bytesWritten = Serial::write(data);
+		if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
+		return bytesWritten;
+	}
 
-    encoder.encode(data);
+	encoder.encode(data);
 
-    size_t bytesWritten = Serial::write(data);
+	size_t bytesWritten = Serial::write(data);
 
-    hexdump_tx(&data[0], bytesWritten);
+	hexdump_tx(&data[0], bytesWritten);
 
-    return bytesWritten;
+	return bytesWritten;
 }
 
 /**
@@ -151,19 +151,19 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape)
 {
 
-    buffer.reserve(buffer.size() + (size + HDLC_OVERHEAD_LENGTH));
-    
-    size_t bytesRead = 
+	buffer.reserve(buffer.size() + (size + HDLC_OVERHEAD_LENGTH));
+	
+	size_t bytesRead = 
 		Serial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
 
-    if (!unescape || !bytesRead) {
-        if (bytesRead) hexdump_rx(&buffer[0], bytesRead);
-        return bytesRead;
-    }
+	if (!unescape || !bytesRead) {
+		if (bytesRead) hexdump_rx(&buffer[0], bytesRead);
+		return bytesRead;
+	}
 
-    encoder.decode(buffer);
+	encoder.decode(buffer);
 
-    hexdump_rx(&buffer[0], buffer.size());
+	hexdump_rx(&buffer[0], buffer.size());
 
-    return buffer.size();
+	return buffer.size();
 }

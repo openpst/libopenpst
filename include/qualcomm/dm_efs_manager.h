@@ -32,7 +32,7 @@ namespace OpenPST {
 		* @brief OpenPST::DmEfsManager
 		*/
 		class DmEfsManager {
-    
+	
 			protected:
 				QcdmSerial& port;
 				uint8_t buffer[DIAG_MAX_PACKET_SIZE];
@@ -40,7 +40,7 @@ namespace OpenPST {
 				uint32_t subsystemCommand;
 				uint32_t subsystemId;
 			public:
-            
+			
 				enum DmEfsOperationResult{
 					kDmEfsIOError = -1,
 					kDmEfsError = 0,
@@ -143,7 +143,7 @@ namespace OpenPST {
 				* @return std::vector<uint8_t> - Data read
 				*/
 				std::vector<uint8_t> read(int32_t fp, size_t size, uint32_t offset);
-            
+			
 				/**
 				* @brief read - Read from a file to a file
 				*
@@ -165,7 +165,7 @@ namespace OpenPST {
 				* @return size_t - Amount written
 				*/
 				size_t write(int32_t fp, uint8_t* data, size_t amount, uint32_t offset);
-            
+			
 				/**
 				* @brief symlink - Create a symlink
 				*
@@ -203,7 +203,7 @@ namespace OpenPST {
 				* @return void
 				*/
 				void mkdir(std::string path, int16_t mode);
-            
+			
 				/**
 				* @brief rmdir - Delete a directory
 				*
@@ -221,7 +221,7 @@ namespace OpenPST {
 				* @return uint32_t - Directory pointer to opened directory or 0 on error
 				*/
 				uint32_t openDir(std::string path);
-                
+				
 				/**
 				* @brief readDir - Read a directory contents, optionally recursively
 				*
@@ -259,7 +259,7 @@ namespace OpenPST {
 				* @return bool
 				*/
 				void rename(std::string path, std::string newPath);
-            
+			
 				/**
 				* @brief stat - Stat a file or directory by path
 				*
@@ -268,7 +268,7 @@ namespace OpenPST {
 				* @return QcdmEfsStatResponse
 				*/
 				QcdmEfsStatResponse stat(std::string path);
-            
+			
 				/**
 				* @brief lstat - Stat a link by path
 				*
@@ -277,7 +277,7 @@ namespace OpenPST {
 				* @return QcdmEfsLstatResponse
 				*/
 				QcdmEfsLstatResponse lstat(std::string path);
-            
+			
 				/**
 				* @brief fstat - Stat a file by fp
 				*
@@ -286,7 +286,7 @@ namespace OpenPST {
 				* @return QcdmEfsFstatResponse
 				*/
 				QcdmEfsFstatResponse fstat(int32_t fp);
-            
+			
 				/**
 				* @brief chmod - Change file permissions
 				*
@@ -296,7 +296,7 @@ namespace OpenPST {
 				* @return bool
 				*/
 				void chmod(std::string path, int16_t mode);
-            
+			
 				/**
 				* @brief statfs - Stat the filesystem
 				*
@@ -328,7 +328,7 @@ namespace OpenPST {
 				* @return bool
 				*/
 				void setQuota(std::string path, int32_t gid, size_t size);
-            
+			
 				/**
 				* @brief deltree - Delete a directory tree
 				*
@@ -338,7 +338,7 @@ namespace OpenPST {
 				* @return bool
 				*/
 				void deltree(std::string path, int32_t sequence = 1);
-            
+			
 				/*
 				int startBenchmarkTest();
 				int getBenchmarkResults();
@@ -348,7 +348,7 @@ namespace OpenPST {
 				int put();
 				int get();
 				*/
-            
+			
 				/**
 				* @brief truncate - Truncate a file by path
 				*
@@ -359,7 +359,7 @@ namespace OpenPST {
 				* @return void
 				*/
 				void truncate(std::string path, size_t amount, int32_t sequence = 1);
-            
+			
 				/**
 				* @brief truncate - Truncate a file by fp
 				*
@@ -370,7 +370,7 @@ namespace OpenPST {
 				* @return void
 				*/
 				void ftruncate(int32_t fp, size_t amount, int32_t sequence = 1);
-            
+			
 				/**
 				* @brief statfsV2 - STATFS v2
 				*
@@ -379,7 +379,7 @@ namespace OpenPST {
 				* @return QcdmEfsStatfsV2Response
 				*/
 				QcdmEfsStatfsV2Response statfsV2(std::string path, int sequence = 1);
-            
+			
 				/**
 				* @brief md5sum - Get MD5 Sum for a file.
 				*
@@ -389,7 +389,7 @@ namespace OpenPST {
 				* @return QcdmEfsMd5SumResponse
 				*/
 				QcdmEfsMd5SumResponse md5sum(std::string path, int32_t sequence = 1);
-            
+			
 				/**
 				* @brief formatHotplugDevice - Format a hot plug device
 				*
@@ -399,7 +399,7 @@ namespace OpenPST {
 				* @return void
 				*/
 				void formatHotplugDevice(std::string path, int32_t sequence = 1);
-            
+			
 				/**
 				* @brief shred - Erase obsolete data
 				*
@@ -409,7 +409,7 @@ namespace OpenPST {
 				* @return void
 				*/
 				void shred(std::string path, int32_t sequence = 1);
-            
+			
 
 				/*
 				int setIdleDevEventTime();
@@ -420,7 +420,7 @@ namespace OpenPST {
 				QcdmEfsSyncResponse syncNoWait(std::string path, uint16_t sequence = 1);
 
 				QcdmEfsGetSyncStatusResponse getSyncStatus(std::string path, uint32_t token, uint16_t sequence = 1);
-            
+			
 				/*int truncate64();
 				int ftruncate64(int32_t fp);
 				int lseek64();
@@ -488,7 +488,7 @@ namespace OpenPST {
 
 
 			private:
-            
+			
 				/**
 				* @brief getHeader - Used internally to quickly assemble a packet header
 				* 
@@ -497,8 +497,8 @@ namespace OpenPST {
 				* @return QcdmSubsysHeader
 				*/
 				QcdmSubsysHeader getHeader(uint16_t command);
-            
-      	
+			
+		
 				bool sendCommand(uint16_t command, uint8_t* responseOut, size_t responseOutSize, bool flush = true);
 				bool sendCommand(uint16_t command, uint8_t* request, size_t requestSize, uint8_t* responseOut, size_t responseOutSize, bool flush = true);
 

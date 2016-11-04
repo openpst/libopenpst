@@ -22,7 +22,7 @@ using namespace OpenPST::Serial;
 * @param serial::Timeout - Timeout, defaults to 1000ms
 */
 GenericSerial::GenericSerial(std::string port, int baudrate, serial::Timeout timeout) :
-    serial::Serial(port, baudrate, timeout)
+	serial::Serial(port, baudrate, timeout)
 {
 }
 
@@ -40,9 +40,9 @@ GenericSerial::~GenericSerial()
 */
 size_t GenericSerial::write(uint8_t *data, size_t size)
 {
-    size_t bytesWritten = Serial::write(data, size);
-    hexdump_tx(data, bytesWritten);
-    return bytesWritten;
+	size_t bytesWritten = Serial::write(data, size);
+	hexdump_tx(data, bytesWritten);
+	return bytesWritten;
 }
 
 /**
@@ -52,9 +52,9 @@ size_t GenericSerial::write(uint8_t *data, size_t size)
 */
 size_t GenericSerial::read(uint8_t *buf, size_t size)
 {
-    size_t bytesRead = Serial::read(buf, size);
-    hexdump_rx(buf, bytesRead);
-    return bytesRead;
+	size_t bytesRead = Serial::read(buf, size);
+	hexdump_rx(buf, bytesRead);
+	return bytesRead;
 }
 
 /**
@@ -64,9 +64,9 @@ size_t GenericSerial::read(uint8_t *buf, size_t size)
 */
 size_t GenericSerial::write(std::vector<uint8_t> &data)
 {
-    size_t bytesWritten = Serial::write(data);
-    hexdump_tx(&data[0], bytesWritten);
-    return bytesWritten;
+	size_t bytesWritten = Serial::write(data);
+	hexdump_tx(&data[0], bytesWritten);
+	return bytesWritten;
 }
 
 /**
@@ -76,7 +76,7 @@ size_t GenericSerial::write(std::vector<uint8_t> &data)
 */
 size_t GenericSerial::read(std::vector<uint8_t> &buffer, size_t size)
 {
-    size_t bytesRead = Serial::read(buffer, size);
-    hexdump_rx(&buffer[0], bytesRead);
-    return bytesRead;
+	size_t bytesRead = Serial::read(buffer, size);
+	hexdump_rx(&buffer[0], bytesRead);
+	return bytesRead;
 }

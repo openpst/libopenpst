@@ -16,7 +16,7 @@ using namespace OpenPST::QC;
 using serial::IOException;
 
 QcdmSerial::QcdmSerial(std::string port, int baudrate, serial::Timeout timeout) :
-    HdlcSerial (port, baudrate, timeout)
+	HdlcSerial (port, baudrate, timeout)
 {
 
 }
@@ -32,7 +32,7 @@ QcdmVersionResponse QcdmSerial::getVersion()
 
 	sendCommand(kDiagVerno);
 
-    std::memcpy(&response, buffer, sizeof(response));
+	std::memcpy(&response, buffer, sizeof(response));
 
 	return response;
 } 
@@ -75,7 +75,7 @@ bool QcdmSerial::sendSpc(std::string spc)
 	if (spc.length() != DIAG_SPC_LENGTH) {
 		message << "SPC must be " << DIAG_SPC_LENGTH << " digits";
 		throw QcdmSerialInvalidArgument(message.str());
-    }
+	}
 
 	packet.command = kDiagSpc;
 	std::memcpy(&packet.spc, spc.c_str(), DIAG_SPC_LENGTH);
@@ -98,34 +98,34 @@ bool QcdmSerial::sendPassword(std::string password)
 
 	return false;
 	/*
-    long data = std::stoul(password, nullptr, 16);
+	long data = std::stoul(password, nullptr, 16);
 
-    #ifdef _WIN32
-        data = _byteswap_uint64(data);
-    #else
-        data = __builtin_bswap64(data);
-    #endif
+	#ifdef _WIN32
+		data = _byteswap_uint64(data);
+	#else
+		data = __builtin_bswap64(data);
+	#endif
 
-    QcdmPasswordRequest packet;
-    memcpy(&packet.password, &data, sizeof(data));
+	QcdmPasswordRequest packet;
+	memcpy(&packet.password, &data, sizeof(data));
 
-    lastTxSize = write((uint8_t*)&packet, sizeof(packet));
+	lastTxSize = write((uint8_t*)&packet, sizeof(packet));
 
-    if (!lastTxSize) {
-        printf("Attempted to write to device but 0 bytes were written\n");
-        return DIAG_CMD_TX_FAIL;
-    }
+	if (!lastTxSize) {
+		printf("Attempted to write to device but 0 bytes were written\n");
+		return DIAG_CMD_TX_FAIL;
+	}
 
-    lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
+	lastRxSize = read(buffer, DIAG_MAX_PACKET_SIZE);
 
-    if (!lastRxSize) {
-        printf("Device did not respond\n");
-        return DIAG_CMD_RX_FAIL;
-    }
+	if (!lastRxSize) {
+		printf("Device did not respond\n");
+		return DIAG_CMD_RX_FAIL;
+	}
 
-    QcdmPasswordResponse* rxPacket = (QcdmPasswordResponse*)buffer;
+	QcdmPasswordResponse* rxPacket = (QcdmPasswordResponse*)buffer;
 
-    return rxPacket->status;
+	return rxPacket->status;
 	*/
 }
 
@@ -140,7 +140,7 @@ bool QcdmSerial::setPhoneMode(QcdmPhoneMode mode)
 	QcdmPhoneModeRequest packet;
 
 	packet.command = kDiagControl;
-    packet.mode	   = mode;
+	packet.mode	   = mode;
 
 	sendCommand(packet.command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
@@ -155,7 +155,7 @@ QcdmNvResponse QcdmSerial::readNV(uint16_t itemId)
 	QcdmNvRequest packet = {};
 
 	packet.command	= kDiagNvRead;
-    packet.nvItem	= itemId;
+	packet.nvItem	= itemId;
 
 	sendCommand(packet.command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
@@ -175,8 +175,8 @@ bool QcdmSerial::writeNV(uint16_t itemId, uint8_t* data, size_t size)
 	}
 
 	// TODO: add support for short nv writes
-    packet.command	= kDiagNvWrite;
-    packet.nvItem	= itemId;
+	packet.command	= kDiagNvWrite;
+	packet.nvItem	= itemId;
 	memcpy(&packet.data, data, size);
 
 	sendCommand(packet.command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
@@ -215,7 +215,7 @@ bool QcdmSerial::sendHtcNvUnlock()
 
 	sendCommand(NULL, packet, sizeof(packet));
 	
-    return true;
+	return true;
 }
 
 bool QcdmSerial::sendLgNvUnlock()
@@ -240,9 +240,9 @@ bool QcdmSerial::getLgSpc()
 
 void QcdmSerial::sendCommand(uint8_t command, bool validate)
 {
-    QcdmGenericRequest packet = { command };
+	QcdmGenericRequest packet = { command };
 
-    return sendCommand(command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+	return sendCommand(command, reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 }
 
 void QcdmSerial::sendCommand(uint8_t command, uint8_t* data, size_t size, bool validate)
@@ -300,31 +300,31 @@ std::string QcdmSerial::getErrorString(uint8_t responseCommand)
 
 int QcdmSerial::getErrorLog()
 {
-    /*
-    PACKED(typedef struct QcdmLogResponse{
-        uint8_t command;
-        uint8_t entries;
-        uint16_t  length;
-        uint8_t  logs[0];
-    }) QcdmLogResponse;*/
+	/*
+	PACKED(typedef struct QcdmLogResponse{
+		uint8_t command;
+		uint8_t entries;
+		uint16_t  length;
+		uint8_t  logs[0];
+	}) QcdmLogResponse;*/
 
-    //kDiageatureQuery
-    //kDiagLog
-    QcdmGenericRequest packet = { kDiagLog };
+	//kDiageatureQuery
+	//kDiagLog
+	QcdmGenericRequest packet = { kDiagLog };
 
-    write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+	write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
-    size_t rx = read(buffer, DIAG_MAX_PACKET_SIZE);
-    hexdump(buffer, rx);
+	size_t rx = read(buffer, DIAG_MAX_PACKET_SIZE);
+	hexdump(buffer, rx);
 
 
-    QcdmLogResponse* response = (QcdmLogResponse*)buffer;
+	QcdmLogResponse* response = (QcdmLogResponse*)buffer;
 
-    LOGI("Cmd: %d\n", response->command);
-    LOGI("Entries: %d\n", response->entries);
-    LOGI("Size: %lu\n", response->length);
+	LOGI("Cmd: %d\n", response->command);
+	LOGI("Entries: %d\n", response->entries);
+	LOGI("Size: %lu\n", response->length);
 
-    //hexdump(&response->logs, response->length);
+	//hexdump(&response->logs, response->length);
 
-    return kQcdmSuccess;
+	return kQcdmSuccess;
 }

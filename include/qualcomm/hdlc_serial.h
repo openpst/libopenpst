@@ -19,9 +19,9 @@ using OpenPST::Serial::GenericSerial;
 
 namespace OpenPST {
 	namespace QC {
-        class HdlcSerial : public GenericSerial {
-            protected:
-                HdlcEncoder encoder;
+		class HdlcSerial : public GenericSerial {
+			protected:
+				HdlcEncoder encoder;
 			public:
 				/**
 				* @brief HdlcSerial
@@ -31,7 +31,7 @@ namespace OpenPST {
 				* @param serial::Timeout - Timeout, defaults to 1000ms
 				*/
 				HdlcSerial(std::string port, int baudrate, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
-            
+			
 				/**
 				* @brief ~HdlcSerial            
 				*/
@@ -64,7 +64,7 @@ namespace OpenPST {
 				 * @return size_t bytes read
 				 */
 				size_t read(uint8_t *buf, size_t size, bool unescape = true);
-            
+			
 				/**
 				* @brief write - Escapes the data and creates a CRC'ed HDLC packet
 				* then writes the data
@@ -78,7 +78,7 @@ namespace OpenPST {
 				* @return size_t - Bytes written
 				*/
 				size_t write(std::vector<uint8_t> &data, bool encapsulate = true);
-            
+			
 				/**
 				* @brief read - Reads and unescpaes theCRC'ed HDLC packet
 				* read from the device

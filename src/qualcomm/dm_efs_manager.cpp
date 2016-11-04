@@ -19,9 +19,9 @@ using namespace OpenPST::QC;
 * @param QcdmSerial port
 */
 DmEfsManager::DmEfsManager(QcdmSerial& port) : 
-    port(port),
-    subsystemCommand(kDiagSubsysCmd),
-    subsystemId(kDiagSubsyss)
+	port(port),
+	subsystemCommand(kDiagSubsysCmd),
+	subsystemId(kDiagSubsyss)
 {
 
 }
@@ -40,7 +40,7 @@ DmEfsManager::~DmEfsManager()
 */
 void DmEfsManager::setSubsystemCommand(uint16_t command)
 {
-    subsystemCommand = command;
+	subsystemCommand = command;
 }
 
 /**
@@ -50,7 +50,7 @@ void DmEfsManager::setSubsystemCommand(uint16_t command)
 */
 uint16_t DmEfsManager::getSubsystemCommand()
 {
-    return subsystemCommand;
+	return subsystemCommand;
 }
 
 /**
@@ -61,7 +61,7 @@ uint16_t DmEfsManager::getSubsystemCommand()
 */
 void DmEfsManager::setSubsystemId(uint8_t id)
 {
-    subsystemId = id;
+	subsystemId = id;
 }
 
 /**
@@ -71,26 +71,26 @@ void DmEfsManager::setSubsystemId(uint8_t id)
 */
 uint8_t DmEfsManager::getSubsystemId()
 {
-    return subsystemId;
+	return subsystemId;
 }
 
 QcdmEfsHelloResponse DmEfsManager::hello()
 {
 	QcdmEfsHelloResponse response = {};
 
-    QcdmEfsHelloRequest packet = {
-        getHeader(kDiagEfsHello),
-        DIAG_EFS_DEFAULT_WINDOW_SIZE,
-        DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-        DIAG_EFS_DEFAULT_WINDOW_SIZE,
-        DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-        DIAG_EFS_DEFAULT_WINDOW_SIZE,
-        DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-        DIAG_EFS_VERSION,
-        DIAG_EFS_MIN_VERSION,
-        DIAG_EFS_MAX_VERSION,
-        0x000000
-    };
+	QcdmEfsHelloRequest packet = {
+		getHeader(kDiagEfsHello),
+		DIAG_EFS_DEFAULT_WINDOW_SIZE,
+		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+		DIAG_EFS_DEFAULT_WINDOW_SIZE,
+		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+		DIAG_EFS_DEFAULT_WINDOW_SIZE,
+		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+		DIAG_EFS_VERSION,
+		DIAG_EFS_MIN_VERSION,
+		DIAG_EFS_MAX_VERSION,
+		0x000000
+	};
 	
 	sendCommand(
 		packet.header.subsysCommand,
@@ -106,8 +106,8 @@ QcdmEfsHelloResponse DmEfsManager::hello()
 QcdmEfsDeviceInfoResponse DmEfsManager::getDeviceInfo()
 {
 	QcdmEfsDeviceInfoResponse response = {};
-    
-    sendCommand(
+	
+	sendCommand(
 		kDiagEfsDevInfo,
 		reinterpret_cast<uint8_t*>(&response),
 		sizeof(response)
@@ -140,13 +140,13 @@ int32_t DmEfsManager::open(std::string path, int32_t flags, int32_t mode)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize = sizeof(QcdmEfsOpenFileRequest) + path.size();
-    packet = (QcdmEfsOpenFileRequest*) new uint8_t[packetSize]();
+	packetSize = sizeof(QcdmEfsOpenFileRequest) + path.size();
+	packet = (QcdmEfsOpenFileRequest*) new uint8_t[packetSize]();
 
-    packet->header  = getHeader(kDiagEfsOpen);
-    packet->flags	= flags;
-    packet->mode	= mode;    
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header  = getHeader(kDiagEfsOpen);
+	packet->flags	= flags;
+	packet->mode	= mode;    
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 		
@@ -168,7 +168,7 @@ int32_t DmEfsManager::open(std::string path, int32_t flags, int32_t mode)
 		throw DmEfsManagerResponseError("Response returned an error", response.error);
 	}
 
-    return response.fp;
+	return response.fp;
 }
 
 void DmEfsManager::close(int32_t fp)
@@ -250,7 +250,7 @@ std::vector<uint8_t> DmEfsManager::read(int32_t fp, size_t size, uint32_t offset
 
 	data.insert(data.end(), response->data, response->data + response->bytesRead);
 
-    return data;
+	return data;
 }
 
 
@@ -266,40 +266,40 @@ size_t DmEfsManager::read(std::string path, std::string outPath)
 		throw DmEfsManagerInvalidArgument("Invalid out path");
 	}
 
-    fp = open(path, O_RDONLY, 0x00);
+	fp = open(path, O_RDONLY, 0x00);
 
 	if (!fp) {
 		return 0;
 	}
 
-    fileInfo = fstat(fp);
+	fileInfo = fstat(fp);
 
 	if (fileInfo.error) {
-        return 0;
-    }
+		return 0;
+	}
 
-    if (fileInfo.size <= 0) {
-        return 0;
-    }
+	if (fileInfo.size <= 0) {
+		return 0;
+	}
 
 	data = read(fp, fileInfo.size, 0);
 
-    close(fp);
+	close(fp);
 
-    std::ofstream out(outPath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+	std::ofstream out(outPath.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
 
-    if (!out.is_open()) {
-        return 0;
-    }
+	if (!out.is_open()) {
+		return 0;
+	}
 
-    out.write(reinterpret_cast<char*>(&data[0]), data.size());
+	out.write(reinterpret_cast<char*>(&data[0]), data.size());
 
 	return data.size();
 }
 
 size_t DmEfsManager::write(int32_t fp, uint8_t* data, size_t amount, uint32_t offset)
 {
-    return 0;
+	return 0;
 }
 
 void DmEfsManager::symlink(std::string path, std::string linkPath)
@@ -398,11 +398,11 @@ void DmEfsManager::unlink(std::string path)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsUnlinkRequest) + path.size() + 1;
-    packet		= (QcdmEfsUnlinkRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsUnlinkRequest) + path.size() + 1;
+	packet		= (QcdmEfsUnlinkRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsUnlink);
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsUnlink);
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -445,9 +445,9 @@ void DmEfsManager::mkdir(std::string path, int16_t mode)
 	packetSize	= sizeof(QcdmEfsMkdirRequest) + path.size();
 	packet		= (QcdmEfsMkdirRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsMkdir);
-    packet->mode = mode;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsMkdir);
+	packet->mode = mode;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -482,11 +482,11 @@ void DmEfsManager::rmdir(std::string path)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsRmdirRequest) + path.size();
-    packet		= (QcdmEfsRmdirRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsRmdirRequest) + path.size();
+	packet		= (QcdmEfsRmdirRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsRmdir);
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsRmdir);
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -520,11 +520,11 @@ uint32_t DmEfsManager::openDir(std::string path)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsOpenDirRequest) + path.size();
-    packet		= (QcdmEfsOpenDirRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsOpenDirRequest) + path.size();
+	packet		= (QcdmEfsOpenDirRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsOpenDIR);
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsOpenDIR);
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -553,7 +553,7 @@ uint32_t DmEfsManager::openDir(std::string path)
 
 std::vector<DmEfsNode> DmEfsManager::readDir(std::string path, bool recursive)
 {
-    uint32_t dp;
+	uint32_t dp;
 	std::string checkPath;
 	std::vector<DmEfsNode> contents;
 	QcdmEfsReadDirResponse* response;
@@ -573,10 +573,10 @@ std::vector<DmEfsNode> DmEfsManager::readDir(std::string path, bool recursive)
 	response = (QcdmEfsReadDirResponse*) new uint8_t[DIAG_MAX_PACKET_SIZE]();
 
 	packet.header = getHeader(kDiagEfsReadDIR);
-    packet.dp = dp;
-    packet.sequenceNumber = 1;
+	packet.dp = dp;
+	packet.sequenceNumber = 1;
 
-    do {
+	do {
 
 		try {
 
@@ -596,38 +596,38 @@ std::vector<DmEfsNode> DmEfsManager::readDir(std::string path, bool recursive)
 			throw;
 		}
 
-        if (response->sequenceNumber != packet.sequenceNumber) {
+		if (response->sequenceNumber != packet.sequenceNumber) {
 			LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
 		}
 
-        if (strlen(response->name) == 0) {
+		if (strlen(response->name) == 0) {
 			break; // end
-        }
-    
+		}
+	
 		DmEfsNode node(path, response);
 
-        contents.insert(contents.end(), node);
-        packet.sequenceNumber++;
+		contents.insert(contents.end(), node);
+		packet.sequenceNumber++;
 		
 
-    } while (true);
+	} while (true);
 
 	closeDir(dp);
 
 	delete response;
 
-    if (recursive) {
-        for (auto &node : contents) {
-            if (node.isDir()) {
+	if (recursive) {
+		for (auto &node : contents) {
+			if (node.isDir()) {
 
-                checkPath = path;
+				checkPath = path;
 
-                checkPath.append(node.name).append("/");
+				checkPath.append(node.name).append("/");
 				
 				node.children = readDir(checkPath, recursive);
-            }
-        }
-    }
+			}
+		}
+	}
 
 	return contents;
 }
@@ -645,11 +645,11 @@ std::vector<DmEfsNode> DmEfsManager::readDir(uint32_t dp)
 	
 	response = (QcdmEfsReadDirResponse*) new uint8_t[DIAG_MAX_PACKET_SIZE]();
 
-    packet.header = getHeader(kDiagEfsReadDIR);
-    packet.dp = dp;
-    packet.sequenceNumber = 1;
-            
-    do {
+	packet.header = getHeader(kDiagEfsReadDIR);
+	packet.dp = dp;
+	packet.sequenceNumber = 1;
+			
+	do {
 
 		try {
 
@@ -669,21 +669,21 @@ std::vector<DmEfsNode> DmEfsManager::readDir(uint32_t dp)
 			throw;
 		}
 
-        if (response->sequenceNumber != packet.sequenceNumber) {
+		if (response->sequenceNumber != packet.sequenceNumber) {
 			LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
 		}
 
-        if (strlen(response->name) == 0) {
-            break; // end
-        }
+		if (strlen(response->name) == 0) {
+			break; // end
+		}
 
-        DmEfsNode node("", response);
+		DmEfsNode node("", response);
 
-        contents.insert(contents.end(), node);
+		contents.insert(contents.end(), node);
 
-        packet.sequenceNumber++;
+		packet.sequenceNumber++;
 
-    } while (true);
+	} while (true);
 
 	delete response;
 
@@ -729,12 +729,12 @@ void DmEfsManager::rename(std::string path, std::string newPath)
 		throw DmEfsManagerInvalidArgument("Invalid new path");
 	}
 
-    packetSize  = sizeof(QcdmEfsRenameRequest) + path.size() + newPath.size() + 1;
-    packet		= (QcdmEfsRenameRequest*) new uint8_t[packetSize]();
-    
+	packetSize  = sizeof(QcdmEfsRenameRequest) + path.size() + newPath.size() + 1;
+	packet		= (QcdmEfsRenameRequest*) new uint8_t[packetSize]();
+	
 	packet->header = getHeader(kDiagEfsRename);    
 	std::memcpy(packet->path, path.c_str(), path.size());
-    std::memcpy((packet->path + path.size() + 1), newPath.c_str(), newPath.size());
+	std::memcpy((packet->path + path.size() + 1), newPath.c_str(), newPath.size());
 
 	try {
 
@@ -751,7 +751,7 @@ void DmEfsManager::rename(std::string path, std::string newPath)
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
 
 	if (isError(response.error)) {
@@ -770,10 +770,10 @@ QcdmEfsStatResponse DmEfsManager::stat(std::string path)
 	}
 
 	packetSize = sizeof(QcdmEfsStatRequest) + path.size() + 1;
-    packet = (QcdmEfsStatRequest*) new uint8_t[packetSize]();
+	packet = (QcdmEfsStatRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsStat);
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsStat);
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -806,11 +806,11 @@ QcdmEfsLstatResponse DmEfsManager::lstat(std::string path)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsLstatRequest) + path.size() + 1;
-    packet		= (QcdmEfsLstatRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsLstatRequest) + path.size() + 1;
+	packet		= (QcdmEfsLstatRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsLstat);
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsLstat);
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -839,8 +839,8 @@ QcdmEfsFstatResponse DmEfsManager::fstat(int32_t fp)
 		throw DmEfsManagerInvalidArgument("Invalid file pointer");
 	}
 
-    packet.header	= getHeader(kDiagEfsFstat);
-    packet.fp		= fp;
+	packet.header	= getHeader(kDiagEfsFstat);
+	packet.fp		= fp;
 
 	sendCommand(
 		packet.header.subsysCommand,
@@ -864,12 +864,12 @@ void DmEfsManager::chmod(std::string path, int16_t mode)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsChmodRequest) + path.size() + 1;
-    packet		= (QcdmEfsChmodRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsChmodRequest) + path.size() + 1;
+	packet		= (QcdmEfsChmodRequest*) new uint8_t[packetSize]();
 
-    packet->header	= getHeader(kDiagEfsChmod);
-    packet->mode	= mode;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header	= getHeader(kDiagEfsChmod);
+	packet->mode	= mode;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -904,11 +904,11 @@ QcdmEfsStatfsResponse DmEfsManager::statfs(std::string path)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsStatfsRequest) + path.size() + 1;
-    packet		= (QcdmEfsStatfsRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsStatfsRequest) + path.size() + 1;
+	packet		= (QcdmEfsStatfsRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsStatFS);
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsStatFS);
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -938,14 +938,14 @@ void DmEfsManager::chown(std::string path, int32_t uid, int32_t gid)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsChownRequest) + path.size() + 1;
-    packet		= (QcdmEfsChownRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsChownRequest) + path.size() + 1;
+	packet		= (QcdmEfsChownRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsChown);
-    packet->uid = uid;
-    packet->gid = gid;
-    std::memcpy(packet->path, path.c_str(), path.size());
-    
+	packet->header = getHeader(kDiagEfsChown);
+	packet->uid = uid;
+	packet->gid = gid;
+	std::memcpy(packet->path, path.c_str(), path.size());
+	
 	try {
 
 		sendCommand(
@@ -979,13 +979,13 @@ void DmEfsManager::setQuota(std::string path, int32_t gid, size_t size)
 		throw DmEfsManagerInvalidArgument("Invalid size");
 	}
 
-    packetSize	= sizeof(QcdmEfsSetQuotaRequest) + path.size() + 1;
-    packet		= (QcdmEfsSetQuotaRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsSetQuotaRequest) + path.size() + 1;
+	packet		= (QcdmEfsSetQuotaRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsSetQuota);
-    packet->gid = gid;
-    packet->amount = size;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsSetQuota);
+	packet->gid = gid;
+	packet->amount = size;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -1002,7 +1002,7 @@ void DmEfsManager::setQuota(std::string path, int32_t gid, size_t size)
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
 
 	if (isError(response.error)) {
@@ -1021,12 +1021,12 @@ void DmEfsManager::deltree(std::string path, int sequence)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsDeltreeRequest) + path.size() + 1;
-    packet		= (QcdmEfsDeltreeRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsDeltreeRequest) + path.size() + 1;
+	packet		= (QcdmEfsDeltreeRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsDeltree);
-    packet->sequence = sequence;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsDeltree);
+	packet->sequence = sequence;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -1043,9 +1043,9 @@ void DmEfsManager::deltree(std::string path, int sequence)
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
-    if (response.sequence != sequence) {
+	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
 	}
 
@@ -1067,12 +1067,12 @@ void DmEfsManager::truncate(std::string path, size_t amount, int32_t sequence)
 		throw DmEfsManagerInvalidArgument("Invalid amount");
 	}
 
-    packetSize = sizeof(QcdmEfsTruncateRequest) + path.size();
-    packet = (QcdmEfsTruncateRequest*) new uint8_t[packetSize]();
+	packetSize = sizeof(QcdmEfsTruncateRequest) + path.size();
+	packet = (QcdmEfsTruncateRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsTruncate);
-    packet->sequence = sequence;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsTruncate);
+	packet->sequence = sequence;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -1089,9 +1089,9 @@ void DmEfsManager::truncate(std::string path, size_t amount, int32_t sequence)
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
-    if (response.sequence != sequence) {
+	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
 	}
 
@@ -1112,9 +1112,9 @@ void DmEfsManager::ftruncate(int32_t fp, size_t amount, int32_t sequence)
 		throw DmEfsManagerInvalidArgument("Invalid amount");
 	}
 
-    packet.header	= getHeader(kDiagEfsFtruncate);
-    packet.sequence = sequence;
-    packet.fp		= fp;
+	packet.header	= getHeader(kDiagEfsFtruncate);
+	packet.sequence = sequence;
+	packet.fp		= fp;
 
 	sendCommand(
 		packet.header.subsysCommand,
@@ -1197,9 +1197,9 @@ QcdmEfsMd5SumResponse DmEfsManager::md5sum(std::string path, int32_t sequence)
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
-    if (response.sequence != sequence) {
+	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
 	}
 	
@@ -1221,12 +1221,12 @@ void DmEfsManager::formatHotplugDevice(std::string path, int32_t sequence)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize  = sizeof(QcdmEfsHotplugFormatRequest) + path.size();
-    packet		= (QcdmEfsHotplugFormatRequest*) new uint8_t[packetSize]();
+	packetSize  = sizeof(QcdmEfsHotplugFormatRequest) + path.size();
+	packet		= (QcdmEfsHotplugFormatRequest*) new uint8_t[packetSize]();
 
-    packet->header	 = getHeader(kDiagEfsHotplugFormat);
-    packet->sequence = sequence;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header	 = getHeader(kDiagEfsHotplugFormat);
+	packet->sequence = sequence;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -1243,9 +1243,9 @@ void DmEfsManager::formatHotplugDevice(std::string path, int32_t sequence)
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
-    if (response.sequence != sequence) {
+	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
 	}
 
@@ -1264,12 +1264,12 @@ void DmEfsManager::shred(std::string path, int32_t sequence)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsShredRequest) + path.size() + 1;
-    packet		= (QcdmEfsShredRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsShredRequest) + path.size() + 1;
+	packet		= (QcdmEfsShredRequest*) new uint8_t[packetSize]();
 
-    packet->header		= getHeader(kDiagEfsShred);
-    packet->sequence	= sequence;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header		= getHeader(kDiagEfsShred);
+	packet->sequence	= sequence;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -1286,9 +1286,9 @@ void DmEfsManager::shred(std::string path, int32_t sequence)
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
-    if (response.sequence != sequence) {
+	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
 	}
 
@@ -1330,9 +1330,9 @@ QcdmEfsSyncResponse DmEfsManager::syncNoWait(std::string path, uint16_t sequence
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
-    if (response.sequence != sequence) {
+	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
 	}
 
@@ -1355,13 +1355,13 @@ QcdmEfsGetSyncStatusResponse DmEfsManager::getSyncStatus(std::string path, uint3
 		throw DmEfsManagerInvalidArgument("Invalid token");
 	}
 		
-    packetSize	= sizeof(QcdmEfsGetSyncStatusRequest) + path.size() + 1;
-    packet		= (QcdmEfsGetSyncStatusRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsGetSyncStatusRequest) + path.size() + 1;
+	packet		= (QcdmEfsGetSyncStatusRequest*) new uint8_t[packetSize]();
 
-    packet->header		= getHeader(kDiagEfsSyncGetStatus);
-    packet->sequence	= sequence;
-    packet->token		= token;
-    std::memcpy(packet->path, path.c_str(), path.size() + 1);
+	packet->header		= getHeader(kDiagEfsSyncGetStatus);
+	packet->sequence	= sequence;
+	packet->token		= token;
+	std::memcpy(packet->path, path.c_str(), path.size() + 1);
 	
 	try {
 
@@ -1378,7 +1378,7 @@ QcdmEfsGetSyncStatusResponse DmEfsManager::getSyncStatus(std::string path, uint3
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
 	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
@@ -1402,12 +1402,12 @@ int DmEfsManager::makeGoldenCopy(std::string path, int32_t sequence)
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize	= sizeof(QcdmEfsMakeGoldenCopyRequest) + path.size() + 1;
-    packet		= (QcdmEfsMakeGoldenCopyRequest*) new uint8_t[packetSize]();
+	packetSize	= sizeof(QcdmEfsMakeGoldenCopyRequest) + path.size() + 1;
+	packet		= (QcdmEfsMakeGoldenCopyRequest*) new uint8_t[packetSize]();
 
-    packet->header	 = getHeader(kDiagEfsMakeGoldenCopy);
-    packet->sequence = sequence;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header	 = getHeader(kDiagEfsMakeGoldenCopy);
+	packet->sequence = sequence;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -1424,7 +1424,7 @@ int DmEfsManager::makeGoldenCopy(std::string path, int32_t sequence)
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
 	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
@@ -1448,13 +1448,13 @@ int32_t DmEfsManager::openFilesystemImage(std::string path, uint8_t imageType, i
 		throw DmEfsManagerInvalidArgument("Invalid path");
 	}
 
-    packetSize  = sizeof(QcdmEfsFsImageOpenRequest) + path.size();
-    packet		= (QcdmEfsFsImageOpenRequest*) new uint8_t[packetSize]();
+	packetSize  = sizeof(QcdmEfsFsImageOpenRequest) + path.size();
+	packet		= (QcdmEfsFsImageOpenRequest*) new uint8_t[packetSize]();
 
-    packet->header = getHeader(kDiagEfsFsImageOpen);
-    packet->sequence = sequence;
-    packet->imageType = imageType;
-    std::memcpy(packet->path, path.c_str(), path.size());
+	packet->header = getHeader(kDiagEfsFsImageOpen);
+	packet->sequence = sequence;
+	packet->imageType = imageType;
+	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
 
@@ -1471,7 +1471,7 @@ int32_t DmEfsManager::openFilesystemImage(std::string path, uint8_t imageType, i
 		throw;
 	}
 
-    delete packet;
+	delete packet;
 
 	if (response.sequence != sequence) {
 		LOGI("Invalid sequence received in %s response\n", __FUNCTION__);
@@ -1754,13 +1754,13 @@ int DmEfsManager::getGroupInfo(std::string path, int32_t gid)
 
 QcdmSubsysHeader DmEfsManager::getHeader(uint16_t command)
 {
-    QcdmSubsysHeader header = {
-        getSubsystemCommand(),
-        getSubsystemId(),
-        command
-    };
+	QcdmSubsysHeader header = {
+		getSubsystemCommand(),
+		getSubsystemId(),
+		command
+	};
 
-    return header;
+	return header;
 }
 
 
@@ -1799,19 +1799,19 @@ bool DmEfsManager::sendCommand(uint16_t command, uint8_t* request, size_t reques
 
 bool DmEfsManager::isValidResponse(uint16_t command, uint8_t* data, size_t size)
 {
-    if (size == 0) {
-        return false;
-    }
+	if (size == 0) {
+		return false;
+	}
 
 	QcdmSubsysHeader* header = (QcdmSubsysHeader*)data;
 
 	if (port.isError(header->command) ||
-        header->subsysCommand != command
-    ) {     
+		header->subsysCommand != command
+	) {     
 		return false;
-    }
+	}
 
-    return true;
+	return true;
 }
 
 

@@ -52,7 +52,7 @@ namespace OpenPST {
 			};
 		};
 
-        class SaharaSerial : public OpenPST::Serial::GenericSerial {
+		class SaharaSerial : public OpenPST::Serial::GenericSerial {
 
 			public:          
 				/**
@@ -63,7 +63,7 @@ namespace OpenPST {
 				* @param serial::Timeout - Timeout, defaults to 1000ms
 				*/
 				SaharaSerial(std::string port, int baudrate = 115200, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
-            
+			
 				/**
 				* @brief ~SaharaSerial
 				*/
@@ -181,7 +181,7 @@ namespace OpenPST {
 				* @return size_t - The total amount of bytes read
 				*/
 				size_t readMemory(uint32_t address, size_t size, std::vector<uint8_t>&out);
-            
+			
 				/**
 				* @brief readMemory - Read size starting from address and
 				*                     save the result into the specified outFilePath
@@ -193,7 +193,7 @@ namespace OpenPST {
 				* @return int
 				*/
 				size_t readMemory(uint32_t address, size_t size, std::string outFilePath);
-            
+			
 				/**
 				* @brief readMemory - Read size starting from address and
 				*                     save the result into an existing file pointer.
@@ -215,7 +215,7 @@ namespace OpenPST {
 				* @return void
 				*/
 				void sendDone();
-            
+			
 				/**
 				 * @brief sendReset - Reset the session. In emergency mode this will 
 				 *						make the device spin a blocking infiniate loop 			

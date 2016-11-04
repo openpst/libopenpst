@@ -215,7 +215,7 @@ namespace OpenPST {
 			*
 			* @return std::string msg
 			*/
-            std::string getNamedError(uint8_t code);
+			std::string getNamedError(uint8_t code);
 
 			/**
 			* @brief getNamedOpenMode - Get a named mode from an open mode integer
@@ -224,7 +224,7 @@ namespace OpenPST {
 			*
 			* @return std::string mode
 			*/
-            std::string getNamedOpenMode(uint8_t mode);
+			std::string getNamedOpenMode(uint8_t mode);
 
 			/**
 			* @brief getNamedMultiImage - Get a named image from an open multi image type
@@ -233,7 +233,7 @@ namespace OpenPST {
 			*
 			* @return std::string name
 			*/
-            std::string getNamedMultiImage(uint8_t imageType);
+			std::string getNamedMultiImage(uint8_t imageType);
 
 		private:
 			/**

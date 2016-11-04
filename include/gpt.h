@@ -28,7 +28,7 @@ PACKED(typedef struct GptHeader {
 PACKED(typedef struct GptEntryAttributes {
 	uint64_t requiredToFunction:1;
 	uint64_t reserved:47;
-    uint64_t typeGuidSpecific:16;
+	uint64_t typeGuidSpecific:16;
 }) GptEntryAttributes;
 
 PACKED(typedef struct GptEntry {

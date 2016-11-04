@@ -36,85 +36,85 @@ void AdbDeviceManager::killServer()
 int AdbDeviceManager::getDeviceCount()
 {
 
-    std::list<std::string> output;     
-    AdbCommand adbCommand = {};
+	std::list<std::string> output;     
+	AdbCommand adbCommand = {};
 
-    adbCommand.command = "devices";
-    adbCommand.type = kAdbCommandTypeDefault;
+	adbCommand.command = "devices";
+	adbCommand.type = kAdbCommandTypeDefault;
 
-    output = sendCommand(adbCommand);
+	output = sendCommand(adbCommand);
 
-    return 0;
+	return 0;
 }
 
 std::vector<AdbDevice> AdbDeviceManager::getDevices()
 {
-    std::list<std::string> output;
-    std::vector<AdbDevice> result;
+	std::list<std::string> output;
+	std::vector<AdbDevice> result;
 
-    AdbCommand adbCommand = {};
-    adbCommand.command = "devices";
-    adbCommand.type = kAdbCommandTypeDefault;
+	AdbCommand adbCommand = {};
+	adbCommand.command = "devices";
+	adbCommand.type = kAdbCommandTypeDefault;
 
-    output = sendCommand(adbCommand);
+	output = sendCommand(adbCommand);
 
-    for (std::string line : output) {
-        if (line.length() > 2) {
-            if (line.find("List of devices attached") != std::string::npos) {
+	for (std::string line : output) {
+		if (line.length() > 2) {
+			if (line.find("List of devices attached") != std::string::npos) {
 
-            }
-            else {
-                AdbDevice device = {};
-                std::string delimiter = "\t";
-                size_t position = 0;
+			}
+			else {
+				AdbDevice device = {};
+				std::string delimiter = "\t";
+				size_t position = 0;
 
-                while ((position = line.find(delimiter)) != std::string::npos) {
-                    if (!device.serial.length()) {
-                        device.serial = line.substr(0, position);
-                        line.erase(0, position + delimiter.length());
-                    }
-                }
+				while ((position = line.find(delimiter)) != std::string::npos) {
+					if (!device.serial.length()) {
+						device.serial = line.substr(0, position);
+						line.erase(0, position + delimiter.length());
+					}
+				}
 
-                device.state = line;
+				device.state = line;
 
-                AdbCommand adbCommand = {};
-                adbCommand.command = "getprop ro.product.model";
-                adbCommand.type = kAdbCommandTypeShell;
+				AdbCommand adbCommand = {};
+				adbCommand.command = "getprop ro.product.model";
+				adbCommand.type = kAdbCommandTypeShell;
 
-                std::list<std::string> output = sendCommand(adbCommand, device);
+				std::list<std::string> output = sendCommand(adbCommand, device);
 
-                for (std::string line : output) {
-                    if (line.length()) {
-                        device.model = line;
-                    }
-                }
+				for (std::string line : output) {
+					if (line.length()) {
+						device.model = line;
+					}
+				}
 
-                result.push_back(device);
-            }
-        }
-    }
+				result.push_back(device);
+			}
+		}
+	}
 
-    return result;
+	return result;
 }
 
 bool AdbDeviceManager::installApk(std::string path)
 {
-    return false;
+	return false;
 }
 
 bool AdbDeviceManager::push(std::string src, std::string dest)
 {
-    return false;
+	return false;
 }
 
 bool AdbDeviceManager::pull(std::string src, std::string dest)
 {
-    return false;
+	return false;
 }
 
 std::string AdbDeviceManager::getCurrentWorkingDir()
 {
-    return "";
+	return "";
 }
 
 void AdbDeviceManager::sendCommand(std::string command)
@@ -124,16 +124,16 @@ void AdbDeviceManager::sendCommand(std::string command)
 
 std::list<std::string> AdbDeviceManager::sendCommand(AdbCommand command)
 {
-    std::list<std::string> ret;
+	std::list<std::string> ret;
 
-    return ret;
+	return ret;
 }
 
 std::list<std::string> AdbDeviceManager::sendCommand(AdbCommand command, AdbDevice device)
 {
-    std::list<std::string> ret;
+	std::list<std::string> ret;
 
-    return ret;
+	return ret;
 }
 
 /*

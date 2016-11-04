@@ -13,11 +13,11 @@
 	#include "win_stdint.h"
 	#include "win_inttypes.h"
 
-    #define PACKED( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
+	#define PACKED( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
 
 #else
 	#include <stdint.h>
-    #define PACKED( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+	#define PACKED( __Declaration__ ) __Declaration__ __attribute__((__packed__))
 #endif
 
 #ifdef DEBUG

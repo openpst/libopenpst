@@ -155,7 +155,7 @@ namespace OpenPST {
 
 				bool getLgSpc();
 
-            
+			
 
 				int getErrorLog();
 				int clearErrorLog();
@@ -166,7 +166,7 @@ namespace OpenPST {
 				size_t lastRxSize,
 					   lastTxSize;
 
-            
+			
 				void sendCommand(uint8_t command, bool validate = true);
 				void sendCommand(uint8_t command, uint8_t* data, size_t size, bool validate = true);
 				static bool isError(uint8_t responseCommand);			
