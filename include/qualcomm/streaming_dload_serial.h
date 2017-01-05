@@ -18,7 +18,6 @@
 #include "util/hexdump.h"
 #include "util/endian.h"
 #include "qualcomm/streaming_dload.h"
-#include "qualcomm/hdlc.h"
 
 namespace OpenPST {
 	namespace QC {

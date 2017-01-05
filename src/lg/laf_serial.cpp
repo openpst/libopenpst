@@ -11,7 +11,6 @@
 */
 
 #include "lg/laf_serial.h"
-#include "qualcomm/hdlc.h"
 
 #define BUFFER_SIZE (LAF_MAX_DATA_SIZE + sizeof(LafCmdHeader))
 
