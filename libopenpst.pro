@@ -3,48 +3,43 @@
 #-------------------------------------------------
 lessThan(QT_MAJOR_VERSION, 5): error("At least Qt 5.0 is required")
 
-CONFIG += C++11
-CONFIG -= qt        # we do not need QT libs for this
-TARGET = openpst
-TEMPLATE = lib
-VER_MAJ=1
-VER_MIN=0
-VER_PAT=0
+CONFIG    += C++11
+CONFIG    -= qt        # we do not need QT libs for this
+TARGET    = openpst
+TEMPLATE  = lib
+VER_MAJ   = 1
+VER_MIN   = 0
+VER_PAT   = 0
 
-equals(BASE_DIR, ""): BASE_DIR = $$PWD
+equals(BASE_DIR, ""):  BASE_DIR = $$PWD
+equals(BUILD_DIR, ""): BUILD_DIR = $$BASE_DIR/build/linux/$$QT_ARCH
 
-contains(QT_ARCH, i386) {
-    unix {
-        equals(BUILD_DIR, ""): BUILD_DIR = $$BASE_DIR/build/linux/i386
-    }
-} contains(QT_ARCH, x86_64) { 
-    unix {
-        equals(BUILD_DIR, ""): BUILD_DIR = $$BASE_DIR/build/linux/x86_64
-    }
-} else {
-    error("Arch $$QT_ARCH not supported")
-}
-
-equals(BASE_DIR, ""): error("Missing BASE_DIR")
+equals(BASE_DIR, ""):  error("Missing BASE_DIR")
 equals(BUILD_DIR, ""): error("Missing BUILD_DIR")
 
 
-INCLUDEPATH     += $$BASE_DIR/include $$BASE_DIR/lib/serial/include
-DEPENDPATH      += $$BASE_DIR/
-VPATH           += $$BASE_DIR/
-OBJECTS_DIR     += $$BUILD_DIR/obj
-MOC_DIR         += $$BUILD_DIR/moc
-DESTDIR         += $$BUILD_DIR
+INCLUDEPATH  += $$BASE_DIR/include $$BASE_DIR/lib/serial/include
+DEPENDPATH   += $$BASE_DIR/
+VPATH        += $$BASE_DIR/
+OBJECTS_DIR  += $$BUILD_DIR/obj
+MOC_DIR      += $$BUILD_DIR/moc
+RCC_DIR      += $$BUILD_DIR/rcc
+UI_DIR       += $$BUILD_DIR/ui
+DESTDIR      += $$BUILD_DIR
 
-message("$$TARGET ARC         $$QT_ARCH")
-message("$$TARGET BASE_DIR    $$BASE_DIR")
-message("$$TARGET BUILD_DIR   $$BUILD_DIR")
-message("$$TARGET INCLUDEPATH $$INCLUDEPATH")
-message("$$TARGET DEPENDPATH  $$DEPENDPATH")
-message("$$TARGET VPATH       $$VPATH")
-message("$$TARGET OBJECTS_DIR $$OBJECTS_DIR")
-message("$$TARGET MOC_DIR     $$MOC_DIR")
-message("$$TARGET DESTDIR     $$DESTDIR")
+message("------------ $$TARGET ------------ ")
+message("ARC         $$QT_ARCH")
+message("BASE_DIR    $$BASE_DIR")
+message("BUILD_DIR   $$BUILD_DIR")
+message("INCLUDEPATH $$INCLUDEPATH")
+message("DEPENDPATH  $$DEPENDPATH")
+message("VPATH       $$VPATH")
+message("OBJECTS_DIR $$OBJECTS_DIR")
+message("MOC_DIR     $$MOC_DIR")
+message("RCC_DIR     $$RCC_DIR")
+message("UI_DIR      $$UI_DIR")
+message("DESTDIR     $$DESTDIR")
+message("------------ $$TARGET ------------ ")
 
 
 SOURCES += \
