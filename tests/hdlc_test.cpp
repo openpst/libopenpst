@@ -294,7 +294,6 @@ void test_unescape()
 	uint8_t* out = NULL;
 	size_t outSize = 0;
 
-
 	hdlc_request((uint8_t*)test_hdlc_escape, sizeof(test_hdlc_escape), &out, outSize);
 
 	printf("Resulting Encapsulated Data\n");

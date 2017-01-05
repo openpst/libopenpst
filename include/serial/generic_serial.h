@@ -1,10 +1,10 @@
 /**
 * LICENSE PLACEHOLDER
 *
-* @file sahara_serial.h
-* @class SaharaSerial
-* @package OpenPST
-* @brief 
+* @file generic_serial.h
+* @class GenericSerial
+* @package libopenpst
+* @brief A generic serial interface
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
