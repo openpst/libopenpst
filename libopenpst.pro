@@ -1,9 +1,10 @@
 #-------------------------------------------------
-# PLACEHOLDER
+# QMake Build Script for: openpst/libopenpst
 #-------------------------------------------------
+
 lessThan(QT_MAJOR_VERSION, 5): error("At least Qt 5.0 is required")
 
-CONFIG    += C++11
+CONFIG    += C++11 debug_and_release build_all
 CONFIG    -= qt        # we do not need QT libs for this
 TARGET    = openpst
 TEMPLATE  = lib
@@ -11,23 +12,47 @@ VER_MAJ   = 1
 VER_MIN   = 0
 VER_PAT   = 0
 
-equals(BASE_DIR, ""):  BASE_DIR = $$PWD
-equals(BUILD_DIR, ""): BUILD_DIR = $$BASE_DIR/build/linux/$$QT_ARCH
+!defined(BUILD_SHARED) {
+    CONFIG += staticlib
+}
 
-equals(BASE_DIR, ""):  error("Missing BASE_DIR")
-equals(BUILD_DIR, ""): error("Missing BUILD_DIR")
+CONFIG(release, debug|release){
+    BUILD_DIR = $$BASE_DIR/build/release
+} else {
+    BUILD_DIR = $$BASE_DIR/build/debug
+}
 
+## Remove these for less logging
+DEFINES   += DEBUG
+## Remove these for less output to console for RX
+DEFINES   += HEXDUMP_PORT_RX
+DEFINES   += HEXDUMP_PORT_TX
 
-INCLUDEPATH  += $$BASE_DIR/include $$BASE_DIR/lib/serial/include
-DEPENDPATH   += $$BASE_DIR/
-VPATH        += $$BASE_DIR/
+BASE_DIR = $$PWD
+
+CONFIG(release, debug|release){
+    BUILD_DIR = $$BASE_DIR/build/release
+} else {
+    BUILD_DIR = $$BASE_DIR/build/debug
+}
+
+CONFIG(debug, debug|release){
+    DEFINES   += DEBUG
+    DEFINES   += HEXDUMP_PORT_RX
+    DEFINES   += HEXDUMP_PORT_TX
+}
+
+INCLUDEPATH  += $$BASE_DIR/include \
+                $$BASE_DIR/lib/serial/include
+DEPENDPATH   += $$BASE_DIR
+VPATH        += $$BASE_DIR
 OBJECTS_DIR  += $$BUILD_DIR/obj
 MOC_DIR      += $$BUILD_DIR/moc
 RCC_DIR      += $$BUILD_DIR/rcc
 UI_DIR       += $$BUILD_DIR/ui
 DESTDIR      += $$BUILD_DIR
 
-message("------------ $$TARGET ------------ ")
+message("------------ $$TARGET ------------ !!!")
 message("ARC         $$QT_ARCH")
 message("BASE_DIR    $$BASE_DIR")
 message("BUILD_DIR   $$BUILD_DIR")
@@ -40,7 +65,6 @@ message("RCC_DIR     $$RCC_DIR")
 message("UI_DIR      $$UI_DIR")
 message("DESTDIR     $$DESTDIR")
 message("------------ $$TARGET ------------ ")
-
 
 SOURCES += \
     $$BASE_DIR/lib/serial/src/serial.cc \
