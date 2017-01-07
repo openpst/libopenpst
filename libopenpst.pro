@@ -19,10 +19,12 @@ VER_PAT   = 0
 BASE_DIR = $$PWD
 
 CONFIG(release, debug|release){
-    BUILD_DIR = $$BASE_DIR/build/release
+    RELEASE = release
 } else {
-    BUILD_DIR = $$BASE_DIR/build/debug
+    RELEASE = debug
 }
+
+BUILD_DIR = $$BASE_DIR/build/$$RELEASE/
 
 CONFIG(debug, debug|release){
     DEFINES   += DEBUG
