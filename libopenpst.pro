@@ -16,18 +16,6 @@ VER_PAT   = 0
     CONFIG += staticlib
 }
 
-CONFIG(release, debug|release){
-    BUILD_DIR = $$BASE_DIR/build/release
-} else {
-    BUILD_DIR = $$BASE_DIR/build/debug
-}
-
-## Remove these for less logging
-DEFINES   += DEBUG
-## Remove these for less output to console for RX
-DEFINES   += HEXDUMP_PORT_RX
-DEFINES   += HEXDUMP_PORT_TX
-
 BASE_DIR = $$PWD
 
 CONFIG(release, debug|release){
