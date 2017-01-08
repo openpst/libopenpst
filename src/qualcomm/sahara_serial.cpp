@@ -150,7 +150,7 @@ SaharaState SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t mi
 	
 	ret.mode 		= packet.mode;
 	ret.version  	= packet.version;
-	ret.minVersion  = packet.minVersion
+	ret.minVersion  = packet.minVersion;
 
 	return ret;
 }
@@ -160,7 +160,9 @@ void SaharaSerial::switchMode(uint32_t mode)
 {
 	SaharaSwitchModeRequest packet = {};
 	std::vector<uint8_t> buffer;
-			
+
+	LOGD("Requesting Mode Switch to %s (0x%02x)\n", getNamedMode(mode).c_str(), mode);
+		
 	packet.header.command   = kSaharaCommandSwitchMode;
 	packet.header.size      = sizeof(packet);
 	packet.mode             = mode;
