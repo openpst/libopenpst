@@ -1,8 +1,8 @@
 /**
 * LICENSE PLACEHOLDER
 *
-* @file mbn_reader.h
-* @class OpenPST::QC::MbnHeader
+* @file mbn_parser.h
+* @class OpenPST::QC::MbnParser
 * @package OpenPST
 * @brief Reads and parses various MBN information from a binary on disk
 *
@@ -27,23 +27,22 @@ namespace OpenPST {
 			};
 		};
 
-		class MbnReader {
+		class MbnParser {
 			
 			protected:
 				std::string filePath;
 				size_t fileSize = 0;
 				MbnHeader header = {};
-
 			public:
 				/**
 				* @brief - Constructor
 				*/
-				MbnReader(std::string filePath);
+				MbnParser(std::string filePath);
 
 				/**
 				* @brief - Deconstructor
 				*/
-				~MbnReader();
+				~MbnParser();
 
 				const MbnHeader& getHeader();
 

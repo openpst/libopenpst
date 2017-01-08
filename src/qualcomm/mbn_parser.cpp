@@ -1,20 +1,19 @@
 /**
 * LICENSE PLACEHOLDER
 *
-* @file mbn_reader.cpp
-* @class OpenPST::QC::MbnHeader
+* @file mbn_parser.cpp
+* @class OpenPST::QC::MbnParser
 * @package OpenPST
 * @brief Reads and parses various MBN information from a binary on disk
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 */
 
-#include "qualcomm/mbn_reader.h"
+#include "qualcomm/mbn_parser.h"
 
 using namespace OpenPST::QC;
 
-
-MbnReader::MbnReader(std::string filePath) : filePath(filePath)
+MbnParser::MbnParser(std::string filePath) : filePath(filePath)
 {
 	std::stringstream ss;
 	std::ifstream file(filePath.c_str(), std::ios::in | std::ios::binary);
@@ -35,23 +34,22 @@ MbnReader::MbnReader(std::string filePath) : filePath(filePath)
 	}
 
 	file.read(reinterpret_cast<char*>(&header.header80), sizeof(header.header80));
+	file.close();
 
 	header.is80byte = header.header80.magic == MBN_EIGHTY_BYTE_MAGIC;
-	
-	file.close();
 }
 
-MbnReader::~MbnReader()
+MbnParser::~MbnParser()
 {
 
 }
 
-const MbnHeader& MbnReader::getHeader()
+const MbnHeader& MbnParser::getHeader()
 {
 	return header;
 }
 
-int MbnReader::getHeaderSize()
+int MbnParser::getHeaderSize()
 {
 	return header.is80byte ? 
 		sizeof(MbnHeader80byte) : sizeof(MbnHeader40byte);
