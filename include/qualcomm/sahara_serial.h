@@ -31,8 +31,8 @@
 * Host - Phone
 * A general session works like this:
 *  Guest -> Connect
-*  Host -> Guest | Command: Hello
-*  Guest -> Host | Command: Hello - Dictating version info and mode to work on
+*  Host -> Guest | Command: Hello - Specifying which mode it is in, and its supported versions/buffer size 
+*  Guest -> Host | Command: Hello - Respond with the same mode or a new mode, and tell your versions/buffer size
 *  Host -> ACK or NCK | Branch depending on mode:
 *				SaharaMemoryDebugRequest - Memory Debug
 *				SaharaCommandReadyResponse - Send Command
