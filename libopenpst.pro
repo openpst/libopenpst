@@ -62,6 +62,7 @@ SOURCES += \
     $$BASE_DIR/lib/serial/src/impl/list_ports/list_ports_linux.cc \
     #$$BASE_DIR/src/android/adb_device_manager.cpp \
     $$BASE_DIR/src/lg/laf_serial.cpp \
+    $$BASE_DIR/src/qualcomm/mbn_reader.cpp \
     $$BASE_DIR/src/qualcomm/hdlc_encoder.cpp \
     $$BASE_DIR/src/qualcomm/dm_efs_manager.cpp \
     $$BASE_DIR/src/qualcomm/dm_efs_node.cpp \
