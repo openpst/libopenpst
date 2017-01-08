@@ -59,7 +59,7 @@ PACKED(typedef struct {
 	uint32_t  reserved5;          /* RESERVED */
 	uint32_t  reserved6;          /* RESERVED */
 	uint32_t  reserved7;          /* RESERVED */
-}) MbnSblHeader;
+}) MbnHeader80byte;
 
 PACKED(typedef struct {
   uint32_t image_id;           /**< Identifies the type of image this header
@@ -79,7 +79,7 @@ PACKED(typedef struct {
   uint32_t cert_chain_ptr;     /**< Pointer to the chain of attestation
 								 certificates associated with the image. */
   uint32_t cert_chain_size;    /**< Size of the attestation chain in bytes */
-}) MbnHeader;
+}) MbnHeader40byte;
 
 enum MbnImageId {
 	kMbnImageNone           = 0x00,

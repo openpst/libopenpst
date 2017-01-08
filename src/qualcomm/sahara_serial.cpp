@@ -113,16 +113,16 @@ SaharaState SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t mi
 	packet.version          = version;
 	packet.minVersion       = minVersion;
 
-	printf("Mode: %08X\n", packet.mode);
-
 	write((uint8_t*)&packet, sizeof(packet));
 
 	try {
 		rxSize = read(buffer, sizeof(ret));     
 	}  catch (serial::IOException e) {
-		// sometimes (at least in memory debug mode) the device
-		// will reset itself and the hello needs to be re-read and
-		// sent
+		/*
+		 sometimes (at least in memory debug mode) the device
+		 will reset itself and the hello needs to be re-read and
+		 sent
+		*/
 		close();
 
 		sleep(5000); // give it some time to come back
@@ -139,17 +139,18 @@ SaharaState SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t mi
 	flush();
 
 	if (packet.mode == kSaharaModeCommand && isValidResponse(kSaharaCommandReady, reinterpret_cast<SaharaHeader*>(&buffer[0]), rxSize)) {
-		ret.mode = packet.mode;
 		memcpy(&ret.clientCommand, &buffer[0], sizeof(ret.clientCommand));
 	} else if (packet.mode == kSaharaModeImageTxPending && isValidResponse(kSaharaCommandReadData, reinterpret_cast<SaharaHeader*>(&buffer[0]), rxSize)) {
-		ret.mode = packet.mode;
 		memcpy(&ret.imageTransfer, &buffer[0], sizeof(ret.imageTransfer));
 	} else if (packet.mode == kSaharaModeMemoryDebug && isValidResponse(kSaharaCommandMemoryDebug, reinterpret_cast<SaharaHeader*>(&buffer[0]), rxSize)) {
-		ret.mode = packet.mode;
 		memcpy(&ret.memoryDebug, &buffer[0], sizeof(ret.memoryDebug));
 	} else {
 		throw SaharaSerialError("Unexpected or unsupported mode");
 	}
+	
+	ret.mode 		= packet.mode;
+	ret.version  	= packet.version;
+	ret.minVersion  = packet.minVersion
 
 	return ret;
 }
@@ -159,9 +160,7 @@ void SaharaSerial::switchMode(uint32_t mode)
 {
 	SaharaSwitchModeRequest packet = {};
 	std::vector<uint8_t> buffer;
-
-	LOGD("Requesting Mode Switch to %s (0x%02x)\n", getNamedMode(mode).c_str(), mode);
-		
+			
 	packet.header.command   = kSaharaCommandSwitchMode;
 	packet.header.size      = sizeof(packet);
 	packet.mode             = mode;
@@ -473,10 +472,10 @@ bool SaharaSerial::isValidResponse(uint32_t expectedResponseCommand, SaharaHeade
 {
 
 	if (dataSize == 0) {
-		LOGD("No data to validate");
+		LOGD("No data to validate\n");
 		return false;
 	} else if (isErrorResponse(data, dataSize)) {
-		LOGD("Error Response");
+		LOGD("Error Response\n");
 		return false;
 	} else if (!expectedResponseCommand || data->command == expectedResponseCommand) {
 		return true;

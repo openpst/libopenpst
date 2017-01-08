@@ -43,6 +43,8 @@ namespace OpenPST {
 	namespace QC {
 
 		struct SaharaState {
+			uint32_t version;
+			uint32_t minVersion;
 			uint32_t mode; // see enum SaharaMode
 			union {
 				SaharaMemoryDebugRequest		memoryDebug;
