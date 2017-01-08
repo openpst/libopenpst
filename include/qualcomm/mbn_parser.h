@@ -47,6 +47,10 @@ namespace OpenPST {
 				const MbnHeader& getHeader();
 
 				int getHeaderSize();
+
+				std::string getImageName();
+				
+				std::string getImageName(uint32_t imageId);
 		};
 	}
 }
