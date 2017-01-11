@@ -196,6 +196,7 @@ MbnParser::~MbnParser()
 
 std::unique_ptr<Mbn> MbnParser::parse(std::string filePath, int flags)
 {
+	uint32_t codeword;
 	uint32_t magic;
 	std::stringstream ss;
 	char headerBuff[MBN_HEADER_MAX_SIZE] = {};
@@ -212,23 +213,30 @@ std::unique_ptr<Mbn> MbnParser::parse(std::string filePath, int flags)
 
 	ret->setFileSize((size_t)file.tellg());
 
-	file.seekg(0, file.beg);
-
 	if (ret->getFileSize() < MBN_HEADER_MAX_SIZE) {
 		ss << "Invalid File Type. File " << filePath << " is smaller than max header size";
 		throw MbnParserException(ss.str());
 	}
 
-	// seek to 80 byte magic read it
-	file.seekg(sizeof(uint32_t), file.cur);
-
-	file.read(reinterpret_cast<char*>(&magic), sizeof(magic));
-
+	// read codeword and magic
 	file.seekg(0, file.beg);
+
+	file.read(reinterpret_cast<char*>(&codeword), sizeof(codeword));
+	file.read(reinterpret_cast<char*>(&magic), sizeof(magic));
 
 	int headerSize = 0;
 
+	if (codeword == 0x464C457F) {
+		ss << "Invalid File Type. File " << filePath << " appears to be an elf binary";
+		throw MbnParserException(ss.str());	
+	} else if (codeword > kMbnImageLast && magic != MBN_EIGHTY_BYTE_MAGIC) {
+		ss << "Invalid File Type. File " << filePath << " does not seem to be an mbn";
+		throw MbnParserException(ss.str());		
+	}
+
 	bool is80ByteHeader = magic == MBN_EIGHTY_BYTE_MAGIC;
+	
+	file.seekg(0, file.beg);
 
 	if (is80ByteHeader) {
 		headerSize = sizeof(MbnHeader80byte);

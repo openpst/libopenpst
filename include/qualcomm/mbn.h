@@ -113,5 +113,6 @@ enum MbnImageId {
 	kMbnImageDsp3           = 0x1C,
 	kMbnImageAcdb           = 0x1D,
 	kMbnImageWdt            = 0x1E,
-	kMbnImageMba            = 0x1F
+	kMbnImageMba            = 0x1F,
+	kMbnImageLast 			= kMbnImageMba
 };
