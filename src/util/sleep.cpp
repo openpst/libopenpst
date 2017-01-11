@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file sleep.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief multi platform sleep functions
 *
 * @author Gassan Idriss <ghassani@gmail.com>

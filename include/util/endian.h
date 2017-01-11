@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file endian.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief endian helper functions
 *
 * @author Gassan Idriss <ghassani@gmail.com>

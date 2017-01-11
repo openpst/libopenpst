@@ -3,7 +3,7 @@
 *
 * @file laf_serial.h
 * @class LafSerial
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief LAF serial port implementation
 *
 * @author Gassan Idriss <ghassani@gmail.com>

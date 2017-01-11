@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file hdlc_encoder.cpp
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief HDLC Encoding & Decoding
 *
 * @author Gassan Idriss <ghassani@gmail.com>

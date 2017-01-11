@@ -3,7 +3,7 @@
 *
 * @file dm_efs_manager.h
 * @class OpenPST::DmEfsManager
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief EFS2 management over diagnostic monitor
 *
 * @author Gassan Idriss <ghassani@gmail.com>

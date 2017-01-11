@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file adb.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief ADB helper functions definitions
 *
 * @author Gassan Idriss <ghassani@gmail.com>

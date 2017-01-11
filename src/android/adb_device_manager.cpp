@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file 
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief
 *
 * @author Gassan Idriss <ghassani@gmail.com>

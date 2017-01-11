@@ -3,7 +3,7 @@
 *
 * @file dm_efs_node.h
 * @class OpenPST::DmEfsNode
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief Represents a file or dir retrieved from the diagnostic monitor EFS subsystem
 *
 * @author Gassan Idriss <ghassani@gmail.com>

@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file dload.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief DLOAD definitions and structures
 *
 * @author Gassan Idriss <ghassani@gmail.com>

@@ -1,9 +1,9 @@
 /**
 * LICENSE PLACEHOLDER
 *
-* @file dm.h
-* @package OpenPST
-* @brief QCDM definitions and structures
+* @file dm_efs.h
+* @package openpst/libopenpst
+* @brief Dm EFS definitions and structures
 *
 * @author Gassan Idriss <ghassani@gmail.com>
 * @author Matteson Raab <mraabhimself@gmail.com>

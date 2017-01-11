@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file dm_nv.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief QCDM NV item definitions
 *
 * @author Gassan Idriss <ghassani@gmail.com>

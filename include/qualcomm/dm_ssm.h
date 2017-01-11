@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file dm_ssm.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief QCDM definitions and structures for SSM feature
 *
 * @author Gassan Idriss <ghassani@gmail.com>

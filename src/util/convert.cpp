@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file convert.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief QCDM response conversion helper functions
 *
 * @author Gassan Idriss <ghassani@gmail.com>

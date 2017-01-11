@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file sahara.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief Sahara protocol definitions and structures
 *
 * @author Gassan Idriss <ghassani@gmail.com>

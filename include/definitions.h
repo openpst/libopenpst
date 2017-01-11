@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file definitions.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief standard definitions
 *
 * @author Gassan Idriss <ghassani@gmail.com>

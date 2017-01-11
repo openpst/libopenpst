@@ -3,7 +3,7 @@
 *
 * @file laf_serial.cpp
 * @class LafSerial
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief HDLC serial port implementation
 *
 * @author Gassan Idriss <ghassani@gmail.com>

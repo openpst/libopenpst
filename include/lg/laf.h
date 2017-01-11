@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file laf.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief LAF definitions and structures
 *
 * @author Gassan Idriss <ghassani@gmail.com>

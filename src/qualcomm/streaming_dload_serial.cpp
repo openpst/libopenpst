@@ -3,7 +3,7 @@
 *
 * @file streaming_dload_serial.cpp
 * @class StreamingDloadSerial
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief Streaming DLOAD protocol serial port implementation
 *
 * @author Gassan Idriss <ghassani@gmail.com>

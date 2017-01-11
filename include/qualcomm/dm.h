@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file dm.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief QCDM definitions and structures
 *
 * @author Gassan Idriss <ghassani@gmail.com>

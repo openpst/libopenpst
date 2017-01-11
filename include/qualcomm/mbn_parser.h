@@ -3,7 +3,7 @@
 *
 * @file mbn_parser.h
 * @class OpenPST::QC::MbnParser
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief Reads and parses various MBN information from a binary on disk
 *
 * @author Gassan Idriss <ghassani@gmail.com>

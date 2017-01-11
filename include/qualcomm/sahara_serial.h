@@ -3,7 +3,7 @@
 *
 * @file sahara_serial.h
 * @class SaharaSerial
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief Sahara protocol serial port implementation
 *
 * @author Gassan Idriss <ghassani@gmail.com>

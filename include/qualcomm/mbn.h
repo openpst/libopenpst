@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file mbn.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief MBN file format definitions and structures
 *
 * @author Gassan Idriss <ghassani@gmail.com>

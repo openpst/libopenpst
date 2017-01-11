@@ -3,7 +3,7 @@
 *
 * @file hdlc_serial.h
 * @class HdlcSerial
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief HDLC serial port implementation
 *
 * @author Gassan Idriss <ghassani@gmail.com>

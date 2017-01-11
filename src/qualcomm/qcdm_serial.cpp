@@ -3,7 +3,7 @@
 *
 * @file qcdm_serial.h
 * @class QcdmSerial
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief QCDM serial port implementation
 *
 * @author Gassan Idriss <ghassani@gmail.com>

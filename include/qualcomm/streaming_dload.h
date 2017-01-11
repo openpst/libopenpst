@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file streaming_dload.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief Streaming DLOAD definitions and structures
 * @see DCN 80-V5348-1 J
 *

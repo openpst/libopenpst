@@ -2,7 +2,7 @@
 * LICENSE PLACEHOLDER
 *
 * @file akseed.h
-* @package OpenPST
+* @package openpst/libopenpst
 * @brief Samsung AKSEED Calculations
 *
 * @author Gassan Idriss <ghassani@gmail.com>
