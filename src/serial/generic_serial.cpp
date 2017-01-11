@@ -46,7 +46,7 @@ size_t GenericSerial::write(uint8_t *data, size_t size)
 		hexdump_tx(data, bytesWritten);
 		return bytesWritten;
 	} catch (serial::IOException e) {
-		throw SerialError(e.what());
+		throw SerialError(e.what(), e.getErrorNumber());
 	} catch(serial::SerialException& e) {
 		throw SerialError(e.what());
 	} catch(std::invalid_argument& e) {
@@ -70,7 +70,7 @@ size_t GenericSerial::read(uint8_t *buf, size_t size)
 		hexdump_rx(buf, bytesRead);
 		return bytesRead;
 	} catch (serial::IOException e) {
-		throw SerialError(e.what());
+		throw SerialError(e.what(), e.getErrorNumber());
 	} catch(serial::SerialException& e) {
 		throw SerialError(e.what());
 	} catch(std::invalid_argument& e) {
@@ -94,7 +94,7 @@ size_t GenericSerial::write(std::vector<uint8_t> &data)
 		hexdump_tx(&data[0], bytesWritten);
 		return bytesWritten;
 	} catch (serial::IOException e) {
-		throw SerialError(e.what());
+		throw SerialError(e.what(), e.getErrorNumber());
 	} catch(serial::SerialException& e) {
 		throw SerialError(e.what());
 	} catch(std::invalid_argument& e) {
@@ -118,7 +118,7 @@ size_t GenericSerial::read(std::vector<uint8_t> &buffer, size_t size)
 		hexdump_rx(&buffer[0], bytesRead);
 		return bytesRead;
 	} catch (serial::IOException e) {
-		throw SerialError(e.what());
+		throw SerialError(e.what(), e.getErrorNumber());
 	} catch(serial::SerialException& e) {
 		throw SerialError(e.what());
 	} catch(std::invalid_argument& e) {
