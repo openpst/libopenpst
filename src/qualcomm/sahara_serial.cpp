@@ -33,55 +33,6 @@ SaharaSerial::~SaharaSerial()
 {
 }
 
-/**
-* @brief write
-* @overload Serial:: write(uint8_t *data, size_t size)
-* @return size_t
-*/
-size_t SaharaSerial::write(uint8_t *data, size_t size)
-{
-	size_t bytesWritten = Serial::write(data, size);
-	hexdump_tx(data, bytesWritten);
-	return bytesWritten;
-}
-
-/**
-* @brief read
-* @overload Serial::read(uint8_t *buf, size_t size)
-* @return size_t
-*/
-size_t SaharaSerial::read(uint8_t *buf, size_t size)
-{
-	size_t bytesRead = Serial::read(buf, size);
-	hexdump_rx(buf, bytesRead);
-	return bytesRead;
-}
-
-/**
-* @brief write
-* @overload Serial::write(std::vector<uint8_t> &data)
-* @return size_t
-*/
-size_t SaharaSerial::write(std::vector<uint8_t> &data)
-{
-	size_t bytesWritten = Serial::write(data);
-	hexdump_tx(&data[0], bytesWritten);
-	return bytesWritten;
-}
-
-/**
-* @brief read
-* @overload Serial::read(std::vector<uint8_t> &buffer, size_t size)
-* @return size_t
-*/
-size_t SaharaSerial::read(std::vector<uint8_t> &buffer, size_t size)
-{
-	size_t bytesRead = Serial::read(buffer, size);
-	hexdump_rx(&buffer[0], bytesRead);
-	return bytesRead;
-}
-
-
 SaharaHelloRequest SaharaSerial::readHello()
 {
 	size_t rxSize;

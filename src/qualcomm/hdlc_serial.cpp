@@ -38,7 +38,7 @@ HdlcSerial::~HdlcSerial()
 * @brief HdlcSerial::write - Escapes the data and creates a CRC'ed HDLC packet
 * then writes the data
 *
-* @super Serial::write (uint8_t *data, size_t size);
+* @super GenericSerial::write (uint8_t *data, size_t size);
 *
 * @param uint8_t* data
 * @param size_t size
@@ -49,7 +49,7 @@ HdlcSerial::~HdlcSerial()
 size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 {
 	if (!encapsulate) {
-		size_t bytesWritten = Serial::write(data, size);
+		size_t bytesWritten = GenericSerial::write(data, size);
 		if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
 		return bytesWritten;
 	}
@@ -59,7 +59,7 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 
 	encoder.encode(data, size, &packet, packetSize);
 
-	size_t bytesWritten = Serial::write(packet, packetSize);
+	size_t bytesWritten = GenericSerial::write(packet, packetSize);
 	
 	hexdump_tx(packet, bytesWritten);
 
@@ -74,7 +74,7 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 * @brief HdlcSerial::read - Reads and unescpaes theCRC'ed HDLC packet
 * read from the device
 *
-* @super Serial::read (uint8_t *buffer, size_t size);
+* @super GenericSerial::read (uint8_t *buffer, size_t size);
 
 * @param uint8_t* buf
 * @param size_t size
@@ -84,7 +84,7 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 */
 size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 {
-	size_t bytesRead = Serial::read(buf, size);
+	size_t bytesRead = GenericSerial::read(buf, size);
 
 	if (!unescape || !bytesRead) {
 		if (bytesRead) hexdump_rx(&buf[0], bytesRead);
@@ -111,7 +111,7 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 * @brief HdlcSerial::write - Escapes the data and creates a CRC'ed HDLC packet
 * then writes the data
 *
-* @super Serial::write (std::vector<uint8_t> &data);
+* @super GenericSerial::write (std::vector<uint8_t> &data);
 *
 * @param std::vector<uint8_t>& data
 * @param size_t size
@@ -122,14 +122,14 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 {
 	if (!encapsulate) {
-		size_t bytesWritten = Serial::write(data);
+		size_t bytesWritten = GenericSerial::write(data);
 		if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
 		return bytesWritten;
 	}
 
 	encoder.encode(data);
 
-	size_t bytesWritten = Serial::write(data);
+	size_t bytesWritten = GenericSerial::write(data);
 
 	hexdump_tx(&data[0], bytesWritten);
 
@@ -140,7 +140,7 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 * @brief HdlcSerial::read - Reads and unescpaes theCRC'ed HDLC packet
 * read from the device
 *
-* @super Serial::read (std::vector<uint8_t> &buffer, size_t size);
+* @super GenericSerial::read (std::vector<uint8_t> &buffer, size_t size);
 
 * @param std::vector<uint8_t>& buffer
 * @param size_t size
@@ -154,7 +154,7 @@ size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape
 	buffer.reserve(buffer.size() + (size + HDLC_OVERHEAD_LENGTH));
 	
 	size_t bytesRead = 
-		Serial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
+		GenericSerial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
 
 	if (!unescape || !bytesRead) {
 		if (bytesRead) hexdump_rx(&buffer[0], bytesRead);

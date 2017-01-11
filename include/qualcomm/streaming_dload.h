@@ -85,10 +85,10 @@ enum StreamingDloadCommand {
 	//25-2F commands described in [Q2]
 
 	kStreamingDloadUnframedStreamWrite           = 0x30,
-	kStreamingDloadUnframedStreamWriteResponse  = 0x31,
-	kStreamingDloadWfpromWrite                    = 0x32,
+	kStreamingDloadUnframedStreamWriteResponse   = 0x31,
+	kStreamingDloadWfpromWrite                   = 0x32,
 	kStreamingDloadWfpromWriteResponse           = 0x33,
-	kStreamingDloadQfpromRead                     = 0x34,
+	kStreamingDloadQfpromRead                    = 0x34,
 	kStreamingDloadQfpromReadResponse            = 0x35
 
 	//36-FE Reserved

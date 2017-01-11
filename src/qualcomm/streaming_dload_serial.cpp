@@ -39,24 +39,25 @@ StreamingDloadSerial::~StreamingDloadSerial()
 StreamingDloadHelloResponse StreamingDloadSerial::sendHello(std::string magic, uint8_t version, uint8_t compatibleVersion, uint8_t featureBits)
 {
 	size_t rxSize; 
-	StreamingDloadHelloRequest hello = {};
-	StreamingDloadHelloResponse response;
+	StreamingDloadHelloRequest  hello = {};
+	std::vector<uint8_t> buffer; 
 
-	hello.command = kStreamingDloadHello;
-	memcpy(hello.magic, magic.c_str(), magic.size());
-	hello.version = version;
+	hello.command 			= kStreamingDloadHello;
+	hello.version 			= version;
 	hello.compatibleVersion = compatibleVersion;
-	hello.featureBits = featureBits;
+	hello.featureBits 		= featureBits;
+
+	memcpy(hello.magic, magic.c_str(), magic.size());
 
 	write((uint8_t*)&hello, sizeof(hello));
 
-	if (!(rxSize = read(reinterpret_cast<uint8_t*>(&response), sizeof(response)))){
+	if (!(rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE))){
 		throw StreamingDloadSerialError("Device did not respond");
 	}
-   
-	validateResponse(kStreamingDloadHelloResponse, reinterpret_cast<uint8_t*>(&response), rxSize);
+   	
+	validateResponse(kStreamingDloadHelloResponse, reinterpret_cast<uint8_t*>(&buffer[0]), rxSize);
 			
-	/*memcpy(&state.hello, &buffer[0], sizeof(StreamingDloadHelloResponseHeader));
+	memcpy(&state.hello, &buffer[0], sizeof(StreamingDloadHelloResponseHeader));
 	
 	int dataStartIndex = sizeof(StreamingDloadHelloResponseHeader);
 
@@ -69,9 +70,9 @@ StreamingDloadHelloResponse StreamingDloadSerial::sendHello(std::string magic, u
 	int sectorSize = 4 * state.hello.numberOfSectors;
 	memcpy(&state.hello.sectorSizes, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize) + sizeof(state.hello.numberOfSectors)], sectorSize-1);
 	memcpy(&state.hello.featureBits, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize) + sizeof(state.hello.numberOfSectors) + sectorSize-1], sizeof(state.hello.featureBits));
-	state.hello.featureBits = flip_endian16(state.hello.featureBits);*/
+	state.hello.featureBits = flip_endian16(state.hello.featureBits);
 
-	return response;
+	return state.hello;
 }
 
 bool StreamingDloadSerial::sendUnlock(std::string code)
