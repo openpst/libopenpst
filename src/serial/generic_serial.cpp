@@ -49,6 +49,10 @@ size_t GenericSerial::write(uint8_t *data, size_t size)
 		throw SerialError(e.what());
 	} catch(serial::SerialException& e) {
 		throw SerialError(e.what());
+	} catch(std::invalid_argument& e) {
+		throw SerialError(e.what());
+	} catch(serial::PortNotOpenedException& e) {
+		throw SerialError(e.what());
 	} catch (...) {
 		throw SerialError("Unhandled Exception Encountered");
 	}
@@ -68,6 +72,10 @@ size_t GenericSerial::read(uint8_t *buf, size_t size)
 	} catch (serial::IOException e) {
 		throw SerialError(e.what());
 	} catch(serial::SerialException& e) {
+		throw SerialError(e.what());
+	} catch(std::invalid_argument& e) {
+		throw SerialError(e.what());
+	} catch(serial::PortNotOpenedException& e) {
 		throw SerialError(e.what());
 	} catch (...) {
 		throw SerialError("Unhandled Exception Encountered");
@@ -89,6 +97,10 @@ size_t GenericSerial::write(std::vector<uint8_t> &data)
 		throw SerialError(e.what());
 	} catch(serial::SerialException& e) {
 		throw SerialError(e.what());
+	} catch(std::invalid_argument& e) {
+		throw SerialError(e.what());
+	} catch(serial::PortNotOpenedException& e) {
+		throw SerialError(e.what());
 	} catch (...) {
 		throw SerialError("Unhandled Exception Encountered");
 	}
@@ -108,6 +120,10 @@ size_t GenericSerial::read(std::vector<uint8_t> &buffer, size_t size)
 	} catch (serial::IOException e) {
 		throw SerialError(e.what());
 	} catch(serial::SerialException& e) {
+		throw SerialError(e.what());
+	} catch(std::invalid_argument& e) {
+		throw SerialError(e.what());
+	} catch(serial::PortNotOpenedException& e) {
 		throw SerialError(e.what());
 	} catch (...) {
 		throw SerialError("Unhandled Exception Encountered");

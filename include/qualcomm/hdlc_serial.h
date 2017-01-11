@@ -41,7 +41,7 @@ namespace OpenPST {
 				 * @brief write - Escapes the data and creates a CRC'ed HDLC packet
 				 * then writes the data
 				 *
-				 * @super Serial::write (uint8_t *data, size_t size);
+				 * @super GenericSerial::write (uint8_t *data, size_t size);
 				 *
 				 * @param uint8_t* data
 				 * @param size_t size
@@ -55,7 +55,7 @@ namespace OpenPST {
 				 * @brief read - Reads and unescpaes theCRC'ed HDLC packet
 				 * read from the device
 				 *
-				 * @super Serial::read (uint8_t *buffer, size_t size);
+				 * @super GenericSerial::read (uint8_t *buffer, size_t size);
 
 				 * @param uint8_t* buf
 				 * @param size_t size
@@ -69,7 +69,7 @@ namespace OpenPST {
 				* @brief write - Escapes the data and creates a CRC'ed HDLC packet
 				* then writes the data
 				*
-				* @super Serial::write (std::vector<uint8_t> &data);
+				* @super GenericSerial::write (std::vector<uint8_t> &data);
 				*
 				* @param std::vector<uint8_t>& data
 				* @param size_t size
@@ -83,7 +83,7 @@ namespace OpenPST {
 				* @brief read - Reads and unescpaes theCRC'ed HDLC packet
 				* read from the device
 				*
-				* @super Serial::read (std::vector<uint8_t> &buffer, size_t size);
+				* @super GenericSerial::read (std::vector<uint8_t> &buffer, size_t size);
 
 				* @param std::vector<uint8_t>& buffer
 				* @param size_t size 

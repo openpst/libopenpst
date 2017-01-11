@@ -72,34 +72,6 @@ namespace OpenPST {
 				~SaharaSerial();
 
 				/**
-				* @brief write
-				* @overload Serial:: write(uint8_t *data, size_t size)
-				* @return size_t
-				*/
-				size_t write(uint8_t *data, size_t size);
-
-				/**
-				* @brief read
-				* @overload Serial::read(uint8_t *buf, size_t size)
-				* @return size_t
-				*/
-				size_t read(uint8_t *buf, size_t size);
-
-				/**
-				* @brief write
-				* @overload Serial::write(std::vector<uint8_t> &data)
-				* @return size_t
-				*/
-				size_t write(std::vector<uint8_t> &data);
-
-				/**
-				* @brief read
-				* @overload Serial::read(std::vector<uint8_t> &buffer, size_t size)
-				* @return size_t
-				*/
-				size_t read(std::vector<uint8_t> &buffer, size_t size);
-
-				/**
 				* @brief readHello - Always start a session by reading hello
 				* @return SaharaHelloRequest
 				*/

@@ -94,42 +94,42 @@ enum DLOAF_FLASH_DEVICE_SIZE {
 	DLOAD_FLASH_DEVICE_SIZE_64MB        = 0x06,
 };
 
-PACKED(typedef struct dload_write_tx_t { // 0x01
+PACKED(typedef struct DloadWriteRequest { // 0x01
 	uint8_t command;
 	uint32_t address;
 	uint16_t size;
 	uint8_t* data;
-} dload_write_tx_t);
+} DloadWriteRequest);
 
-PACKED(typedef struct dload_ack_rx_t { // 0x02
+PACKED(typedef struct DloadAckResponse { // 0x02
 	uint8_t command;
-} dload_ack_rx_t);
+} DloadAckResponse);
 
-PACKED(typedef struct dload_nck_rx_t { // 0x03
+PACKED(typedef struct DloadNckResponse { // 0x03
 	uint8_t command;
 	uint16_t reason;
-} dload_nck_rx_t);
+} DloadNckResponse);
 
-PACKED(typedef struct dload_erase_tx_t { // 0x04
+PACKED(typedef struct DloadEraseReequest { // 0x04
 	uint8_t command;
 	uint32_t address;
-} dload_erase_tx_t);
+} DloadEraseReequest);
 
-PACKED(typedef struct dload_go_tx_t { // 0x05
+PACKED(typedef struct DloadGoRequest { // 0x05
 	uint8_t command;
 	uint16_t address;
 	uint16_t offset;
-} dload_go_tx_t);
+} DloadGoRequest);
 
-PACKED(typedef struct dload_nop_tx_t { // 0x06
+PACKED(typedef struct DloadNopRequest { // 0x06
 	uint8_t command;
-} dload_nop_tx_t);
+} DloadNopRequest);
 
-PACKED(typedef struct dload_parameters_tx_t { // 0x07
+PACKED(typedef struct DloadParametersRequest { // 0x07
 	uint8_t command;
-} dload_parameters_tx_t);
+} DloadParametersRequest);
 
-PACKED(typedef struct dload_parameters_rx_t { // 0x08
+PACKED(typedef struct DloadParametersResponse { // 0x08
 	uint8_t command;
 	uint8_t version;
 	uint8_t minVersion;
@@ -137,33 +137,33 @@ PACKED(typedef struct dload_parameters_rx_t { // 0x08
 	uint8_t model;
 	uint8_t size;
 	uint8_t type;
-} dload_parameters_rx_t);
+} DloadParametersResponse);
 
-PACKED(typedef struct dload_dump_tx_t { // 0x09
+PACKED(typedef struct DloadDumpRequest { // 0x09
 	uint8_t command;
 	uint32_t address;
 	uint16_t length;
-} dload_dump_tx_t);
+} DloadDumpRequest);
 
-PACKED(typedef struct dload_reset_tx_t { // 0x0A
+PACKED(typedef struct DloadResetRequest { // 0x0A
 	uint8_t command;
-} dload_reset_tx_t);
+} DloadResetRequest);
 
-PACKED(typedef struct dload_unlock_tx_t { // 0x0B
+PACKED(typedef struct DloadUnlockRequest { // 0x0B
 	uint8_t command;
 	uint8_t securityCode[8];
-} dload_unlock_tx_t);
+} DloadUnlockRequest);
 
-PACKED(typedef struct dload_sw_version_tx_t { // 0x0C
+PACKED(typedef struct DloadSwVersionRequest { // 0x0C
 	uint8_t command;
-} dload_sw_version_tx_t);
+} DloadSwVersionRequest);
 
-PACKED(typedef struct dload_sw_version_rx_t { // 0x0D
+PACKED(typedef struct DloadSwVersionResponse { // 0x0D
 	uint8_t command;
 	uint8_t length;
 	uint8_t version[20];
-} dload_sw_version_rx_t);
+} DloadSwVersionResponse);
 
-PACKED(typedef struct dload_power_down_tx_t { // 0x0E
+PACKED(typedef struct DloadPowerDownRequest { // 0x0E
 	uint8_t command;
-} dload_power_down_tx_t);
+} DloadPowerDownRequest);
