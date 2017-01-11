@@ -24,7 +24,7 @@
 using OpenPST::QC::QcdmSerial;
 using OpenPST::QC::QcdmSerialError;
 using OpenPST::QC::QcdmSerialInvalidArgument;
-using OpenPST::QC::QcdmSerialResponseError;
+using OpenPST::Serial::SerialError;
 
 namespace OpenPST {
 	namespace QC {

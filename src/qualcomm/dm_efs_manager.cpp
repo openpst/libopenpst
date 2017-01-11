@@ -1781,7 +1781,7 @@ bool DmEfsManager::sendCommand(uint16_t command, uint8_t* request, size_t reques
 	if (!(rxSize = port.read(buffer, DIAG_MAX_PACKET_SIZE))) {
 		throw DmEfsManagerResponseError("Device did not respond", 0);
 	} else if (port.isError(header->command)) {
-		throw QcdmSerialResponseError(port.getErrorString(header->command), header->command);
+		throw QcdmSerialError(port.getErrorString(header->command), header->command);
 	} else if (header->subsysCommand != command) {
 		throw DmEfsManagerResponseError("Unexcpected command response", header->subsysCommand);
 	} else if (responseOutSize < rxSize) {

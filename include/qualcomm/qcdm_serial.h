@@ -200,24 +200,6 @@ namespace OpenPST {
 		};
 
 		/**
-		* @brief QcdmSerialResponseError - Exception thrown when a method encounters an error
-		* @super QcdmSerialError
-		*/
-		class QcdmSerialResponseError : public QcdmSerialError
-		{
-			const QcdmSerialResponseError& operator=(QcdmSerialResponseError);
-			std::string _what;
-			uint8_t code;
-		public:
-			QcdmSerialResponseError(std::string message, uint8_t code = 0) : QcdmSerialError(message), _what(message), code(code)  {}
-			QcdmSerialResponseError(const QcdmSerialResponseError& second) : QcdmSerialError(second), _what(second._what), code(second.code) {}
-			virtual ~QcdmSerialResponseError() throw() {}
-			virtual const char* what() const throw () {		
-				return _what.c_str();
-			}
-		};
-
-		/**
 		* @brief QcdmSerialInvalidArgument - Exception thrown when a method has an invalid argument
 		* @super QcdmSerialError, std::invalid_argument
 		*/

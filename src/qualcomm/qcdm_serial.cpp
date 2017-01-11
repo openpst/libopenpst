@@ -253,15 +253,15 @@ void QcdmSerial::sendCommand(uint8_t command, uint8_t* data, size_t size, bool v
 	write(data, size);
 
 	if (!(responseSize = read(buffer, DIAG_MAX_PACKET_SIZE))) {
-		throw QcdmSerialResponseError("Device did not respond");
+		throw QcdmSerialError("Device did not respond");
 	}
 
 	if (validate) {
 		if (command && response->command != command) {
-			throw QcdmSerialResponseError("Received an unexpected response", response->command);
+			throw QcdmSerialError("Received an unexpected response", response->command);
 		} else if (!command) {
 			if (isError(response->command)) {
-				throw QcdmSerialResponseError("Invalid Response", response->command);
+				throw QcdmSerialError("Invalid Response", response->command);
 			}
 		}
 	}

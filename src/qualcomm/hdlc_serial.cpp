@@ -59,7 +59,16 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 
 	encoder.encode(data, size, &packet, packetSize);
 
-	size_t bytesWritten = GenericSerial::write(packet, packetSize);
+	size_t bytesWritten = 0;
+
+	try {
+		bytesWritten = GenericSerial::write(packet, packetSize);
+	} catch(...) {
+		if (packet != NULL) {
+			delete packet;
+		}
+		throw;
+	}
 	
 	hexdump_tx(packet, bytesWritten);
 
