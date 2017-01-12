@@ -39,6 +39,12 @@ namespace OpenPST {
 				*/
 				~GenericSerial();
 
+				void open();
+
+				void close();
+
+				size_t available();
+				
 				/**
 				* @brief write
 				* @overload Serial:: write(uint8_t *data, size_t size)

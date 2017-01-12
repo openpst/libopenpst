@@ -53,6 +53,28 @@ GenericSerial::~GenericSerial()
 {
 }
 
+void GenericSerial::open()
+{
+	GENERIC_SERIAL_TRY
+		return Serial::open();
+	GENERIC_SERIAL_CATCH
+}
+
+void GenericSerial::close()
+{
+	GENERIC_SERIAL_TRY
+		return Serial::close();
+	GENERIC_SERIAL_CATCH
+}
+
+size_t GenericSerial::available()
+{
+	GENERIC_SERIAL_TRY
+		return Serial::available();
+	GENERIC_SERIAL_CATCH
+}
+
+	
 /**
 * @brief write
 * @overload Serial:: write(uint8_t *data, size_t size)
