@@ -15,7 +15,7 @@
 using namespace OpenPST::QC;
 using serial::IOException;
 
-QcdmSerial::QcdmSerial(std::string port, int baudrate, serial::Timeout timeout) :
+QcdmSerial::QcdmSerial(std::string port, int baudrate, int timeout) :
 	HdlcSerial (port, baudrate, timeout)
 {
 

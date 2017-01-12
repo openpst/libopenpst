@@ -20,7 +20,7 @@ using namespace OpenPST::QC;
 * @param int baudrate
 * @param serial::Timeout - Timeout, defaults to 1000ms
 */
-HdlcSerial::HdlcSerial(std::string port, int baudrate, serial::Timeout timeout) :
+HdlcSerial::HdlcSerial(std::string port, int baudrate, int timeout) :
 	GenericSerial(port, baudrate, timeout)
 {
 

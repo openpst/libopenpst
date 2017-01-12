@@ -62,9 +62,9 @@ namespace OpenPST {
 				*
 				* @param std::string port
 				* @param int baudrate
-				* @param serial::Timeout - Timeout, defaults to 1000ms
+				* @param int timeout in ms
 				*/
-				SaharaSerial(std::string port, int baudrate = 115200, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+				SaharaSerial(std::string port, int baudrate = 115200, int timeout = 1000);
 			
 				/**
 				* @brief ~SaharaSerial

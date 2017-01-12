@@ -33,7 +33,7 @@ namespace OpenPST {
 				* @param int baudrate
 				* @param serial::Timeout - Timeout, defaults to 1000ms
 				*/
-				LafSerial(std::string port, int baudrate, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+				LafSerial(std::string port, int baudrate, int timeout = 1000);
 
 				/**
 				* @brief ~LafSerial

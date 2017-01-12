@@ -14,6 +14,25 @@
 
 using namespace OpenPST::Serial;
 
+// use macros for try and catch so we only have to edit it in one place
+// we try and catch all exceptions here thrown by the serial library used
+// and re-throw our own exception to cut down our library try/catch statements needed
+// when being implemented
+
+#define GENERIC_SERIAL_TRY try {
+
+#define GENERIC_SERIAL_CATCH 	\
+	} catch (serial::IOException e) { \
+		throw SerialError(e.what(), e.getErrorNumber()); \
+	} catch(serial::SerialException& e) { \
+		throw SerialError(e.what()); \
+	} catch(std::invalid_argument& e) { \
+		throw SerialError(e.what()); \
+	} catch(serial::PortNotOpenedException& e) { \
+		throw SerialError(e.what()); \
+	} catch (...) { \
+		throw SerialError("Unhandled Exception Encountered"); \
+	} 
 
 /**
 * @brief GenericSerial
@@ -22,8 +41,8 @@ using namespace OpenPST::Serial;
 * @param int baudrate
 * @param serial::Timeout - Timeout, defaults to 1000ms
 */
-GenericSerial::GenericSerial(std::string port, int baudrate, serial::Timeout timeout) :
-	serial::Serial(port, baudrate, timeout)
+GenericSerial::GenericSerial(std::string port, int baudrate, int timeout) :
+	serial::Serial(port, baudrate, serial::Timeout::simpleTimeout(timeout))
 {
 }
 
@@ -41,21 +60,12 @@ GenericSerial::~GenericSerial()
 */
 size_t GenericSerial::write(uint8_t *data, size_t size)
 {
-	try {
+	
+	GENERIC_SERIAL_TRY
 		size_t bytesWritten = Serial::write(data, size);
 		hexdump_tx(data, bytesWritten);
 		return bytesWritten;
-	} catch (serial::IOException e) {
-		throw SerialError(e.what(), e.getErrorNumber());
-	} catch(serial::SerialException& e) {
-		throw SerialError(e.what());
-	} catch(std::invalid_argument& e) {
-		throw SerialError(e.what());
-	} catch(serial::PortNotOpenedException& e) {
-		throw SerialError(e.what());
-	} catch (...) {
-		throw SerialError("Unhandled Exception Encountered");
-	}
+	GENERIC_SERIAL_CATCH
 }
 
 /**
@@ -65,21 +75,11 @@ size_t GenericSerial::write(uint8_t *data, size_t size)
 */
 size_t GenericSerial::read(uint8_t *buf, size_t size)
 {
-	try {
+	GENERIC_SERIAL_TRY
 		size_t bytesRead = Serial::read(buf, size);
 		hexdump_rx(buf, bytesRead);
 		return bytesRead;
-	} catch (serial::IOException e) {
-		throw SerialError(e.what(), e.getErrorNumber());
-	} catch(serial::SerialException& e) {
-		throw SerialError(e.what());
-	} catch(std::invalid_argument& e) {
-		throw SerialError(e.what());
-	} catch(serial::PortNotOpenedException& e) {
-		throw SerialError(e.what());
-	} catch (...) {
-		throw SerialError("Unhandled Exception Encountered");
-	}
+	GENERIC_SERIAL_CATCH
 }
 
 /**
@@ -89,21 +89,11 @@ size_t GenericSerial::read(uint8_t *buf, size_t size)
 */
 size_t GenericSerial::write(std::vector<uint8_t> &data)
 {
-	try {
+	GENERIC_SERIAL_TRY
 		size_t bytesWritten = Serial::write(data);
 		hexdump_tx(&data[0], bytesWritten);
 		return bytesWritten;
-	} catch (serial::IOException e) {
-		throw SerialError(e.what(), e.getErrorNumber());
-	} catch(serial::SerialException& e) {
-		throw SerialError(e.what());
-	} catch(std::invalid_argument& e) {
-		throw SerialError(e.what());
-	} catch(serial::PortNotOpenedException& e) {
-		throw SerialError(e.what());
-	} catch (...) {
-		throw SerialError("Unhandled Exception Encountered");
-	}
+	GENERIC_SERIAL_CATCH
 }
 
 /**
@@ -113,19 +103,9 @@ size_t GenericSerial::write(std::vector<uint8_t> &data)
 */
 size_t GenericSerial::read(std::vector<uint8_t> &buffer, size_t size)
 {
-	try {
+	GENERIC_SERIAL_TRY
 		size_t bytesRead = Serial::read(buffer, size);
 		hexdump_rx(&buffer[0], bytesRead);
 		return bytesRead;
-	} catch (serial::IOException e) {
-		throw SerialError(e.what(), e.getErrorNumber());
-	} catch(serial::SerialException& e) {
-		throw SerialError(e.what());
-	} catch(std::invalid_argument& e) {
-		throw SerialError(e.what());
-	} catch(serial::PortNotOpenedException& e) {
-		throw SerialError(e.what());
-	} catch (...) {
-		throw SerialError("Unhandled Exception Encountered");
-	}
+	GENERIC_SERIAL_CATCH
 }

@@ -12,7 +12,6 @@
 #pragma once
 
 #include "definitions.h"
-#include "serial/serial.h"
 #include "qualcomm/hdlc_serial.h"
 #include "qualcomm/dm.h"
 #include "qualcomm/dm_nv.h"
@@ -35,9 +34,9 @@ namespace OpenPST {
 				*
 				* @param std::string port
 				* @param int baudrate
-				* @param serial::Timeout - Timeout, defaults to 1000ms
+				* @param int timeout in ms
 				*/
-				QcdmSerial(std::string port, int baudrate, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+				QcdmSerial(std::string port, int baudrate, int timeout = 1000);
 
 				/**
 				* @brief ~QcdmSerial - Destructor

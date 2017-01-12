@@ -21,7 +21,7 @@ using namespace OpenPST::QC;
 * @param int baudrate
 * @param serial::Timeout - Timeout, defaults to 1000ms
 */
-SaharaSerial::SaharaSerial(std::string port, int baudrate, serial::Timeout timeout) :
+SaharaSerial::SaharaSerial(std::string port, int baudrate, int timeout) :
 	OpenPST::Serial::GenericSerial(port, baudrate, timeout)
 {
 }

@@ -13,7 +13,6 @@
 #include <iostream>
 #include <fstream>
 #include "definitions.h"
-#include "serial/serial.h"
 #include "qualcomm/hdlc_serial.h"
 #include "util/hexdump.h"
 #include "util/endian.h"
@@ -21,6 +20,7 @@
 
 namespace OpenPST {
 	namespace QC {
+		
 		struct StreamingDloadDeviceState {
 			uint8_t openMode;
 			uint8_t openMultiMode;
@@ -48,9 +48,9 @@ namespace OpenPST {
 			*
 			* @param std::string port - The device to connect to
 			* @param int baudrate - Defaults to 115200
-			* @param serial::Timeout - Timeout, defaults to 1000ms
+			* @param int timeout in ms
 			*/
-			StreamingDloadSerial(std::string port, int baudrate = 115200, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+			StreamingDloadSerial(std::string port, int baudrate = 115200, int timeout = 1000);
 
 			/**
 			* @brief ~StreamingDloadSerial()

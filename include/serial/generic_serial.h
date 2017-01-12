@@ -32,7 +32,7 @@ namespace OpenPST {
 				* @param int baudrate
 				* @param serial::Timeout - Timeout, defaults to 1000ms
 				*/
-				GenericSerial(std::string port, int baudrate = 115200, serial::Timeout timeout = serial::Timeout::simpleTimeout(1000));
+				GenericSerial(std::string port, int baudrate = 115200, int timeout = 1000);
 
 				/**
 				* @brief ~GenericSerial

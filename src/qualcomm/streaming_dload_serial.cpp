@@ -20,7 +20,7 @@ using namespace OpenPST::QC;
 * @param int baudrate - Defaults to 115200
 * @param serial::Timeout - Timeout, defaults to 1000ms
 */
-StreamingDloadSerial::StreamingDloadSerial(std::string port, int baudrate, serial::Timeout timeout) :
+StreamingDloadSerial::StreamingDloadSerial(std::string port, int baudrate, int timeout) :
 	HdlcSerial(port, baudrate, timeout), 
 	state({})
 {
