@@ -166,7 +166,6 @@ enum StreamingDloadOpenMultiState {
 };
 
 
-
 PACKED(typedef struct { // 0x01
 	uint8_t command;
 	uint8_t magic[STREAMING_DLOAD_MAGIC_SIZE];

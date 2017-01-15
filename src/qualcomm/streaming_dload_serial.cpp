@@ -362,148 +362,127 @@ int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t**
 *                      into a std::vector<uint8_t> container
 *
 * @param uint32_t address - The starting address
-* @param size_t length - The length to read from address
+* @param size_t amount - The amount to read from address
 * @param std::vector<uint8_t> &out - The populated vector containing the read data until success or error encountered.
-* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
 *
-* @return int
+* @return size_t
 */
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t stepSize)
+size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::vector<uint8_t> &out)
 {
-	if (!isOpen()) {
-		LOGE("Port Not Open\n");
-		return kStreamingDloadIOError;
+	size_t rx;
+	size_t total = 0;
+	size_t step = amount;
+	std::vector<uint8_t> temp;
+	StreamingDloadReadRequest packet = {};	
+
+	out.reserve(amount);	
+	temp.reserve(STREAMING_DLOAD_MAX_RX_SIZE);
+
+	if (step > state.hello.maxPreferredBlockSize) {
+		step = state.hello.maxPreferredBlockSize;
 	}
 
-	size_t txSize, rxSize;
-
-	StreamingDloadReadRequest packet = {};
-	packet.command = kStreamingDloadRead;
-	packet.address = address;
-
-	StreamingDloadReadResponse* readRx;
-
-	if (out.size()) {
-		out.clear();
-	}
-
-	out.reserve(length);
-
-	std::vector<uint8_t> tmp;
-	tmp.reserve(packet.length + sizeof(packet));
-
-	if (stepSize > state.hello.maxPreferredBlockSize) {
-		stepSize = state.hello.maxPreferredBlockSize;
-	}
-
-	do {
-		packet.address = packet.address + out.size();       
-		packet.length = length <= stepSize ? length : stepSize;
+	while (total < amount) {
 		
-		LOGE("Requesting %lu bytes from %08X\n", packet.length, packet.address);
-
-		txSize = write((uint8_t*)&packet, sizeof(packet));
-		
-		if (!txSize) {
-			LOGE("Wrote 0 bytes requesting to read %lu bytes from 0x%08X\n", packet.length, packet.address);
-			return kStreamingDloadIOError;
+		if ((amount - total) < step) {
+			step = amount - total;
 		}
 
-		// read accounting for additional room for the data to be read
-		// and the extra packet data in the header of the response
-		// and possibly escaped content
-		rxSize = read(tmp, STREAMING_DLOAD_MAX_RX_SIZE);
+		packet.command = kStreamingDloadRead;
+		packet.address = address + total;
+		packet.length  = step;
 
-		if (!rxSize) {
-			LOGE("Device did not respond to request to read %lu bytes from 0x%08X\n", packet.length, packet.address);
-			return kStreamingDloadIOError;
-		}
+#ifndef STREAMING_DLOAD_SERIAL_READ_NOHACK
+    	// protocol will crap out if
+    	// the crc of this packet contains HDLC_ESC_CHAR
+		// or HDLC_CONTROL_CHAR	
+		// ugly hack, check for these in the crc of the request packet
+		uint32_t crc = encoder.crc16(reinterpret_cast<const char*>(&packet), sizeof(packet));
+
+		if (((crc & 0x00FF) == 0x007E) || ((crc & 0xFF00) == 0x7E00) || 
+        	((crc & 0x00FF) == 0x007D) || ((crc & 0xFF00) == 0x7D00)){
+
+			size_t fixup 	  = 0;
+			size_t fixupCount = 0;
+			size_t fixupStep  = 0;
+
+			if (((packet.length / 2) % 2) == 0) {
+				fixupStep = (packet.length / 2);
+				fixupCount = 2;
+			} else {
+				throw StreamingDloadSerialError("Attempted to fix the read packet but gave up");
+			}
+
+	    	for (int i = 0; i < fixupCount; i++ ) {
+				fixup += readFlash((address + total + fixup), fixupStep, out);
+	    	}
+
+	    	total += fixup;
+
+	    	continue;
+	    }
+#endif
+		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
 		
-		if (!isValidResponse(kStreamingDloadReadData, tmp)) {
-			LOGD("Invalid response in request to read %lu bytes from 0x%08X. Data read so far is %lu bytes.\n", packet.length, packet.address, out.size());
-			return kStreamingDloadError;
+		write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+
+		if (!(rx = read(temp, STREAMING_DLOAD_MAX_RX_SIZE))) {
+			throw StreamingDloadSerialError("Device did not respond");
 		}
 
-		readRx = (StreamingDloadReadResponse*)&tmp[0];
-
-		if (readRx->address != packet.address) {
-			LOGE("Packet address and response address differ\n");
-			return kStreamingDloadError;
+		validateResponse(kStreamingDloadReadData, temp);
+		
+		if (reinterpret_cast<StreamingDloadReadResponse*>(&temp[0])->address != packet.address) {			
+			throw StreamingDloadSerialError("Packet address and response address differ");
 		}
 
 		// remove the command code, address, and length to only
 		// keep the real data
-		tmp.erase(tmp.end() - rxSize, (tmp.end() - rxSize) + sizeof(packet));
+		temp.erase(temp.end() - rx, ((temp.end() - rx) + sizeof(packet.command) + sizeof(packet.address)));
 
-		out.reserve(out.size() + tmp.size());
-		std::copy(tmp.begin(), tmp.end(), std::back_inserter(out));
+		out.reserve(out.size() + temp.size());
 
-		if (length <= out.size()) {
-			LOGE("Final read size is %lu bytes\n", out.size());
-			break; //done
-		}
+		std::copy(temp.begin(), temp.end(), std::back_inserter(out));
 
-		// clear out the tmp buffer for next read
-		tmp.clear();
+		total += temp.size();
 
-	} while (true);
+		temp.clear();
+	    		
+	}
 
-	return kStreamingDloadSuccess;
+	return total;
 }
 
 
-size_t StreamingDloadSerial::readAddress(uint32_t address, size_t length, std::ofstream& out, size_t stepSize)
+size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::ofstream& out)
 {
-	size_t rxSize;
-	size_t outSize = 0;
-	StreamingDloadReadRequest packet = {};
+	size_t total  	  = 0;
+	size_t step   	  = amount;
+	std::vector<uint8_t> temp;
 
-	packet.command = kStreamingDloadRead;
-	packet.address = address;
-
-	uint8_t tmp[STREAMING_DLOAD_MAX_RX_SIZE];
-
-	if (stepSize > state.hello.maxPreferredBlockSize) {
-		stepSize = state.hello.maxPreferredBlockSize;
+	if (step > state.hello.maxPreferredBlockSize) {
+		step = state.hello.maxPreferredBlockSize;
 	}
 
-	do {
-		packet.address = packet.address + outSize;
-		packet.length = length <= stepSize ? length : stepSize;
-
-		LOGE("Requesting %lu bytes from %08X\n", packet.length, packet.address);
-
-		write((uint8_t*)&packet, sizeof(packet));
-
-		if (!(rxSize = read(tmp, STREAMING_DLOAD_MAX_RX_SIZE))) {
-			throw StreamingDloadSerialError("Device did not respond");
-		}
-
-		validateResponse(kStreamingDloadReadData, tmp, rxSize);
-
-		StreamingDloadReadResponse* resp = reinterpret_cast<StreamingDloadReadResponse*>(&tmp);
+	temp.reserve(STREAMING_DLOAD_MAX_RX_SIZE);
 	
-		if (resp->address != packet.address) {
-			throw StreamingDloadSerialError("Packet address and response address differ");
+	while (total < amount) {
+		
+		if ((amount - total) < step) {
+			step = amount - total;
 		}
 
-		size_t dataSize = rxSize - (sizeof(resp->command) + sizeof(resp->address));
+		readFlash(address+total, step, temp);
 
-		out.write((char *)resp->data, dataSize);
+		out.write(reinterpret_cast<char *>(&temp[0]), temp.size());
 
-		if (packet.length != dataSize) {
-			std::stringstream ss;
-			ss << "Data Written Does Not Match Requested Length. Requested " << packet.length << " and wrote " << dataSize << " bytes";
-			throw StreamingDloadSerialError(ss.str());
-		}
+		total += temp.size();
 
-		outSize += dataSize;
+		temp.clear();
+		
+	}
 
-	} while (outSize < length);
-
-	LOGD("Final read size is %lu bytes\n", outSize);
-
-	return outSize;
+	return total;
 }
 
 uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool overwrite)
@@ -514,7 +493,7 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 
 	if (!file.is_open()) {      
 		ss << "Could Not Open File " << fileName;
-		throw StreamingDloadSerialInvalidArgument(ss.str());
+		throw StreamingDloadSerialError(ss.str());
 	}
 
 	file.seekg(0, file.end);
@@ -534,10 +513,11 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 	packet.command = kStreamingDloadPartitionTable;
 	packet.overrideExisting = overwrite;
 
-	file.read((char *)&packet.data, fileSize);
+	file.read(reinterpret_cast<char *>(&packet.data), fileSize);
+	
 	file.close();
 
-	write((uint8_t*)&packet, sizeof(packet));
+	write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
 	if (!(rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE))) {
 		throw StreamingDloadSerialError("Device did not respond");
@@ -633,21 +613,34 @@ size_t StreamingDloadSerial::streamWrite(uint32_t address, uint8_t* data, size_t
 
 bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize)
 {
-	if (response[0] != expectedCommand) {
-		if (response[0] == kStreamingDloadLog) {
-			StreamingDloadLogResponse* packet = (StreamingDloadLogResponse*)response;
-			LOGE("Received Log Response\n");
-			memcpy((uint8_t*)&state.lastLog, packet, responseSize);
-		} else if (response[0] == kStreamingDloadError) {
-			StreamingDloadErrorResponse* packet = (StreamingDloadErrorResponse*)response;
-			LOGE("Received Error Response %02X - %s\n", packet->code, getNamedError(packet->code).c_str());
-			memcpy((uint8_t*)&state.lastError, packet, responseSize);
-		} else {
-			LOGE("Unexpected Response\n");
-		}
+	std::stringstream ss;
+
+	if (responseSize <= 0) {
 		return false;
 	}
 
+	if (response[0] != expectedCommand) {
+		if (response[0] == kStreamingDloadLog) {
+			StreamingDloadLogResponse* packet = (StreamingDloadLogResponse*)response;
+			if (responseSize == sizeof(state.lastLog)) {
+				memcpy(reinterpret_cast<uint8_t*>(&state.lastLog), packet, sizeof(state.lastLog));
+			} else {
+				LOGE("Response size doesnt match log response size\n");
+			}	
+			return false;
+		} else if (response[0] == kStreamingDloadError) {
+			StreamingDloadErrorResponse* packet = (StreamingDloadErrorResponse*)response;	
+			if (responseSize == sizeof(state.lastError)) {
+				memcpy(reinterpret_cast<uint8_t*>(&state.lastError), packet, sizeof(state.lastError));
+			} else {
+				LOGE("Response size doesnt match error response size\n");
+			}
+			return false;
+
+		} else {
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -658,12 +651,42 @@ bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, std::vector<
 
 void StreamingDloadSerial::validateResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize)
 {
+	std::stringstream ss;
 
+	if (responseSize <= 0) {
+		throw StreamingDloadSerialError("No Response");
+	}
+
+	if (response[0] != expectedCommand) {
+		if (response[0] == kStreamingDloadLog) {
+			StreamingDloadLogResponse* packet = (StreamingDloadLogResponse*)response;
+			if (responseSize == sizeof(state.lastLog)) {
+				memcpy(reinterpret_cast<uint8_t*>(&state.lastLog), packet, sizeof(state.lastLog));
+			} else {
+				LOGE("Response size doesnt match log response size %li %li\n", sizeof(state.lastLog), responseSize);
+			}
+
+			ss << "Received Log Response: " << (char*)&packet->text;
+			throw StreamingDloadSerialError(ss.str());
+		} else if (response[0] == kStreamingDloadError) {
+			StreamingDloadErrorResponse* packet = (StreamingDloadErrorResponse*)response;	
+			if (responseSize == sizeof(state.lastError)) {
+				memcpy(reinterpret_cast<uint8_t*>(&state.lastError), packet, sizeof(state.lastError));
+			} else {
+				LOGE("Response size doesnt match error response size %li %li\n", sizeof(state.lastError), responseSize);
+			}
+			ss << "Received Error Response: " << getNamedError(packet->code);
+			throw StreamingDloadSerialError(ss.str(), packet->code);
+
+		} else {
+			throw StreamingDloadSerialError("Unexpected Response");
+		}
+	}
 }
 
 void StreamingDloadSerial::validateResponse(uint8_t expectedCommand, std::vector<uint8_t> &response)
 {
-
+	return validateResponse(expectedCommand, &response[0], response.size());
 }
 
 std::string StreamingDloadSerial::getNamedError(uint8_t code)

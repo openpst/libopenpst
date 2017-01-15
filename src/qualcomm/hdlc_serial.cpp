@@ -50,12 +50,12 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 {
 	if (!encapsulate) {
 		size_t bytesWritten = GenericSerial::write(data, size);
-		if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
+		//if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
 		return bytesWritten;
 	}
 
 	size_t packetSize = 0;
-	uint8_t* packet   = NULL;
+	uint8_t* packet   = nullptr;
 
 	encoder.encode(data, size, &packet, packetSize);
 
@@ -64,15 +64,13 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 	try {
 		bytesWritten = GenericSerial::write(packet, packetSize);
 	} catch(...) {
-		if (packet != NULL) {
+		if (packet != nullptr) {
 			delete packet;
 		}
 		throw;
 	}
-	
-	hexdump_tx(packet, bytesWritten);
 
-	if (packet != NULL) {
+	if (packet != nullptr) {
 		delete packet;
 	}
 
@@ -96,7 +94,7 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 	size_t bytesRead = GenericSerial::read(buf, size);
 
 	if (!unescape || !bytesRead) {
-		if (bytesRead) hexdump_rx(&buf[0], bytesRead);
+		//if (bytesRead) hexdump_rx(&buf[0], bytesRead);
 		return bytesRead;
 	}
 
@@ -107,7 +105,7 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 
 	memcpy(buf, data, dataSize);
 
-	hexdump_rx(buf, dataSize);
+	//hexdump_rx(buf, dataSize);
 
 	if (data != nullptr) {
 		delete data;
@@ -132,7 +130,7 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 {
 	if (!encapsulate) {
 		size_t bytesWritten = GenericSerial::write(data);
-		if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
+		//if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
 		return bytesWritten;
 	}
 
@@ -140,7 +138,7 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 
 	size_t bytesWritten = GenericSerial::write(data);
 
-	hexdump_tx(&data[0], bytesWritten);
+	//hexdump_tx(&data[0], bytesWritten);
 
 	return bytesWritten;
 }
@@ -166,13 +164,13 @@ size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape
 		GenericSerial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
 
 	if (!unescape || !bytesRead) {
-		if (bytesRead) hexdump_rx(&buffer[0], bytesRead);
+		//if (bytesRead) hexdump_rx(&buffer[0], bytesRead);
 		return bytesRead;
 	}
 
 	encoder.decode(buffer);
 
-	hexdump_rx(&buffer[0], buffer.size());
+	//hexdump_rx(&buffer[0], buffer.size());
 
 	return buffer.size();
 }

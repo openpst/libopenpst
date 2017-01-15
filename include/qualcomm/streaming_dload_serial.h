@@ -17,6 +17,7 @@
 #include "util/hexdump.h"
 #include "util/endian.h"
 #include "qualcomm/streaming_dload.h"
+#include "qualcomm/hdlc_encoder.h"
 
 namespace OpenPST {
 	namespace QC {
@@ -154,31 +155,29 @@ namespace OpenPST {
 
 
 			/**
-			* @brief readAddress - Read x bytes from starting address
+			* @brief readFlash - Read x bytes from starting address
 			*                      into a std::vector<uint8_t> container
 			*
 			* @param uint32_t address - The starting address
-			* @param size_t length - The length to read from address
+			* @param size_t amount - The amount to read from address
 			* @param std::vector<uint8_t> &out - The populated vector containing the read data until success or error encountered.
-			* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
 			*
 			* @return int
 			*/
-			int readAddress(uint32_t address, size_t length, std::vector<uint8_t> &out, size_t stepSize);
+			size_t readFlash(uint32_t address, size_t amount, std::vector<uint8_t> &out);
 
 			/**
 			* @brief readAddress - Read x bytes from starting address
 			*                      into a file pointer
 			*
 			* @param uint32_t address - The starting address
-			* @param size_t length - The length to read from address
-			* @param FILE* out - The file pointer to write the data to
+			* @param size_t amount - The amount to read from address
+			* @param std::ofstream& out - The file pointer to write the data to
 			* @param size_t& outSize - The amount of bytes written to the file until success or error encountered.
-			* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
 			*
 			* @return size_t
 			*/
-			size_t readAddress(uint32_t address, size_t length, std::ofstream& out, size_t stepSize);
+			size_t readFlash(uint32_t address, size_t amount, std::ofstream& out);
 
 			/**
 			* @brief writePartitionTable - Writes partition table for sessions that require it.
@@ -280,23 +279,6 @@ namespace OpenPST {
 				return code;
 			}
 
-		};
-
-		/**
-		* @brief StreamingDloadSerialInvalidArgument - Exception thrown when a method has an invalid argument
-		* @super StreamingDloadSerialError, std::invalid_argument
-		*/
-		class StreamingDloadSerialInvalidArgument : public StreamingDloadSerialError, std::invalid_argument
-		{
-			const StreamingDloadSerialInvalidArgument& operator=(StreamingDloadSerialInvalidArgument);
-			std::string _what;
-		public:
-			StreamingDloadSerialInvalidArgument(std::string message) : StreamingDloadSerialError(message), invalid_argument(message), _what(message)  {}
-			StreamingDloadSerialInvalidArgument(const StreamingDloadSerialInvalidArgument& second) : StreamingDloadSerialError(second), invalid_argument(second), _what(second._what) {}
-			virtual ~StreamingDloadSerialInvalidArgument() throw() {}
-			virtual const char* what() const throw () {
-				return _what.c_str();
-			}
 		};
 	}
 }

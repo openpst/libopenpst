@@ -17,6 +17,7 @@ int HdlcEncoder::encode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSi
 	uint16_t crc = crc16((const char*)in, inSize); // perform the crc or the original data
 
 	outSize = inSize + HDLC_OVERHEAD_LENGTH;
+	
 	for (unsigned int i = 0; i < inSize; i++) {
 		if (in[i] == HDLC_CONTROL_CHAR || in[i] == HDLC_ESC_CHAR) {
 			outSize += 1;
@@ -40,7 +41,19 @@ int HdlcEncoder::encode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSi
 
 
 	buffer[o] = crc & 0xFF; // add first byte of crc
+
+	if (buffer[o] == HDLC_CONTROL_CHAR || buffer[o] == HDLC_ESC_CHAR) {
+		buffer[++o] = (buffer[o] == HDLC_ESC_CHAR ? HDLC_ESC_CHAR : HDLC_CONTROL_CHAR) ^ HDLC_ESC_MASK;
+		buffer[o-1] = HDLC_ESC_CHAR;
+	}
+
 	buffer[++o] = (crc >> 8) & 0xFF; // add second byte of crc
+	
+	if (buffer[o] == HDLC_CONTROL_CHAR || buffer[o] == HDLC_ESC_CHAR) {
+		buffer[++o] = (buffer[o] == HDLC_ESC_CHAR ? HDLC_ESC_CHAR : HDLC_CONTROL_CHAR) ^ HDLC_ESC_MASK;
+		buffer[o-1] = HDLC_ESC_CHAR;
+	}
+
 	buffer[++o] = HDLC_CONTROL_CHAR; // Add out ending control character
 
 	*out = buffer;
@@ -56,6 +69,12 @@ int  HdlcEncoder::decode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outS
 	for (int i = 0; i < (int)inSize; i++) {
 		if (in[i] == HDLC_CONTROL_CHAR) {
 			continue;
+		} else if (in[i] == HDLC_CONTROL_CHAR) {
+			if (i == 0) {
+				continue;
+			} else {
+				break;
+			}			
 		} else if (in[i] == HDLC_ESC_CHAR) {
 			buffer[o] = in[i + 1] ^ HDLC_ESC_MASK;
 			i++;
@@ -123,11 +142,11 @@ int HdlcEncoder::decode(std::vector<uint8_t> &data) {
 		data.erase(data.begin());
 	}
 
-	uint16_t crc = crc16((const char*)&data[0], data.size() - HDLC_TRAILER_LENGTH);
+	uint16_t crc = crc16(reinterpret_cast<const char*>(&data[0]), data.size() - HDLC_TRAILER_LENGTH);
 	uint16_t chk = *((uint16_t*)&data[data.size() - HDLC_TRAILER_LENGTH]);
 
 	if (crc != chk) {
-		printf("Invalid Response CRC Expected: %04X - Received: %04X\n", crc, chk);
+		printf("Invalid Response CRC Expected: %04X - Received: %04X Data In Size: %lu Data Out Size: %lu\n", crc, chk);
 	}
 
 	data.erase(data.end() - 3, data.end());
