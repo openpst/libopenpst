@@ -72,6 +72,8 @@ StreamingDloadHelloResponse StreamingDloadSerial::sendHello(std::string magic, u
 	memcpy(&state.hello.featureBits, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize) + sizeof(state.hello.numberOfSectors) + sectorSize-1], sizeof(state.hello.featureBits));
 	state.hello.featureBits = flip_endian16(state.hello.featureBits);
 
+	state.negotiated = true;
+
 	return state.hello;
 }
 
@@ -460,8 +462,10 @@ size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::ofs
 	size_t step   	  = amount;
 	std::vector<uint8_t> temp;
 
-	if (step > state.hello.maxPreferredBlockSize) {
+	if (state.negotiated && state.hello.maxPreferredBlockSize && step > state.hello.maxPreferredBlockSize) {
 		step = state.hello.maxPreferredBlockSize;
+	} else if (step > STREAMING_DLOAD_MAX_DATA_SIZE) {
+		step = STREAMING_DLOAD_MAX_DATA_SIZE;
 	}
 
 	temp.reserve(STREAMING_DLOAD_MAX_RX_SIZE);
@@ -514,7 +518,7 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 	packet.overrideExisting = overwrite;
 
 	file.read(reinterpret_cast<char *>(&packet.data), fileSize);
-	
+
 	file.close();
 
 	write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
@@ -528,87 +532,61 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 	return reinterpret_cast<StreamingDloadPartitionTableResponse*>(&buffer[0])->status;    
 }
 
-size_t StreamingDloadSerial::streamWrite(uint32_t address, uint8_t* data, size_t dataSize, bool unframed)
+size_t StreamingDloadSerial::writeFlash(uint32_t address, uint8_t* data, size_t length, bool unframed)
 {
-	uint8_t packetBuffer[STREAMING_DLOAD_MAX_TX_SIZE] = {};
-	uint8_t responseBuffer[STREAMING_DLOAD_MAX_RX_SIZE] = {};
+	size_t step = length;
+	size_t written = 0;
+	size_t rx = 0;
+	StreamingDloadStreamWriteRequest* request = nullptr;
+	uint8_t readbuff[STREAMING_DLOAD_MAX_RX_SIZE];
+	StreamingDloadStreamWriteResponse* response = reinterpret_cast<StreamingDloadStreamWriteResponse*>(&readbuff);
 
-	StreamingDloadStreamWriteRequest* packet = (StreamingDloadStreamWriteRequest*)packetBuffer;
-
-	if (dataSize > state.hello.maxPreferredBlockSize) {
-
-		size_t bytesWritten = 0;
-		size_t dataSegmentSize = state.hello.maxPreferredBlockSize;
-		
-
-		do {
-			packet->command = unframed ? kStreamingDloadUnframedStreamWrite : kStreamingDloadStreamWrite;
-			packet->address = address + bytesWritten;
-
-			if (dataSegmentSize > (dataSize - bytesWritten)) {
-				dataSegmentSize = dataSize - bytesWritten;
-			}
-
-			memcpy(packet->data, &data[bytesWritten], dataSegmentSize);
-
-			size_t txSize = write((uint8_t*)packet, sizeof(packet->command) + sizeof(packet->address) + dataSize, unframed);
-
-			if (!txSize) {
-				LOGE("Wrote 0 bytes\n");
-				return kStreamingDloadIOError;
-			}
-
-			size_t rxSize = read(responseBuffer, STREAMING_DLOAD_MAX_RX_SIZE, unframed);
-
-			if (!rxSize) {
-				LOGE("Device did not respond\n");
-				return kStreamingDloadIOError;
-			}
-
-			StreamingDloadStreamWriteResponse* response = (StreamingDloadStreamWriteResponse*) responseBuffer;
-
-			if (response->address != packet->address) {
-				LOGE("Response address %04X differs from requeasted write address %04X\n", response->address, packet->address);
-				return kStreamingDloadError;
-			}
-
-			bytesWritten += dataSegmentSize;
-
-		} while (bytesWritten < dataSize);
-
-	} else {
-		packet->command = unframed ? kStreamingDloadUnframedStreamWrite : kStreamingDloadStreamWrite;;
-		packet->address = address;
-		memcpy(packet->data, data, dataSize);
-
-		size_t bytesWritten = write((uint8_t*)packet, sizeof(packet->command) + sizeof(packet->address) + dataSize, (!unframed));
-
-		if (!bytesWritten) {
-			LOGE("Wrote 0 bytes\n");
-			return kStreamingDloadIOError;
-		}
-
-		size_t rxSize = read(responseBuffer, STREAMING_DLOAD_MAX_RX_SIZE, (!unframed));
-
-		if (!rxSize) {
-			LOGE("Device did not respond\n");
-			return kStreamingDloadIOError;
-		}
-
-		if (!isValidResponse(unframed ? kStreamingDloadUnframedStreamWriteResponse : kStreamingDloadBlockWritten, responseBuffer, rxSize)) {
-			return kStreamingDloadError;
-		}
-
-		StreamingDloadStreamWriteResponse* response = (StreamingDloadStreamWriteResponse*)responseBuffer;
-
-		if (response->address != packet->address) {
-			LOGE("Response address %04X differs from requested write address %04X\n", response->address, packet->address);
-			return kStreamingDloadError;
-		}
-
+	if (data == nullptr || !length) {
+		throw StreamingDloadSerialError("No data to write");
 	}
 
-	return kStreamingDloadSuccess;
+	if (state.negotiated && state.hello.maxPreferredBlockSize && step > state.hello.maxPreferredBlockSize) {
+		step = state.hello.maxPreferredBlockSize;
+	} else if (step > STREAMING_DLOAD_MAX_DATA_SIZE) {
+		step = STREAMING_DLOAD_MAX_DATA_SIZE;
+	}
+
+	request = reinterpret_cast<StreamingDloadStreamWriteRequest*>(new uint8_t[sizeof(StreamingDloadStreamWriteRequest) + step]);
+
+	if (!request) {
+		throw StreamingDloadSerialError("Error allocating memory for write");
+	}
+
+	while (written < length) {
+		request->command = unframed ? kStreamingDloadUnframedStreamWrite : kStreamingDloadStreamWrite;
+		request->address = address + written;
+
+		if ((length - written) < step) {
+			step = length - written;
+		}
+		
+		std::copy((data + written), (data + written + step), request->data);
+
+		write(reinterpret_cast<uint8_t*>(request), step, (unframed ? false : true));
+
+		if (!(rx = read(readbuff, sizeof(readbuff)))) {
+			delete[] request;
+			throw StreamingDloadSerialError("Device did not respond");
+		}
+			
+		validateResponse(unframed ? kStreamingDloadUnframedStreamWriteResponse : kStreamingDloadBlockWritten, reinterpret_cast<uint8_t*>(&readbuff), rx);
+		
+		if (request->address != response->address) {	
+			delete[] request;
+			throw StreamingDloadSerialError("Response address differs from requeasted write address");
+		}
+
+		written += step;
+	}
+	
+	delete[] request;
+
+	return written;
 }
 
 bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize)
@@ -759,4 +737,14 @@ std::string StreamingDloadSerial::getNamedMultiImage(uint8_t imageType)
 		case kStreamingDloadOpenModeMultiGpp4:          return "EMMC GPP4";
 		default:                                        return "Unknown";
 	}
+}
+
+void StreamingDloadSerial::close()
+{
+	try {
+		GenericSerial::close();
+		state = {};
+	} catch (...) {
+		state = {};
+	} 
 }

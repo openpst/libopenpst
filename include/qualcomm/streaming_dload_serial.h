@@ -23,11 +23,12 @@ namespace OpenPST {
 	namespace QC {
 		
 		struct StreamingDloadDeviceState {
-			uint8_t openMode;
-			uint8_t openMultiMode;
-			StreamingDloadHelloResponse hello;
-			StreamingDloadErrorResponse lastError;
-			StreamingDloadLogResponse   lastLog;
+			bool negotiated = false;
+			uint8_t openMode = 0x00;
+			uint8_t openMultiMode = 0x00;
+			StreamingDloadHelloResponse hello = {};
+			StreamingDloadErrorResponse lastError = {};
+			StreamingDloadLogResponse   lastLog = {};
 		};
 
 		enum StreamingDloadOperationResult {
@@ -194,17 +195,17 @@ namespace OpenPST {
 			uint8_t writePartitionTable(std::string filePath, bool overwrite = false);
 
 			/**
-			* @brief streamWrite - Stream write data starting at specified address. Writes hdlc encoded chunks
+			* @brief writeFlash - Stream write data starting at specified address. Writes hdlc encoded chunks
 			*                   of max block size specified by device
 			*
 			* @param uint32_t address - The starting address to write to
 			* @param uint8_t data - A pointer to the data to be written
-			* @param size_t dataSize - The amount of data to write.
+			* @param size_t length - The amount of data to write.
 			* @param bool unframed - Write in unframed (non hdlc encoded) packets
 			*
 			* @return int
 			*/
-			size_t streamWrite(uint32_t address, uint8_t* data, size_t dataSize, bool unframed = false);
+			size_t writeFlash(uint32_t address, uint8_t* data, size_t length, bool unframed = false);
 
 			/**
 			* @brief getNamedError - Get a named error from an error code
@@ -232,6 +233,11 @@ namespace OpenPST {
 			* @return std::string name
 			*/
 			std::string getNamedMultiImage(uint8_t imageType);
+
+			/**
+			* @overload GenericSerial::close()
+			*/
+			void close();
 
 		private:
 			/**

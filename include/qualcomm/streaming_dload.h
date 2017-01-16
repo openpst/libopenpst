@@ -214,7 +214,7 @@ PACKED(typedef struct { // 0x04
 PACKED(typedef struct {// 0x05
 	uint8_t command;
 	uint32_t address;
-	uint8_t* data;
+	uint8_t data[1]; // varies
 }) StreamingDloadSimpleWriteRequest;
 
 PACKED(typedef struct { // 0x06

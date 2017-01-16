@@ -146,7 +146,7 @@ int HdlcEncoder::decode(std::vector<uint8_t> &data) {
 	uint16_t chk = *((uint16_t*)&data[data.size() - HDLC_TRAILER_LENGTH]);
 
 	if (crc != chk) {
-		printf("Invalid Response CRC Expected: %04X - Received: %04X Data In Size: %lu Data Out Size: %lu\n", crc, chk);
+		printf("Invalid Response CRC Expected: %04X - Received: %04X\n", crc, chk);
 	}
 
 	data.erase(data.end() - 3, data.end());
