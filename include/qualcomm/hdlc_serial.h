@@ -16,6 +16,7 @@
 #include "qualcomm/hdlc_encoder.h"
 
 using OpenPST::Serial::GenericSerial;
+using OpenPST::Serial::SerialError;
 
 namespace OpenPST {
 	namespace QC {
@@ -28,7 +29,7 @@ namespace OpenPST {
 				*
 				* @param std::string port
 				* @param int baudrate
-				* @param serial::Timeout - Timeout, defaults to 1000ms
+				* @param int timeout defaults to 1000ms
 				*/
 				HdlcSerial(std::string port, int baudrate, int timeout = 1000);
 			
@@ -55,15 +56,15 @@ namespace OpenPST {
 				 * @brief read - Reads and unescpaes theCRC'ed HDLC packet
 				 * read from the device
 				 *
-				 * @super GenericSerial::read (uint8_t *buffer, size_t size);
+				 * @super GenericSerial::read (uint8_t *data, size_t size);
 
-				 * @param uint8_t* buf
+				 * @param uint8_t* data
 				 * @param size_t size
 				 * @param bool unescape
 				 *
 				 * @return size_t bytes read
 				 */
-				size_t read(uint8_t *buf, size_t size, bool unescape = true);
+				size_t read(uint8_t *data, size_t size, bool unescape = true);
 			
 				/**
 				* @brief write - Escapes the data and creates a CRC'ed HDLC packet

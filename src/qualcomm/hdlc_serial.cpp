@@ -49,32 +49,27 @@ HdlcSerial::~HdlcSerial()
 size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 {
 	if (!encapsulate) {
-		size_t bytesWritten = GenericSerial::write(data, size);
-		//if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
-		return bytesWritten;
+		return GenericSerial::write(data, size);
 	}
 
-	size_t packetSize = 0;
-	uint8_t* packet   = nullptr;
-
-	encoder.encode(data, size, &packet, packetSize);
-
-	size_t bytesWritten = 0;
+	uint8_t* encoded   = nullptr;
+	size_t encodedSize = encoder.encode(data, size, &encoded);
+	size_t txSize = 0;
 
 	try {
-		bytesWritten = GenericSerial::write(packet, packetSize);
+		txSize = GenericSerial::write(encoded, encodedSize);
 	} catch(...) {
-		if (packet != nullptr) {
-			delete packet;
+		if (encoded != nullptr) {
+			delete[] encoded;
 		}
 		throw;
 	}
 
-	if (packet != nullptr) {
-		delete packet;
+	if (encoded != nullptr) {
+		delete[] encoded;
 	}
 
-	return bytesWritten;    
+	return txSize;    
 }
 
 /**
@@ -83,35 +78,36 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 *
 * @super GenericSerial::read (uint8_t *buffer, size_t size);
 
-* @param uint8_t* buf
+* @param uint8_t* data
 * @param size_t size
 * @param bool unescape
 *
 * @return size_t bytes read
 */
-size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
+size_t HdlcSerial::read (uint8_t* data, size_t size, bool unescape )
 {
-	size_t bytesRead = GenericSerial::read(buf, size);
+	size_t rxSize = GenericSerial::read(data, size);
 
-	if (!unescape || !bytesRead) {
-		//if (bytesRead) hexdump_rx(&buf[0], bytesRead);
-		return bytesRead;
+	if (!unescape || !rxSize) {
+		return rxSize;
 	}
 
-	size_t dataSize = 0;
-	uint8_t* data = nullptr;
+	uint8_t* decoded = nullptr;
 
-	encoder.decode(buf, bytesRead, &data, dataSize);
+	size_t decodedSize = encoder.decode(data, rxSize, &decoded);
 
-	memcpy(buf, data, dataSize);
-
-	//hexdump_rx(buf, dataSize);
-
-	if (data != nullptr) {
-		delete data;
+	if (decodedSize > size) {
+		delete[] decoded;
+		throw SerialError("HDLC decoded response is larger than provided read buffer");
 	}
 
-	return dataSize;
+	memcpy(data, decoded, decodedSize);
+
+	if (decoded != nullptr) {
+		delete[] decoded;
+	}
+
+	return decodedSize;
 }
 
 /**
@@ -129,18 +125,12 @@ size_t HdlcSerial::read (uint8_t *buf, size_t size, bool unescape )
 size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 {
 	if (!encapsulate) {
-		size_t bytesWritten = GenericSerial::write(data);
-		//if (bytesWritten) hexdump_tx(&data[0], bytesWritten);
-		return bytesWritten;
+		return GenericSerial::write(data);
 	}
 
 	encoder.encode(data);
 
-	size_t bytesWritten = GenericSerial::write(data);
-
-	//hexdump_tx(&data[0], bytesWritten);
-
-	return bytesWritten;
+	return GenericSerial::write(data);
 }
 
 /**
@@ -160,17 +150,13 @@ size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape
 
 	buffer.reserve(buffer.size() + (size + HDLC_OVERHEAD_LENGTH));
 	
-	size_t bytesRead = 
-		GenericSerial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
+	size_t rxSize = GenericSerial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
 
-	if (!unescape || !bytesRead) {
-		//if (bytesRead) hexdump_rx(&buffer[0], bytesRead);
-		return bytesRead;
+	if (!unescape || !rxSize) {
+		return rxSize;
 	}
 
 	encoder.decode(buffer);
-
-	//hexdump_rx(&buffer[0], buffer.size());
 
 	return buffer.size();
 }

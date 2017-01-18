@@ -11,14 +11,18 @@
 
 using namespace OpenPST::QC;
 
-int HdlcEncoder::encode(uint8_t* data, size_t size, uint8_t** out, size_t &osize) {
+size_t HdlcEncoder::encode(uint8_t* data, size_t size, uint8_t** out) {
 
-
+	size_t osize 	= 0;
 	uint16_t crc    = crc16(reinterpret_cast<const char*>(data), size); // perform the crc on the original data
+	
+	if (!size) {
+		*out = nullptr;
+		return 0;
+	}
+
 	uint8_t* buffer = new uint8_t[(size * 2) + HDLC_OVERHEAD_LENGTH](); // give enough room for everything to possibly be escaped
 	
-	osize = 0;
-
 	buffer[osize++] = HDLC_CONTROL_CHAR; // start of frame
 	
 	for (int i = 0; i < (int)size; i++) {
@@ -50,14 +54,20 @@ int HdlcEncoder::encode(uint8_t* data, size_t size, uint8_t** out, size_t &osize
 
 	*out  = buffer;
 
-	return 1;
+	return osize;
 }
 
-int  HdlcEncoder::decode(uint8_t* data, size_t size, uint8_t** out, size_t& osize) {
+size_t HdlcEncoder::decode(uint8_t* data, size_t size, uint8_t** out) {
+
+	size_t osize = 0;
+
+	if (!size) {
+		*out = nullptr;
+		return 0;
+	}
 
 	uint8_t* buffer = new uint8_t[size]();
-
-	osize = 0;
+	
 	for (int i = 0; i < (int)size; i++) {
 		if (data[i] == HDLC_CONTROL_CHAR && i == 0) {
 			continue;		
@@ -82,12 +92,12 @@ int  HdlcEncoder::decode(uint8_t* data, size_t size, uint8_t** out, size_t& osiz
 		osize -= 2;
 	}
 
-	return 1;
+	return osize;
 }
 
 
 
-int HdlcEncoder::encode(std::vector<uint8_t> &data) {
+size_t HdlcEncoder::encode(std::vector<uint8_t> &data) {
 
 	uint16_t crc = crc16(reinterpret_cast<const char*>(&data[0]), data.size()); // perform the crc or the original data
 	
@@ -110,10 +120,10 @@ int HdlcEncoder::encode(std::vector<uint8_t> &data) {
 	data.insert(data.begin(), HDLC_CONTROL_CHAR);
 	data.push_back(HDLC_CONTROL_CHAR);
 
-	return 0;
+	return data.size();
 }
 
-int HdlcEncoder::decode(std::vector<uint8_t> &data) {
+size_t HdlcEncoder::decode(std::vector<uint8_t> &data) {
 	// unescape the data first
 	int count = data.size();
 	for (int i = 0; i < count; i++) {
@@ -138,7 +148,7 @@ int HdlcEncoder::decode(std::vector<uint8_t> &data) {
 		data.erase(data.end() - HDLC_TRAILER_LENGTH, data.end());
 	}	
 
-	return 0;
+	return data.size();
 }
 
 uint16_t HdlcEncoder::crc16(const char *buffer, size_t len) {

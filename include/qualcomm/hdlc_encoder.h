@@ -75,41 +75,39 @@ namespace OpenPST {
 				* @param uint8_t* data - Pointer to the data to encode
 				* @param size_t size   - The size of the input buffer
 				* @param uint8_t** out - Heap allocated buffer which contains the encoded result (you need to delete[] this on your own)
-				* @param size_t osize  - The endcoded buffer size
 				*
-				* @return int
+				* @return size_t - The encoded buffer size or 0 on error
 				*/
-				int encode(uint8_t* data, size_t size, uint8_t** out, size_t& osize);
+				size_t encode(uint8_t* data, size_t size, uint8_t** out);
 
 				/**
 				* @brief encode - Encodes a vector buffer using hdlc protocol
 				*
 				* @param std::vector<uint8_t>& data - The buffer to encode
 				*
-				* @return int
+				* @return size_t - The encoded vector size or 0 on error
 				*/
-				int encode(std::vector<uint8_t> &data);
+				size_t encode(std::vector<uint8_t> &data);
 
 				/**
 				* @brief decode - Decodes a buffer using hdlc protocol
 				*
 				* @param uint8_t* data  - Pointer to the data to decode
 				* @param size_t size    - The size of the input buffer
-				* @param uint8_t** out  - Heap allocated buffer which contains the encoded result (you need to delete[] this on your own)
-				* @param size_t osize	- The decoded buffer size
+				* @param uint8_t** out  - Heap allocated buffer which contains the decoded result (you need to delete[] this on your own)
 				*
-				* @return int
+				* @return size_t - The decoded buffer size or 0 on error
 				*/
-				int decode(uint8_t* data, size_t size, uint8_t** out, size_t& osize);
+				size_t decode(uint8_t* data, size_t size, uint8_t** out);
 
 				/**
 				* @brief decode - Decodes a vector buffer using hdlc protocol
 				*
-				* @param std::vector<uint8_t>& data - The buffer to decpde
+				* @param std::vector<uint8_t>& data - The buffer to decode
 				*
-				* @return int
+				* @return size_t - The decoded vector size or 0 on error
 				*/
-				int decode(std::vector<uint8_t> &data);
+				size_t decode(std::vector<uint8_t> &data);
 
 				/**
 				* @brief crc16 - Encodes a buffer using hdlc protocol
