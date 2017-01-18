@@ -11,89 +11,75 @@
 
 using namespace OpenPST::QC;
 
+int HdlcEncoder::encode(uint8_t* data, size_t size, uint8_t** out, size_t &osize) {
 
-int HdlcEncoder::encode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize) {
 
-	uint16_t crc = crc16((const char*)in, inSize); // perform the crc or the original data
-
-	outSize = inSize + HDLC_OVERHEAD_LENGTH;
+	uint16_t crc    = crc16(reinterpret_cast<const char*>(data), size); // perform the crc on the original data
+	uint8_t* buffer = new uint8_t[(size * 2) + HDLC_OVERHEAD_LENGTH](); // give enough room for everything to possibly be escaped
 	
-	for (unsigned int i = 0; i < inSize; i++) {
-		if (in[i] == HDLC_CONTROL_CHAR || in[i] == HDLC_ESC_CHAR) {
-			outSize += 1;
-		}
-	}
+	osize = 0;
 
-	uint8_t* buffer = new uint8_t[outSize];
-
-	buffer[0] = HDLC_CONTROL_CHAR;
-
-	int o = 1;
-	for (unsigned int i = 0; i < inSize; i++) {
-		if (in[i] == HDLC_CONTROL_CHAR || in[i] == HDLC_ESC_CHAR) {
-			buffer[o] = HDLC_ESC_CHAR;
-			buffer[++o] = (in[i] == HDLC_ESC_CHAR ? HDLC_ESC_CHAR : HDLC_CONTROL_CHAR) ^ HDLC_ESC_MASK;
+	buffer[osize++] = HDLC_CONTROL_CHAR; // start of frame
+	
+	for (int i = 0; i < (int)size; i++) {
+		if (data[i] == HDLC_CONTROL_CHAR || data[i] == HDLC_ESC_CHAR) {
+			buffer[osize++]   = HDLC_ESC_CHAR;
+			buffer[osize++] = (data[i] == HDLC_ESC_CHAR ? HDLC_ESC_CHAR : HDLC_CONTROL_CHAR) ^ HDLC_ESC_MASK;
 		} else {
-			buffer[o] = in[i];
+			buffer[osize++] = data[i];
 		}
-		o++;
 	}
 
-
-	buffer[o] = crc & 0xFF; // add first byte of crc
-
-	if (buffer[o] == HDLC_CONTROL_CHAR || buffer[o] == HDLC_ESC_CHAR) {
-		buffer[++o] = (buffer[o] == HDLC_ESC_CHAR ? HDLC_ESC_CHAR : HDLC_CONTROL_CHAR) ^ HDLC_ESC_MASK;
-		buffer[o-1] = HDLC_ESC_CHAR;
-	}
-
-	buffer[++o] = (crc >> 8) & 0xFF; // add second byte of crc
+	// add in each byte of the crc, but account for the crc containing HDLC_CONTROL_CHAR or HDLC_ESC_CHAR
+	uint8_t crcArray[2];	
 	
-	if (buffer[o] == HDLC_CONTROL_CHAR || buffer[o] == HDLC_ESC_CHAR) {
-		buffer[++o] = (buffer[o] == HDLC_ESC_CHAR ? HDLC_ESC_CHAR : HDLC_CONTROL_CHAR) ^ HDLC_ESC_MASK;
-		buffer[o-1] = HDLC_ESC_CHAR;
+	crcArray[0] = (uint8_t)(crc & 0xFF);
+	crcArray[1] = (uint8_t)((crc >> 8) & 0xFF);
+
+	for (int i = 0; i < 2; i++) {
+		
+		if (crcArray[i] == HDLC_CONTROL_CHAR || crcArray[i] == HDLC_ESC_CHAR) {
+			buffer[osize++]   = HDLC_ESC_CHAR;
+			buffer[osize++] = (crcArray[i] == HDLC_ESC_CHAR ? HDLC_ESC_CHAR : HDLC_CONTROL_CHAR) ^ HDLC_ESC_MASK;
+		} else {
+			buffer[osize++]   = crcArray[i];
+		}
 	}
 
-	buffer[++o] = HDLC_CONTROL_CHAR; // Add out ending control character
+	buffer[osize++] = HDLC_CONTROL_CHAR; // Add ending control character
 
-	*out = buffer;
+	*out  = buffer;
 
 	return 1;
 }
 
-int  HdlcEncoder::decode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize) {
+int  HdlcEncoder::decode(uint8_t* data, size_t size, uint8_t** out, size_t& osize) {
 
-	uint8_t* buffer = new uint8_t[inSize]();
+	uint8_t* buffer = new uint8_t[size]();
 
-	int o = 0;
-	for (int i = 0; i < (int)inSize; i++) {
-		if (in[i] == HDLC_CONTROL_CHAR) {
-			continue;
-		} else if (in[i] == HDLC_CONTROL_CHAR) {
-			if (i == 0) {
-				continue;
-			} else {
-				break;
-			}			
-		} else if (in[i] == HDLC_ESC_CHAR) {
-			buffer[o] = in[i + 1] ^ HDLC_ESC_MASK;
+	osize = 0;
+	for (int i = 0; i < (int)size; i++) {
+		if (data[i] == HDLC_CONTROL_CHAR && i == 0) {
+			continue;		
+		} else if (data[i] == HDLC_CONTROL_CHAR) {		
+			break; // stop from reading into another message
+		} else if (data[i] == HDLC_ESC_CHAR) {
+			buffer[osize++] = data[i + 1] ^ HDLC_ESC_MASK;
 			i++;
 		} else {
-			buffer[o] = in[i];
+			buffer[osize++] = data[i];
 		}
-		o++;
 	}
 
-	outSize = o;
 	*out = buffer;
 
-	uint16_t crc = crc16((const char*)buffer, outSize - 2);
-	uint16_t chk = *((uint16_t*)&buffer[outSize - 2]);
+	uint16_t crc = crc16(reinterpret_cast<const char*>(buffer), osize - sizeof(crc));
+	uint16_t chk = *((uint16_t*)&buffer[osize - 2]);
 
 	if (crc != chk) {
 		printf("Invalid Response CRC Expected: %04X - Received: %04X  \n", crc, chk);
 	} else {
-		outSize -= 2;
+		osize -= 2;
 	}
 
 	return 1;
@@ -103,7 +89,8 @@ int  HdlcEncoder::decode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outS
 
 int HdlcEncoder::encode(std::vector<uint8_t> &data) {
 
-	uint16_t crc = crc16((const char*)&data[0], data.size()); // perform the crc or the original data
+	uint16_t crc = crc16(reinterpret_cast<const char*>(&data[0]), data.size()); // perform the crc or the original data
+	
 	data.push_back(crc & 0xFF);
 	data.push_back((crc >> 8) & 0xFF);
 
@@ -147,9 +134,9 @@ int HdlcEncoder::decode(std::vector<uint8_t> &data) {
 
 	if (crc != chk) {
 		printf("Invalid Response CRC Expected: %04X - Received: %04X\n", crc, chk);
-	}
-
-	data.erase(data.end() - 3, data.end());
+	} else {
+		data.erase(data.end() - HDLC_TRAILER_LENGTH, data.end());
+	}	
 
 	return 0;
 }

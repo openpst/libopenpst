@@ -72,14 +72,14 @@ namespace OpenPST {
 				/**
 				* @brief encode - Encodes a buffer using hdlc protocol
 				*
-				* @param uint8_t* in - Pointer to the data to encode
-				* @param size_t inSize - The size of the input buffer
-				* @param uint8_t** out - Buffer which contains the encoded result
-				* @param size_t - The endcoded buffer size
+				* @param uint8_t* data - Pointer to the data to encode
+				* @param size_t size   - The size of the input buffer
+				* @param uint8_t** out - Heap allocated buffer which contains the encoded result (you need to delete[] this on your own)
+				* @param size_t osize  - The endcoded buffer size
 				*
 				* @return int
 				*/
-				int encode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize);
+				int encode(uint8_t* data, size_t size, uint8_t** out, size_t& osize);
 
 				/**
 				* @brief encode - Encodes a vector buffer using hdlc protocol
@@ -93,14 +93,14 @@ namespace OpenPST {
 				/**
 				* @brief decode - Decodes a buffer using hdlc protocol
 				*
-				* @param uint8_t* in - Pointer to the data to decode
-				* @param size_t inSize - The size of the input buffer
-				* @param uint8_t** out - Buffer which contains the decoded result
-				* @param size_t - The decoded buffer size
+				* @param uint8_t* data  - Pointer to the data to decode
+				* @param size_t size    - The size of the input buffer
+				* @param uint8_t** out  - Heap allocated buffer which contains the encoded result (you need to delete[] this on your own)
+				* @param size_t osize	- The decoded buffer size
 				*
 				* @return int
 				*/
-				int decode(uint8_t* in, size_t inSize, uint8_t** out, size_t &outSize);
+				int decode(uint8_t* data, size_t size, uint8_t** out, size_t& osize);
 
 				/**
 				* @brief decode - Decodes a vector buffer using hdlc protocol

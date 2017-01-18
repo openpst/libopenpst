@@ -1,19 +1,11 @@
-#include "include/definitions.h"
-#include "qc/hdlc.h"
+#include "definitions.h"
 #include "util/hexdump.h"
-
+#include "qualcomm/hdlc_encoder.h"
+#include "qualcomm/streaming_dload.h"
 
 using namespace std;
 
-int main();
-void test_basic();
-void test_escape();
-void test_unescape();
-void test_vector_basic();
-void test_vector_escape();
-void test_vector_unescape();
-void test_real_sample();
-
+OpenPST::QC::HdlcEncoder encoder;
 
 static const uint8_t test_hdlc_basic[] = { 0x01, 0x02, 0x03, 0x04 };
 static const uint8_t test_hdlc_basic_encapsulated[] = { HDLC_CONTROL_CHAR, 0x01, 0x02, 0x03, 0x04, 0x91, 0x39, HDLC_CONTROL_CHAR };
@@ -89,30 +81,42 @@ static const uint8_t test_real_escaped_sample_data[] = {
 	0x80, 0x7e
 };
 
-void test_real_escaped_sample()
+
+int main();
+bool test_basic();
+bool test_escape();
+bool test_unescape();
+bool test_vector_basic();
+bool test_vector_escape();
+bool test_vector_unescape();
+bool test_real_sample();
+bool test_sdload_read_packet();
+
+bool test_real_escaped_sample()
 {
-	printf("Starting Real Escaped Sample Test\n");
+	printf("\n\n\nStarting test: %s\n\n", __FUNCTION__);
 
 	printf("Testing Data:\n");
 
 	hexdump((uint8_t*)test_real_escaped_sample_data, sizeof(test_real_escaped_sample_data));
 
-	uint8_t* out = NULL;
+	uint8_t* out = nullptr;
 	size_t outSize = 0;
 
-	hdlc_response((uint8_t*)test_real_escaped_sample_data, sizeof(test_real_escaped_sample_data), &out, outSize);
+	encoder.decode((uint8_t*)test_real_escaped_sample_data, sizeof(test_real_escaped_sample_data), &out, outSize);
 
 	printf("Resulting Unescaped Data:\n");
 
 	hexdump(out, outSize);
 
-	free(out);
+	delete[] out;
 
+	return true;
 }
 
-void test_vector_basic()
+bool test_vector_basic()
 {
-	printf("Starting Basic Vector Encapsulation Test\n");
+	printf("\n\n\nStarting test: %s\n\n", __FUNCTION__);
 
 	vector<uint8_t> test_hdlc_basic_v(test_hdlc_basic, test_hdlc_basic + 4);
 
@@ -120,7 +124,7 @@ void test_vector_basic()
 
 	hexdump(&test_hdlc_basic_v[0], test_hdlc_basic_v.size());
 
-	hdlc_request(test_hdlc_basic_v);
+	encoder.encode(test_hdlc_basic_v);
 
 	printf("Resulting Encapsulated Data:\n");
 
@@ -128,23 +132,24 @@ void test_vector_basic()
 
 	if (test_hdlc_basic_v.size() != sizeof(test_hdlc_basic_encapsulated)) {
 		printf("Test Failed. Encapsulated data is not the expected size\n");
-		return;
+		return false;
 	}
 
 	for (int i = 0; i < test_hdlc_basic_v.size(); i++) {
 		if (test_hdlc_basic_v[i] != test_hdlc_basic_encapsulated[i]) {
 			printf("Test Failed. Encapsulated data contains unexpected data\n");
-			return;
+			return false;
 		}
 	}
 
 	printf("Basic Vector Encapsulation: PASS\n");
+	return true;
 
 }
 
-void test_vector_escape()
+bool test_vector_escape()
 {
-	printf("Starting Vector Escaping Test\n");
+	printf("\n\n\nStarting test: %s\n\n", __FUNCTION__);
 
 	vector<uint8_t> test_hdlc_escape_v(test_hdlc_escape, test_hdlc_escape + 10);
 
@@ -152,7 +157,7 @@ void test_vector_escape()
 
 	hexdump(&test_hdlc_escape_v[0], test_hdlc_escape_v.size());
 
-	hdlc_request(test_hdlc_escape_v);
+	encoder.encode(test_hdlc_escape_v);
 
 	printf("Resulting Encapsulated Data\n");
 
@@ -160,22 +165,24 @@ void test_vector_escape()
 	
 	if (test_hdlc_escape_v.size() != sizeof(test_hdlc_escape_encapsulated)) {
 		printf("Test Failed. Encapsulated data is not the expected size - %lu %li", test_hdlc_escape_v.size(), sizeof(test_hdlc_escape_encapsulated));
-		return;
+		return false;
 	}
 
 	for (int i = 0; i < test_hdlc_escape_v.size(); i++) {
 		if (test_hdlc_escape_v[i] != test_hdlc_escape_encapsulated[i]) {
 			printf("Test Failed. Encapsulated data contains unexpected data");
-			return;
+			return false;
 		}
 	}
 	
 	printf("Escaping Vector: PASS\n"); 
+
+	return true;
 }
 
-void test_vector_unescape()
+bool test_vector_unescape()
 {
-	printf("Starting Vector Unescape Test\n");
+	printf("\n\n\nStarting test: %s\n\n", __FUNCTION__);
 
 	vector<uint8_t> test_hdlc_escape_v(test_hdlc_escape, test_hdlc_escape + 10);
 
@@ -183,13 +190,13 @@ void test_vector_unescape()
 
 	hexdump(&test_hdlc_escape_v[0], test_hdlc_escape_v.size());
 
-	hdlc_request(test_hdlc_escape_v);
+	encoder.encode(test_hdlc_escape_v);
 	
 	printf("Resulting Encapsulated Data\n");
 
 	hexdump(&test_hdlc_escape_v[0], test_hdlc_escape_v.size());
 
-	hdlc_response(test_hdlc_escape_v);
+	encoder.decode(test_hdlc_escape_v);
 
 	printf("Resulting Unescaped Data\n");
 
@@ -197,156 +204,209 @@ void test_vector_unescape()
 
 	if (test_hdlc_escape_v.size() != sizeof(test_hdlc_escape)) {
 		printf("Test Failed. Encapsulated data is not the expected size - %lu %li", test_hdlc_escape_v.size(), sizeof(test_hdlc_escape));
-		return;
+		return false;
 	}
 
 	for (int i = 0; i < test_hdlc_escape_v.size(); i++) {
 		if (test_hdlc_escape_v[i] != test_hdlc_escape[i]) {
 			printf("Test Failed. Encapsulated data contains unexpected data");
-			return;
+			return false;
 		}
 	}
 
 	printf("Unescaping Vector: PASS\n");
+	return true;
 }
 
-void test_basic()
+bool test_basic()
 {
-	printf("Starting Basic Encapsulation Test\n");
+	printf("\n\n\nStarting test: %s\n\n", __FUNCTION__);
 
 	printf("Testing Data:\n");
 
 	hexdump((uint8_t*)test_hdlc_basic, sizeof(test_hdlc_basic));
 
-	uint8_t* out = NULL;
+	uint8_t* out = nullptr;
 	size_t outSize = 0;
 
-	hdlc_request((uint8_t*)test_hdlc_basic, sizeof(test_hdlc_basic), &out, outSize);
+	encoder.encode((uint8_t*)test_hdlc_basic, sizeof(test_hdlc_basic), &out, outSize);
 	
 	printf("Resulting Encapsulated Data:\n");
 
 	hexdump(out, outSize);
 
 	if (outSize  != sizeof(test_hdlc_basic_encapsulated)) {
-		free(out);
+		delete[] out;
 		printf("Test Failed. Encapsulated data is not the expected size\n");
-		return;
+		return false;
 	}
 
 	for (int i = 0; i < outSize; i++) {
 		if (out[i] != test_hdlc_basic_encapsulated[i]) {
-			free(out);
+			delete[] out;
 			printf("Test Failed. Encapsulated data contains unexpected data\n");
-			return;
+			return false;
 		}
 	}
 
-	free(out);
+	delete[] out;
 
 	printf("Basic Encapsulation: PASS\n");
+	return true;
 }
 
-void test_escape()
+bool test_escape()
 {
-	printf("Starting Escaping Test\n");
+	printf("\n\n\nStarting test: %s\n\n", __FUNCTION__);
 
 	printf("Testing Data:\n");
 
 	hexdump((uint8_t*)test_hdlc_escape, sizeof(test_hdlc_escape));
 
-	uint8_t* out = NULL;
+	uint8_t* out = nullptr;
 	size_t outSize = 0;
 
-	hdlc_request((uint8_t*)test_hdlc_escape, sizeof(test_hdlc_escape), &out, outSize);
+	encoder.encode((uint8_t*)test_hdlc_escape, sizeof(test_hdlc_escape), &out, outSize);
 
 	printf("Resulting Encapsulated Data\n");
 
 	hexdump(out, outSize);
 
 	if (outSize != sizeof(test_hdlc_escape_encapsulated)) {
-		free(out); 
+		delete[] out;
 		printf("Test Failed. Encapsulated data is not the expected size\n");
-		return;
+		return false;
 	}
 
 	for (int i = 0; i < outSize; i++) {
 		if (out[i] != test_hdlc_escape_encapsulated[i]) {
-			free(out);
+			delete[] out;
 			printf("Test Failed. Encapsulated data contains unexpected data\n");
-			return;
+			return false;
 		}
 	}
 
-	free(out);
+	delete[] out;
 
-	printf("Escaping Vector: PASS\n");
+	printf("Escaping: PASS\n");
+	return true;
 }
 
-void test_unescape()
+bool test_unescape()
 {
-	printf("Starting Unescape Test\n");
-
+	printf("\n\n\nStarting test: %s\n\n", __FUNCTION__);
 
 	printf("Testing Data:\n");
 
 	hexdump((uint8_t*)test_hdlc_escape, sizeof(test_hdlc_escape));
 
-	uint8_t* out = NULL;
+	uint8_t* out = nullptr;
 	size_t outSize = 0;
 
-	hdlc_request((uint8_t*)test_hdlc_escape, sizeof(test_hdlc_escape), &out, outSize);
+	encoder.encode((uint8_t*)test_hdlc_escape, sizeof(test_hdlc_escape), &out, outSize);
 
 	printf("Resulting Encapsulated Data\n");
 
 	hexdump(out, outSize);
 
-	uint8_t* unescaped = NULL;
+	uint8_t* unescaped = nullptr;
 	size_t unescapedSize = 0;
 
-	hdlc_response(out, outSize, &unescaped, unescapedSize);
+	encoder.decode(out, outSize, &unescaped, unescapedSize);
 
 	printf("Resulting Unescaped Data\n");
 
 	hexdump(&unescaped[0], unescapedSize);
 
 	if (unescapedSize != sizeof(test_hdlc_escape)) {
-		free(out);
-		free(unescaped);
+		delete[] out;
+		delete[] unescaped;
 		printf("Test Failed. Encapsulated data is not the expected size\n");
-		return;
+		return false;
 	}
 
 	for (int i = 0; i < unescapedSize; i++) {
 		if (unescaped[i] != test_hdlc_escape[i]) {
-			free(out);
-			free(unescaped); 
+			delete[] out;
+			delete[] unescaped;
 			printf("Test Failed. Encapsulated data contains unexpected data\n");
-			return;
+			return false;
 		}
 	}
 
-	free(out);
-	free(unescaped);
+	delete[] out;
+	delete[] unescaped;
 
 	printf("Unescaping: PASS\n");
+
+	return true;
 }
 
+bool test_sdload_read_packet()
+{
+	printf("\n\n\nStarting test: %s\n\n", __FUNCTION__);
+	size_t   step 		= STREAMING_DLOAD_MAX_DATA_SIZE;
+	uint32_t address    = 0x00000000;
+	uint32_t endAddress = address + (step * 20);
+
+	while (address < endAddress) {
+		StreamingDloadReadRequest data = {};
+		data.command = kStreamingDloadRead;
+		data.address = address;
+		data.length  = step;
+
+		uint8_t* out = nullptr;
+		uint8_t* escapedOut = nullptr;
+		size_t outSize = 0;
+		size_t escapedOutSize = 0;
+
+		encoder.encode((uint8_t*)&data, sizeof(data), &out, outSize);
+
+		printf("Resulting Encapsulated Data\n");
+
+		hexdump(out, outSize);
+
+		if (outSize != sizeof(data) + HDLC_OVERHEAD_LENGTH) {
+			delete[] out;
+			printf("Test Failed. Unexpected data length\n");
+			return false;
+		}
+
+		encoder.decode(out, outSize, &escapedOut, escapedOutSize);
+
+		if (escapedOutSize != sizeof(data)) {
+			delete[] out;
+			delete[] escapedOut;
+			printf("Test Failed. Unexpected data length\n");
+			return false;
+		}
+
+		delete[] out;
+		delete[] escapedOut;
+
+		address += step;
+	}
+
+	return true;
+}
 
 int main() {
 
-	test_real_escaped_sample();
+	if (
+		!test_real_escaped_sample() ||
+		!test_basic() ||
+		!test_escape() ||
+		!test_unescape() ||
+		!test_vector_basic() ||
+		!test_vector_escape() ||
+		!test_vector_unescape() ||
+		!test_sdload_read_packet()
+	) {
+		cout << "\n\nFAILED" << endl;
+	} else {
+		cout << "\n\nPASSED" << endl;
+	}
 
-	printf("\n\n------------\nStarting Standard Tests\n------------\n\n");
-	test_basic();
-	test_escape();
-	test_unescape(); 
-	
-	printf("\n\n------------\nStarting Vector Tests\n------------\n\n");
-	test_vector_basic();
-	test_vector_escape();
-	test_vector_unescape();
-
-	
 	cout << "\n\nPress Enter To Exit" << endl;
 	int pause = getchar();
 	return 0;
