@@ -394,36 +394,6 @@ size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::vec
 		packet.address = address + total;
 		packet.length  = step;
 
-#ifndef STREAMING_DLOAD_SERIAL_READ_NOHACK
-    	// protocol will crap out if
-    	// the crc of this packet contains HDLC_ESC_CHAR
-		// or HDLC_CONTROL_CHAR	
-		// ugly hack, check for these in the crc of the request packet
-		uint32_t crc = encoder.crc16(reinterpret_cast<const char*>(&packet), sizeof(packet));
-
-		if (((crc & 0x00FF) == 0x007E) || ((crc & 0xFF00) == 0x7E00) || 
-        	((crc & 0x00FF) == 0x007D) || ((crc & 0xFF00) == 0x7D00)){
-
-			size_t fixup 	  = 0;
-			size_t fixupCount = 0;
-			size_t fixupStep  = 0;
-
-			if (((packet.length / 2) % 2) == 0) {
-				fixupStep = (packet.length / 2);
-				fixupCount = 2;
-			} else {
-				throw StreamingDloadSerialError("Attempted to fix the read packet but gave up");
-			}
-
-	    	for (int i = 0; i < fixupCount; i++ ) {
-				fixup += readFlash((address + total + fixup), fixupStep, out);
-	    	}
-
-	    	total += fixup;
-
-	    	continue;
-	    }
-#endif
 		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
 		
 		write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
