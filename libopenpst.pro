@@ -4,7 +4,7 @@
 
 lessThan(QT_MAJOR_VERSION, 5): error("At least Qt 5.0 is required")
 
-CONFIG    += C++11 debug_and_release build_all
+CONFIG    += C++11
 CONFIG    -= qt        # we do not need QT libs for this
 TARGET    = openpst
 TEMPLATE  = lib
