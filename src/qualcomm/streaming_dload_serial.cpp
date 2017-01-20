@@ -531,7 +531,7 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 	return reinterpret_cast<StreamingDloadPartitionTableResponse*>(&buffer[0])->status;    
 }
 
-size_t StreamingDloadSerial::writeFlash(uint32_t address, uint8_t* data, size_t length, bool unframed)
+size_t StreamingDloadSerial::writeFlash(uint32_t address, uint8_t* data, size_t length)
 {
 	size_t step = length;
 	size_t written = 0;
@@ -557,7 +557,7 @@ size_t StreamingDloadSerial::writeFlash(uint32_t address, uint8_t* data, size_t 
 	}
 
 	while (written < length) {
-		request->command = unframed ? kStreamingDloadUnframedStreamWrite : kStreamingDloadStreamWrite;
+		request->command = kStreamingDloadStreamWrite;
 		request->address = address + written;
 
 		if ((length - written) < step) {
@@ -566,18 +566,18 @@ size_t StreamingDloadSerial::writeFlash(uint32_t address, uint8_t* data, size_t 
 		
 		std::copy((data + written), (data + written + step), request->data);
 
-		write(reinterpret_cast<uint8_t*>(request), step, (unframed ? false : true));
+		write(reinterpret_cast<uint8_t*>(request), step);
 
 		if (!(rx = read(readbuff, sizeof(readbuff)))) {
 			delete[] request;
 			throw StreamingDloadSerialError("Device did not respond");
 		}
 			
-		validateResponse(unframed ? kStreamingDloadUnframedStreamWriteResponse : kStreamingDloadBlockWritten, reinterpret_cast<uint8_t*>(&readbuff), rx);
+		validateResponse(kStreamingDloadBlockWritten, reinterpret_cast<uint8_t*>(&readbuff), rx);
 		
 		if (request->address != response->address) {	
 			delete[] request;
-			throw StreamingDloadSerialError("Response address differs from requeasted write address");
+			throw StreamingDloadSerialError("Response address differs from requested write address");
 		}
 
 		written += step;
@@ -586,6 +586,47 @@ size_t StreamingDloadSerial::writeFlash(uint32_t address, uint8_t* data, size_t 
 	delete[] request;
 
 	return written;
+}
+
+size_t StreamingDloadSerial::writeFlashUnframed(uint32_t address, uint8_t* data, size_t length)
+{
+	size_t  rx = 0;
+	size_t  total = sizeof(StreamingDloadUnframedStreamWriteRequest) + length;
+	uint8_t rxbuffer[STREAMING_DLOAD_MAX_RX_SIZE];
+	
+	if (data == nullptr || !length) {
+		throw StreamingDloadSerialError("No data to write");
+	}
+
+	StreamingDloadUnframedStreamWriteRequest* request = reinterpret_cast<StreamingDloadUnframedStreamWriteRequest*>(new uint8_t[total]());
+
+	if (!request) {
+		throw StreamingDloadSerialError("Error allocating memory for write");
+	}
+
+	request->command = kStreamingDloadUnframedStreamWrite;
+	request->address = address;
+	request->length  = length;
+
+	std::copy(data, data + length, request->data);
+
+	write(reinterpret_cast<uint8_t*>(request), total, false);
+
+	if (!(rx = read(rxbuffer, sizeof(rxbuffer)))) {
+		delete[] request;
+		throw StreamingDloadSerialError("Device did not respond");
+	}
+
+	validateResponse(kStreamingDloadUnframedStreamWriteResponse, reinterpret_cast<uint8_t*>(&rxbuffer), rx);
+	
+	if (request->address != reinterpret_cast<StreamingDloadUnframedStreamWriteResponse*>(&rxbuffer)->address) {	
+		delete[] request;
+		throw StreamingDloadSerialError("Response address differs from requested write address");
+	}
+	
+	delete[] request;
+
+	return total;
 }
 
 bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize)

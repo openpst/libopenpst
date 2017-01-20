@@ -18,6 +18,12 @@
 #define STREAMING_DLOAD_FEATURE_BIT_MULTI_IMAGE             0x00000008
 #define STREAMING_DLOAD_FEATURE_BIT_SECTOR_ADDRESSES        0x00000010
 
+#define STREAMING_DLOAD_FEATURE_ALL (STREAMING_DLOAD_FEATURE_BIT_UNCOMPRESSED_DOWNLOAD | \
+	STREAMING_DLOAD_FEATURE_BIT_NAND_BOOTABLE_IMAGE | \
+	STREAMING_DLOAD_FEATURE_BIT_NAND_BOOT_LOADER | \
+	STREAMING_DLOAD_FEATURE_BIT_MULTI_IMAGE | \
+	STREAMING_DLOAD_FEATURE_BIT_SECTOR_ADDRESSES)
+
 #define STREAMING_DLOAD_MAX_DATA_SIZE 1024
 
 #define STREAMING_DLOAD_MAX_TX_SIZE (STREAMING_DLOAD_MAX_DATA_SIZE * 2)
@@ -83,7 +89,7 @@ enum StreamingDloadCommand {
 
 	//25-2F commands described in [Q2]
 
-	kStreamingDloadUnframedStreamWrite           = 0x30,
+	kStreamingDloadUnframedStreamWrite           = 0x29,
 	kStreamingDloadUnframedStreamWriteResponse   = 0x31,
 	kStreamingDloadWfpromWrite                   = 0x32,
 	kStreamingDloadWfpromWriteResponse           = 0x33,
@@ -373,10 +379,10 @@ PACKED(typedef struct { // 0x22
 
 PACKED(typedef struct { // 0x30
 	uint8_t command;
-	uint8_t padding[2]; // should be set to 0x000000
+	uint8_t padding[3]; // for alignment
 	uint32_t address;
 	uint32_t length;
-	uint8_t* data;
+	uint8_t  data[1]; // varies
 }) StreamingDloadUnframedStreamWriteRequest;
 
 PACKED(typedef struct { // 0x31

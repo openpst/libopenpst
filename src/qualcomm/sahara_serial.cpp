@@ -102,7 +102,7 @@ SaharaState SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t mi
 	ret.mode 		= packet.mode;
 	ret.version  	= packet.version;
 	ret.minVersion  = packet.minVersion;
-
+	
 	return ret;
 }
 
