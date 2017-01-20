@@ -59,19 +59,48 @@ StreamingDloadHelloResponse StreamingDloadSerial::sendHello(std::string magic, u
 			
 	memcpy(&state.hello, &buffer[0], sizeof(StreamingDloadHelloResponseHeader));
 	
-	int dataStartIndex = sizeof(StreamingDloadHelloResponseHeader);
+	int index = sizeof(StreamingDloadHelloResponseHeader);
 
-	// parse the packet and get the things that are not obvious without calculation
-	// flashIdenfier, windowSize, numberOfSectors, sectorSizes, featureBits
-	memcpy(&state.hello.flashIdenfier, &buffer[dataStartIndex], state.hello.flashIdLength);
-	memcpy(&state.hello.windowSize, &buffer[dataStartIndex + state.hello.flashIdLength], sizeof(state.hello.windowSize));
-	memcpy(&state.hello.numberOfSectors, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize)], sizeof(state.hello.numberOfSectors));
+	if (index + state.hello.flashIdLength > rxSize) {
+		throw StreamingDloadSerialError("Flash ID overflow");
+	}
 
-	int sectorSize = 4 * state.hello.numberOfSectors;
-	memcpy(&state.hello.sectorSizes, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize) + sizeof(state.hello.numberOfSectors)], sectorSize-1);
-	memcpy(&state.hello.featureBits, &buffer[dataStartIndex + state.hello.flashIdLength + sizeof(state.hello.windowSize) + sizeof(state.hello.numberOfSectors) + sectorSize-1], sizeof(state.hello.featureBits));
-	state.hello.featureBits = flip_endian16(state.hello.featureBits);
+	memcpy(&state.hello.flashIdenfier, &buffer[index], state.hello.flashIdLength);
 
+	index += state.hello.flashIdLength;
+
+	if (index + sizeof(state.hello.windowSize) > rxSize) {
+		throw StreamingDloadSerialError("Window Size overflow");
+	}
+
+	memcpy(&state.hello.windowSize, &buffer[index], sizeof(state.hello.windowSize));
+
+	index += sizeof(state.hello.windowSize);
+
+	if (index + sizeof(state.hello.numberOfSectors) > rxSize) {
+		throw StreamingDloadSerialError("Number of sectors overflow");
+	}
+
+	memcpy(&state.hello.numberOfSectors, &buffer[index], sizeof(state.hello.numberOfSectors));
+
+	index += sizeof(state.hello.numberOfSectors);
+
+	size_t sectorsSize = sizeof(uint32_t) * state.hello.numberOfSectors;
+
+	if (index + sectorsSize > rxSize) {
+		throw StreamingDloadSerialError("Sectors overflow");
+	}
+
+	memcpy(&state.hello.sectorSizes, &buffer[index], sectorsSize);
+
+	index += sectorsSize;
+
+	if (index + sizeof(state.hello.featureBits) > rxSize) {
+		throw StreamingDloadSerialError("Feature bits overflow");
+	}
+
+	state.hello.featureBits = buffer[index];
+	
 	state.negotiated = true;
 
 	return state.hello;

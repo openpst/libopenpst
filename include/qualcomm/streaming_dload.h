@@ -18,16 +18,15 @@
 #define STREAMING_DLOAD_FEATURE_BIT_MULTI_IMAGE             0x00000008
 #define STREAMING_DLOAD_FEATURE_BIT_SECTOR_ADDRESSES        0x00000010
 
-#define STREAMING_DLOAD_MAGIC_SIZE 32
-#define STREAMING_DLOAD_FLASH_ID_MAX_SIZE    32
-#define STREAMING_DLOAD_MESSAGE_SIZE  64
-#define STREAMING_DLOAD_MAX_SECTORS 32
-
 #define STREAMING_DLOAD_MAX_DATA_SIZE 1024
 
 #define STREAMING_DLOAD_MAX_TX_SIZE (STREAMING_DLOAD_MAX_DATA_SIZE * 2)
 #define STREAMING_DLOAD_MAX_RX_SIZE (STREAMING_DLOAD_MAX_DATA_SIZE * 2)
 
+#define STREAMING_DLOAD_MAGIC_SIZE 32
+#define STREAMING_DLOAD_FLASH_ID_MAX_SIZE    32
+#define STREAMING_DLOAD_MESSAGE_SIZE  64
+#define STREAMING_DLOAD_MAX_SECTORS 128
 
 enum StreamingDloadSecurityMode {
 	kStreamingDloadSecurityModeUntrusted = 0x00,
@@ -195,8 +194,8 @@ PACKED(typedef struct { // 0x02
 	uint8_t  flashIdenfier[STREAMING_DLOAD_FLASH_ID_MAX_SIZE];
 	uint16_t windowSize;
 	uint16_t numberOfSectors;
-	uint16_t sectorSizes[STREAMING_DLOAD_MAX_SECTORS * 4];
-	uint16_t featureBits;
+	uint32_t sectorSizes[STREAMING_DLOAD_MAX_SECTORS];
+	uint8_t  featureBits;
 }) StreamingDloadHelloResponse;
 
 PACKED(typedef struct { // 0x03
