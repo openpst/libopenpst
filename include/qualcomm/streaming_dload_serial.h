@@ -196,16 +196,26 @@ namespace OpenPST {
 
 			/**
 			* @brief writeFlash - Stream write data starting at specified address. Writes hdlc encoded chunks
-			*                   of max block size specified by device
+			*                   of max block size specified by device. Try writeFlashUnframed first, its faster
 			*
 			* @param uint32_t address - The starting address to write to
 			* @param uint8_t data - A pointer to the data to be written
 			* @param size_t length - The amount of data to write.
-			* @param bool unframed - Write in unframed (non hdlc encoded) packets
 			*
 			* @return int
 			*/
-			size_t writeFlash(uint32_t address, uint8_t* data, size_t length, bool unframed = false);
+			size_t writeFlash(uint32_t address, uint8_t* data, size_t length);
+
+			/**
+			* @brief writeFlash - Stream write unframed data starting at specified address. 
+			*
+			* @param uint32_t address - The starting address to write to
+			* @param uint8_t data - A pointer to the data to be written
+			* @param size_t length - The amount of data to write.
+			*
+			* @return size_t
+			*/
+			size_t writeFlashUnframed(uint32_t address, uint8_t* data, size_t length);
 
 			/**
 			* @brief getNamedError - Get a named error from an error code
