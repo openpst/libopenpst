@@ -72,6 +72,7 @@ SOURCES += \
     $$BASE_DIR/src/qualcomm/streaming_dload_serial.cpp \
     $$BASE_DIR/src/samsung/akseed_calculator.cpp \
     $$BASE_DIR/src/serial/generic_serial.cpp \
+    $$BASE_DIR/src/util/gpt_parser.cpp \
     $$BASE_DIR/src/util/convert.cpp \
     $$BASE_DIR/src/util/endian.cpp \
     $$BASE_DIR/src/util/hexdump.cpp \

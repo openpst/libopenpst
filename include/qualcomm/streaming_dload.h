@@ -33,6 +33,7 @@
 #define STREAMING_DLOAD_FLASH_ID_MAX_SIZE    32
 #define STREAMING_DLOAD_MESSAGE_SIZE  64
 #define STREAMING_DLOAD_MAX_SECTORS 128
+#define STREAMING_DLOAD_PARTITION_TABLE_SIZE 512
 
 enum StreamingDloadSecurityMode {
 	kStreamingDloadSecurityModeUntrusted = 0x00,
@@ -83,18 +84,20 @@ enum StreamingDloadCommand {
 	kStreamingDloadCurrentEccState            = 0x20,
 	kStreamingDloadSetEcc                      = 0x21,
 	kStreamingDloadSetEccResponse             = 0x22,
-	kStreamingDloadCalculateSha1          = 0x23, // depreciated - doesnt appear to be used
-	kStreamingDloadCalculateSha1Response = 0x24, // depreciated - doesnt appear to be used
+	kStreamingDloadCalculateSha1          	= 0x23, // depreciated - doesnt appear to be used
+	kStreamingDloadCalculateSha1Response 	= 0x24, // depreciated - doesnt appear to be used
 	kStreamingDloadInfoResponse                = 0x24, 
 
 	//25-2F commands described in [Q2]
 
 	kStreamingDloadUnframedStreamWrite           = 0x29,
 	kStreamingDloadUnframedStreamWriteResponse   = 0x31,
-	kStreamingDloadWfpromWrite                   = 0x32,
-	kStreamingDloadWfpromWriteResponse           = 0x33,
-	kStreamingDloadQfpromRead                    = 0x34,
-	kStreamingDloadQfpromReadResponse            = 0x35
+
+	// havent tested on a device that these is supported but is mentioned in a document
+	kStreamingDloadWfpromWrite                   = 0x32, 
+	kStreamingDloadWfpromWriteResponse           = 0x33, 
+	kStreamingDloadQfpromRead                    = 0x34, 
+	kStreamingDloadQfpromReadResponse            = 0x35  
 
 	//36-FE Reserved
 };
@@ -170,6 +173,7 @@ enum StreamingDloadOpenMultiState {
 	kStreamingDloadOpenMultiBlockWriteProtected   = 0x04
 };
 
+#ifndef NO_POD_PACKET_STRUCTURES
 
 PACKED(typedef struct { // 0x01
 	uint8_t command;
@@ -313,7 +317,7 @@ PACKED(typedef struct { // 0x18
 PACKED(typedef struct { // 0x19
 	uint8_t command;
 	uint8_t overrideExisting; // 0x00 no override, 0x01 override existing table
-	uint8_t data[512]; // max 512 bytes
+	uint8_t data[STREAMING_DLOAD_PARTITION_TABLE_SIZE]; // max STREAMING_DLOAD_PARTITION_TABLE_SIZE bytes
 }) StreamingDloadPartitionTableRequest;
 
 
@@ -344,10 +348,13 @@ PACKED(typedef struct { // 0x1C
 					// 0x04 Block 0 write protected, fail
 }) StreamingDloadOpenMultiImageResponse;
 
+
+
 /*
 * This packet will erase the whole flash. If the operation fails, you may
 * have to restore the device via jtag. Use with caution
 */
+
 PACKED(typedef struct { // 0x1D
 	uint8_t command;
 }) StreamingDloadEraseFlashRequest;
@@ -417,3 +424,5 @@ PACKED(typedef struct { // 0x35
 	uint32_t lsb;
 	uint32_t msb;
 }) StreamingDloadQfpromReadResponse;
+
+#endif

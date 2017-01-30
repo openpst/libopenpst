@@ -128,6 +128,7 @@ enum SaharaStatusCode {
 	kSaharaStatusMax
 };
 
+#ifndef NO_POD_PACKET_STRUCTURES
 /**
 * SaharaHeader
 *
@@ -148,7 +149,7 @@ typedef struct SaharaAbstractPacket {
 } SaharaAbstractPacket;
 
 /**
-* SaharaHelloRequest
+* SaharaHelloRequestS
 *
 * The initial packet received from the device
 * when first opening the COM port. If no data
@@ -335,6 +336,7 @@ typedef struct { // 0x11
 	uint64_t size;
 } SaharaMemoryRead64Request;
 
+#endif
 
 /**
 * SaharaMsmHwIdResponse
@@ -377,6 +379,7 @@ typedef struct {
 typedef struct {
 	uint8_t hash[32];
 } SaharaOemPkHashResponse;
+
 
 /**
 * SaharaDebugLogEntry
