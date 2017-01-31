@@ -406,7 +406,7 @@ size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::vec
 	std::vector<uint8_t> temp;
 	StreamingDloadReadRequest packet = {};	
 
-	out.reserve(amount);	
+	out.reserve(out.size() + amount);	
 	temp.reserve(STREAMING_DLOAD_MAX_RX_SIZE);
 
 	if (step > state.hello.maxPreferredBlockSize) {

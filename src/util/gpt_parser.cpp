@@ -15,12 +15,14 @@ GptParser::~GptParser()
 
 GptInfo GptParser::parse(std::string filePath, int flags, off_t start)
 {
-	GptInfo gpt = {};
+	std::stringstream ss;
+    GptInfo gpt = {};
 
     std::ifstream file(filePath, std::ios_base::in | std::ios_base::binary);
 
     if (!file.is_open()) {
-    	throw std::invalid_argument("Can\'t open file for reading\n");
+        ss << "Could not open " << filePath;
+    	throw std::invalid_argument(ss.str());
     }
 
     file.seekg(0, file.end);
@@ -100,20 +102,18 @@ std::string GptParser::getEntryName(GptEntry* entry)
     return ret;
 }
 
-std::string GptParser::getEntryUUID(GptEntry* entry)
+std::string GptParser::getUUID(GptUuid* uuid)
 {
-    return "";
-    /*std::stringstream;
+    std::stringstream ss;
 
-    for (int i = 0; i < sizeof(entry->partitionName)/sizeof(uint16_t); i++) {
-        if (!entry->partitionName[i]) {
-            break;
-        }
-        ret.push_back((char)entry->partitionName[i]);
+    ss << std::hex << uuid->timeLow << "-";
+    ss << std::hex << uuid->timeMid << "-";
+    ss << std::hex << uuid->timeHiAndVersion << "-";
+    ss << std::hex << uuid->clockSeq << "-";
+
+    for (int i = 0; i < 6; i++) {
+         ss << std::hex << (int)uuid->node[i];
     }
 
-    if (!ret.size()) {
-        return "[Not Specified]";
-    }
-    return ret;*/
+    return ss.str();
 }
