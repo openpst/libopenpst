@@ -30,7 +30,7 @@ On ubuntu you can install everything you should need with:
     
     make
 
-This will build both debug and release binaries. You can build just debug or release with `make debug` or `make release`
+This will build both debug and release libs. You can build just debug or release with `make debug` or `make release`
 
 ### Compiling on Windows
 
