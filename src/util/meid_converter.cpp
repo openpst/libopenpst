@@ -57,13 +57,6 @@ MeidInfo MeidConverter::convert(const std::string& input)
 	return ret;
 }
 
-MeidInfo MeidConverter::convert(uint8_t* input, size_t size)
-{
-	MeidInfo ret("", kMeidInputMeidDec);
-
-	return ret;
-}
-
 Esn MeidConverter::calculatePesn(const std::string& meidHex)
 {
 #ifdef _WIN32
@@ -121,4 +114,115 @@ Esn MeidConverter::calculatePesn(const std::string& meidHex)
 
 	return ret;
 #endif
+}
+
+
+MeidInfo::MeidInfo(const std::string& input, MeidConverterInputType type) :
+	input(input), type(type) {
+}
+
+MeidInfo::MeidInfo(const std::string& input, MeidConverterInputType type, Meid meid, Esn esn) :
+	input(input), type(type), meid(meid), esn(esn) {
+}
+
+MeidInfo::MeidInfo(const std::string& input, MeidConverterInputType type, Meid meid) :
+	input(input), type(type), meid(meid) {
+}
+
+MeidInfo::MeidInfo(const std::string& input, MeidConverterInputType type, Esn esn) :
+	input(input), type(type), esn(esn) {
+}
+
+MeidInfo::~MeidInfo() {
+
+}
+
+void MeidInfo::setEsn(const Esn& esn) 
+{
+	this->esn = esn;
+}
+
+void MeidInfo::setEsn(uint32_t p1, uint32_t p2) 
+{
+	esn.p1 = p1;
+	esn.p2 = p2;
+}
+
+void MeidInfo::setMeid(const Meid& meid) {
+	this->meid = meid;
+}
+
+void MeidInfo::setMeid(uint32_t p1, uint32_t p2) 
+{
+	meid.p1 = p1;
+	meid.p2 = p2;
+}
+
+const std::string& MeidInfo::getInput() 
+{
+	return input;
+}
+
+MeidConverterInputType MeidInfo::getType() 
+{
+	return type;
+}
+
+std::string MeidInfo::getMeidDec() 
+{
+	if (getType() == kMeidInputEsnDec || getType() == kMeidInputEsnHex) {
+		return "000000000000000000";
+	}
+
+	std::stringstream ss1;
+	std::stringstream ss2;
+
+	ss1 << std::dec << meid.p1;
+	ss2 << std::dec << meid.p2;
+
+	std::string p1 = ss1.str();
+	std::string p2 = ss2.str();
+
+	while(p1.size() < 10) {
+		p2.insert(p2.begin(), 0x30);
+	}
+
+	while(p1.size() < 8) {
+		p2.insert(p2.begin(), 0x30);
+	}
+
+	return std::string(p1 + p2);
+}
+
+std::string MeidInfo::getMeidHex() 
+{
+	if (getType() == kMeidInputEsnDec || getType() == kMeidInputEsnHex) {
+		return "00000000000000";
+	}
+
+	std::stringstream ss;
+	ss << std::hex << meid.p1 << meid.p2;
+	return ss.str();
+}
+
+std::string MeidInfo::getEsnDec() 
+{
+	std::stringstream ss1;
+	std::stringstream ss2;
+
+	ss1 << std::dec << esn.p1;
+	ss2 << std::dec << esn.p2;
+	
+	std::string p1 = ss1.str();
+	std::string p2 = ss2.str();
+	while(p2.size() + p1.size() < 11) {
+		p2.insert(p2.begin(), 0x30);
+	}
+	return std::string(p1 + p2);
+}
+
+std::string MeidInfo::getEsnHex() {
+	std::stringstream ss;
+	ss << std::hex << esn.p1 << esn.p2;
+	return ss.str();
 }

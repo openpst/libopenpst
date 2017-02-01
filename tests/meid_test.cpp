@@ -1,6 +1,4 @@
-#include "definitions.h"
 #include "util/meid_converter.h"
-#include <boost/uuid/sha1.hpp>
 
 using namespace OpenPST;
 
@@ -25,7 +23,7 @@ int main() {
 		std::cout << "From MEID HEX :" << t2 << std::endl;
 		MeidInfo test2 = converter.convert(t2);
 		std::cout << test2.getMeidDec() << std::endl;
-		std::cout << test2.getMeidHex() << std::endl << std::endl;
+		std::cout << test2.getMeidHex() << std::endl;
 		std::cout << test2.getEsnDec() << std::endl;
 		std::cout << test2.getEsnHex() << std::endl << std::endl;
 
