@@ -7,17 +7,8 @@
 #include <windows.h>
 #include <Wincrypt.h>
 #else
-#include "openssl/sha.h"
+#include <boost/uuid/sha1.hpp>
 #endif
-
-#define SHA_DIGEST_LENGTH 20
-
-struct MeidInfo {
-	std::string meidDec;
-	std::string meidHex;
-	std::string pEsnDec;
-	std::string pEsnHex;
-};
 
 enum MeidConverterInputType {
 	kMeidInputMeidDec = 1,
@@ -26,29 +17,106 @@ enum MeidConverterInputType {
 	kMeidInputEsnHex
 };
 
-class MeidConverter
-{
+namespace OpenPST {
+	
+	struct Meid {
+		uint32_t p1;
+		uint32_t p2;
+	};
 
+	struct Esn {
+		uint32_t p1;
+		uint32_t p2;
+		bool isPEsn;
+	};
 
+	class MeidInfo {
+		protected:
+			std::string input;
+			MeidConverterInputType type;
+			Meid meid = {};
+			Esn esn = {};
+		public:
+			MeidInfo(const std::string& input, MeidConverterInputType type) :
+				input(input), type(type) {
+			}
 
-	public:
-		MeidConverter();
-		~MeidConverter();
-		MeidInfo convert(const std::string& input);
-		MeidInfo convert(uint8_t* input, size_t size);
-		std::string sha1(std::string data);
-		/*
-		std::string convertToMeidHex(char input[]);
-		std::string convertToMeidDec(char input[]);
-		std::string convertToEsnHex(char input[]);
-		std::string convertToEsnDec(char input[]);
-		std::string calculatePesn(char input[]);
-*/
-	/*private:
-		int mInputType;
-		char *mInput;
-		MEID result;
-		void setType(int type);
-		std::string transformSerial(char* input, int srcBase, int dstBase, int p1Width, int p1Padding, int p2Padding);
-		*/
-};
+			MeidInfo(const std::string& input, MeidConverterInputType type, Meid meid, Esn esn) :
+				input(input), type(type), meid(meid), esn(esn) {
+			}
+			
+			MeidInfo(const std::string& input, MeidConverterInputType type, Meid meid) :
+				input(input), type(type), meid(meid) {
+			}
+
+			MeidInfo(const std::string& input, MeidConverterInputType type, Esn esn) :
+				input(input), type(type), esn(esn) {
+			}
+
+			~MeidInfo() {
+
+			}
+
+			void setEsn(const Esn& esn) {
+				this->esn = esn;
+			}
+
+			void setEsn(uint32_t p1, uint32_t p2) {
+				esn.p1 = p1;
+				esn.p2 = p2;
+			}
+
+			void setMeid(const Meid& meid) {
+				this->meid = meid;
+			}
+
+			void setMeid(uint32_t p1, uint32_t p2) {
+				meid.p1 = p1;
+				meid.p2 = p2;
+			}
+
+			const std::string& getInput() {
+				return input;
+			}
+
+			MeidConverterInputType getType() {
+				return type;
+			}
+
+			std::string getMeidDec() {
+				std::stringstream ss;
+				ss << std::dec << meid.p1 << meid.p2;
+				return ss.str();
+			}
+
+			std::string getMeidHex() {
+				std::stringstream ss;
+				ss << std::hex << meid.p1 << meid.p2;
+				return ss.str();
+			}
+
+			std::string getEsnDec() {
+				std::stringstream ss;
+				ss << std::dec << esn.p1 << esn.p2;
+				return ss.str();
+			}
+
+			std::string getEsnHex() {
+				std::stringstream ss;
+				ss << std::hex << esn.p1 << esn.p2;
+				return ss.str();
+			}
+	};
+	
+
+	class MeidConverter
+	{
+
+		public:
+			MeidConverter();
+			~MeidConverter();
+			MeidInfo convert(const std::string& input);
+			MeidInfo convert(uint8_t* input, size_t size);
+			Esn calculatePesn(const std::string& meidHex);
+	};
+}

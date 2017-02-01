@@ -1,4 +1,15 @@
 [submodule "serial"]
 	path = lib/serial
 	url = https://github.com/wjwwood/serial.git
-
+[submodule "lib/boost/uuid"]
+	path = lib/boost/uuid
+	url = https://github.com/boostorg/uuid
+[submodule "lib/boost/assert"]
+	path = lib/boost/assert
+	url = https://github.com/boostorg/assert
+[submodule "lib/boost/throw_exception"]
+	path = lib/boost/throw_exception
+	url = https://github.com/boostorg/throw_exception
+[submodule "lib/boost/static_assert"]
+	path = lib/boost/static_assert
+	url = https://github.com/boostorg/static_assert
