@@ -4,7 +4,7 @@
 
 all: default
 
-default: hdlc meid gpt sahara_xml raw_program_xml
+default: hdlc meid gpt sahara_xml raw_program_xml simple_math_evaluator
 	
 hdlc:
 	if [ ! -d "./build" ]; then mkdir -p build;  fi
@@ -31,6 +31,7 @@ sahara_xml:
 	$(CXX)  -I./../include -I./../lib/pugixml/src -std=gnu++11 $(CXX_FLAGS) \
 		./../lib/pugixml/src/pugixml.cpp \
 		./../src/qualcomm/sahara_xml_reader.cpp \
+		./../src/util/string_helper.cpp \
 		./sahara_xml_test.cpp -o build/sahara_xml_test 
 
 raw_program_xml:
@@ -38,7 +39,15 @@ raw_program_xml:
 	$(CXX)  -I./../include -I./../lib/pugixml/src -std=gnu++11 $(CXX_FLAGS) \
 		./../lib/pugixml/src/pugixml.cpp \
 		./../src/qualcomm/raw_program_xml_reader.cpp \
+		./../src/util/string_helper.cpp \
+		./../src/util/simple_math_evaluator.cpp \
 		./raw_program_xml_test.cpp -o build/raw_program_xml_test 
+
+simple_math_evaluator:
+	if [ ! -d "./build" ]; then mkdir -p build;  fi
+	$(CXX)  -I./../include -I./../lib/pugixml/src -std=gnu++11 $(CXX_FLAGS) \
+		./../src/util/simple_math_evaluator.cpp \
+		./simple_math_evaluator_test.cpp -o build/simple_math_evaluator_test 
 
 clean:
 	rm -rf build/*

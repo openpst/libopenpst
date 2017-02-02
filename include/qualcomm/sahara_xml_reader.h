@@ -12,7 +12,10 @@
 
 #include <vector>
 #include "definitions.h"
+#include "util/string_helper.h"
 #include "pugixml.hpp"
+
+using OpenPST::StringHelper;
 
 namespace OpenPST {
 	namespace QC {
@@ -25,6 +28,8 @@ namespace OpenPST {
 
 		class SaharaXmlReader
 		{
+			protected:
+				StringHelper stringHelper;
 			public:
 				SaharaXmlReader();
 				~SaharaXmlReader();

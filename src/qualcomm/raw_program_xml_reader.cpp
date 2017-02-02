@@ -10,6 +10,7 @@
 */
 #include "qualcomm/raw_program_xml_reader.h"
 #include <iostream>
+#include <string>
 
 using namespace OpenPST::QC;
 
@@ -23,27 +24,7 @@ RawProgramXmlReader::~RawProgramXmlReader()
 
 }
 
-/*
-
-		/*
-
-		SECTOR_SIZE_IN_BYTES
-file_sector_offset
-filename
-label
-num_partition_sectors
-partofsingleimage
-physical_partition_number
-readbackverify
-size_in_KB
-sparse
-start_byte_hex
-  <program SECTOR_SIZE_IN_BYTES="512" file_sector_offset="0" filename="laf.img" label="laf" num_partition_sectors="65536" partofsingleimage="false" physical_partition_number="0" readbackverify="false" size_in_KB="32768.0" sparse="false" 
-  start_byte_hex="0x13000000" start_sector="622592" />
-
-
-*/
-std::vector<RawProgramXmlEntry> RawProgramXmlReader::parse(const std::string& filePath)
+std::vector<RawProgramXmlEntry> RawProgramXmlReader::parse(const std::string& filePath, int numberOfSectors)
 {
 	pugi::xml_document doc;
 	std::vector<RawProgramXmlEntry> ret;
@@ -59,9 +40,78 @@ std::vector<RawProgramXmlEntry> RawProgramXmlReader::parse(const std::string& fi
     for (auto &program : programs) {
     	RawProgramXmlEntry e;
 
+        for (auto &attribute : program.node().attributes()) {
+            std::string name(attribute.name());
+            std::string value(attribute.value());
+            std::string evaluated;
+
+            stringHelper.toUpper(name);
+            
+            if (requiresEvaluation(value)) {
+                stringHelper.replaceAll(value, "NUM_DISK_SECTORS", std::to_string(numberOfSectors));
+                value = evaluate(value);
+            }
+
+            if (name.compare("SECTOR_SIZE_IN_BYTES") == 0){
+                e.sectorSize = std::strtoul(value.c_str(), nullptr, 10);
+            } else if (name.compare("FILE_SECTOR_OFFSET") == 0) {
+                 e.fileSectorOffset = std::strtoul(value.c_str(), nullptr, 10);
+            } else if (name.compare("FILENAME") == 0) {
+                e.fileName = value;
+            } else if (name.compare("LABEL") == 0) {
+                e.label = value;
+            } else if (name.compare("NUM_PARTITION_SECTORS") == 0) {
+                e.numPartitionSectors = std::strtoul(value.c_str(), nullptr, 10);
+            } else if (name.compare("PARTOFSINGLEIMAGE") == 0) {
+                stringHelper.toUpper(value);
+                e.partOfSingleImage = value.compare("TRUE") == 0;
+            } else if (name.compare("PHYSICAL_PARTITION_NUMBER") == 0) {
+                e.physicalPartitionNumber = std::strtoul(value.c_str(), nullptr, 10);
+            } else if (name.compare("READBACKVERIFY") == 0) {
+                stringHelper.toUpper(value);
+                e.readBackVerify = value.compare("TRUE") == 0;
+            } else if (name.compare("SIZE_IN_KB") == 0) {
+                e.size = std::strtoul(value.c_str(), nullptr, 10);
+                e.size = e.size * 1024;
+            } else if (name.compare("SPARSE") == 0) {
+                stringHelper.toUpper(value);
+                e.sparse = value.compare("TRUE") == 0;
+            } else if (name.compare("START_BYTE_HEX") == 0) {
+                e.startByte = std::strtoul(value.c_str(), nullptr, 16);
+            } else if (name.compare("START_SECTOR") == 0) {
+                e.startSector = std::strtoul(value.c_str(), nullptr, 10);
+            }
+        }
 
     	ret.push_back(e);
     }
 
     return ret;
+}
+
+bool RawProgramXmlReader::requiresEvaluation(const std::string& v) {
+    std::string c = v;
+    
+    stringHelper.toUpper(c);
+    
+    if (c.find("NUM_DISK_SECTORS") != std::string::npos) {
+        return true;
+    } else if (
+        c.find("*") != std::string::npos ||
+        c.find("/") != std::string::npos || 
+        c.find("+") != std::string::npos ||
+        c.find("-") != std::string::npos) {
+        return true;
+    }
+    return false;
+}
+
+std::string RawProgramXmlReader::evaluate(const std::string& expr)
+{
+    return evaluator.evaluate(expr);
+}
+
+std::string RawProgramXmlReader::readNextToken(std::string::iterator it)
+{
+
 }

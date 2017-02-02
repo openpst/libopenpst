@@ -40,17 +40,28 @@ std::vector<SaharaXmlEntry> SaharaXmlReader::parse(const std::string& filePath)
     for (auto &image : images) {
     	SaharaXmlEntry e;
 
-    	std::string imageId(image.node().attribute("image_id").value());
-    	std::string programmer(image.node().attribute("programmer").value());
-    	std::string imagePath(image.node().attribute("image_path").value());
+        for (auto &attribute : image.node().attributes()) {
+            std::string name(attribute.name());
+            std::string value(attribute.value());
+            
+            stringHelper.toUpper(name);
 
-    	if (!imageId.size() || !imagePath.size()) {
-    		continue;
-    	}
+            if (name.compare("IMAGE_ID") == 0){
+                if (!value.size()) {
+                    continue;
+                }
+                e.imageId = std::strtoul(value.c_str(), nullptr, 10);
+            } else if (name.compare("IMAGE_PATH") == 0) {
+                if (!value.size()) {
+                    continue;
+                }
+                e.imagePath = value;
+            } else if (name.compare("PROGRAMMER") == 0) {
+                stringHelper.toUpper(value);
 
-    	e.imageId    = strtoul(imageId.c_str(), nullptr, 10);
-    	e.programmer = programmer.compare("true") == 0;
-    	e.imagePath  = imagePath;
+                e.programmer = value.compare("TRUE") == 0;
+            }
+        }
 
     	ret.push_back(e);
     }
