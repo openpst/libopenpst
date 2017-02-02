@@ -1,3 +1,6 @@
 [submodule "serial"]
 	path = lib/serial
 	url = https://github.com/wjwwood/serial.git
+[submodule "lib/pugixml"]
+	path = lib/pugixml
+	url = https://github.com/zeux/pugixml

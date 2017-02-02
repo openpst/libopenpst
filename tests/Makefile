@@ -4,7 +4,7 @@
 
 all: default
 
-default: hdlc meid gpt
+default: hdlc meid gpt sahara_xml raw_program_xml
 	
 hdlc:
 	if [ ! -d "./build" ]; then mkdir -p build;  fi
@@ -26,6 +26,19 @@ gpt:
 		./../src/util/gpt_parser.cpp \
 		./../src/util/hexdump.cpp \
 		./gpt_test.cpp -o build/gpt_test 
+sahara_xml:
+	if [ ! -d "./build" ]; then mkdir -p build;  fi
+	$(CXX)  -I./../include -I./../lib/pugixml/src -std=gnu++11 $(CXX_FLAGS) \
+		./../lib/pugixml/src/pugixml.cpp \
+		./../src/qualcomm/sahara_xml_reader.cpp \
+		./sahara_xml_test.cpp -o build/sahara_xml_test 
+
+raw_program_xml:
+	if [ ! -d "./build" ]; then mkdir -p build;  fi
+	$(CXX)  -I./../include -I./../lib/pugixml/src -std=gnu++11 $(CXX_FLAGS) \
+		./../lib/pugixml/src/pugixml.cpp \
+		./../src/qualcomm/raw_program_xml_reader.cpp \
+		./raw_program_xml_test.cpp -o build/raw_program_xml_test 
 
 clean:
 	rm -rf build/*
