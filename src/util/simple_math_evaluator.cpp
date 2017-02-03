@@ -27,63 +27,106 @@ SimpleMathEvaluator::~SimpleMathEvaluator()
 
 std::string SimpleMathEvaluator::evaluate(const std::string& expr)
 {   
-    std::string e = expr;
+    // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+    auto tokens = tokenize(expr);
 
-    std::string::iterator cur = e.begin();
-    std::string::iterator end = e.end();
+    // start fresh
+    outstack.empty();
+    opstack.empty();
 
-    output.empty();
-    op.empty();
+    for (auto &token : tokens) {
+    	if (token.type == kSimpleMathEvaluatorTokenTypeValue) {
+    		pushOut(std::stoul(token.value.c_str(), nullptr, 10));
+    		continue;
+    	} else if (token.type == kSimpleMathEvaluatorTokenTypeOperator) {
+    		if (token.value[0] == '(') {
+    			pushOp(getOperator(token));
+    			continue;
+    		} else if (token.value[0] == ')') {
+    			// get the current operator   			
 
+    			while(true) {
+    				if (!opstack.size()) {
+    					throw std::invalid_argument("Fucked up");
+    				}
 
-    while (cur != end) {
+    				auto op = opstack.top();
+
+    				if (op->op == '(') {
+    					break;
+    				} else if (op->op == ')') {
+    					throw std::invalid_argument("Unexpected an operator");
+    				}
+
+    				pushOut(op->evaluate(popOut(), popOut()));
+    			}
+				
+
+    		} else if (opstack.size()) {
+    			// check precedence
+    			auto curOperator = getOperator(token);
+    			auto topOperator = opstack.top();
+            	
+            	if ((curOperator->associativity == kSimpleMathEvaluatorAssociativityLeft && curOperator->precedence <= topOperator->precedence) ||
+            		 (curOperator->associativity == kSimpleMathEvaluatorAssociativityRight && curOperator->precedence < topOperator->precedence)
+            	) {
+					// evaluate 
+					//pushOut(op->evaluate(popOut(), popOut()));
+            	} else {
+            		pushOp(curOperator);
+            	}
+    		} else {
+    			pushOp(getOperator(token));
+    		}
+    	}
+    }
+
+    // parse the string, token by token
+    /*while (cur != end) {
         SimpleMathEvaluatorToken token = readNextToken(cur, end);
         
         if (token.value.size()) {
-            if (token.type == kSimpleMathEvaluatorTokenTypeOperator) {
+            if (token.type == kSimpleMathEvaluatorTokenTypeOperator && token.value[0] != '(' && token.value[0] != ')') {
                 if (op.size()) {
                     auto top = op.top();
-                    if (top.type == kSimpleMathEvaluatorTokenTypeOperator) {
-                        int topOpType = getOperatorType(top.value[0]);
-                        int curOpType = getOperatorType(token.value[0]);
-                        if (
-                            (curOpType == kSimpleMathEvaluatorOperatorTypeMultiply &&
-                            topOpType == kSimpleMathEvaluatorOperatorTypeDivide) ||
-                            (curOpType ==  kSimpleMathEvaluatorOperatorTypeDivide &&
-                            topOpType == kSimpleMathEvaluatorOperatorTypeMultiply)
-                        ) {
-                            output.push(top);
+                    if (top.type == kSimpleMathEvaluatorTokenTypeOperator && top.value[0] != '(' && top.value[0] != ')') {
+                    	// check precedence 
+                    	auto curOperator = getOperator(token);
+                    	auto topOperator = getOperator(top);
+
+                    	if (curOperator->associativity == kSimpleMathEvaluatorAssociativityLeft && curOperator->precedence <= topOperator->precedence) {
+							outstack.push(top);
                             op.pop();
-                        } else if (
-                            (curOpType == kSimpleMathEvaluatorOperatorTypeAdd &&
-                            topOpType == kSimpleMathEvaluatorOperatorTypeSubtract) ||
-                            (curOpType ==  kSimpleMathEvaluatorOperatorTypeSubtract &&
-                            topOpType == kSimpleMathEvaluatorOperatorTypeAdd)
-                        ) {
-                            output.push(top);
+                    	} else if (curOperator->associativity == kSimpleMathEvaluatorAssociativityRight && curOperator->precedence < topOperator->precedence) {
+							outstack.push(top);
                             op.pop();
-                        }
+                    	}
                     }
                 }
                 op.push(token);
-            } else if(token.type == kSimpleMathEvaluatorTokenTypeParenthesisLeft) {
+            } else if(token.type == kSimpleMathEvaluatorTokenTypeOperator && token.value[0] == '(') {
                 op.push(token);
-            } else if(token.type == kSimpleMathEvaluatorTokenTypeParenthesisRight) {
-                
-                auto top = op.top();
-                
-                while (top.type != kSimpleMathEvaluatorTokenTypeParenthesisLeft) {
-                    output.push(top);
-                    op.pop();
+            } else if(token.type == kSimpleMathEvaluatorTokenTypeOperator && token.value[0] == ')') {
+         
+                while (true) {
+                	auto top = op.top();
+                	if(top.type == kSimpleMathEvaluatorTokenTypeOperator && top.value[0] == '(') {                		
+                		break;
+                	} else if(top.type == kSimpleMathEvaluatorTokenTypeOperator && top.value[0] == ')') {
+                		throw std::invalid_argument("Bad Expression");
+                	}
+
+                	outstack.push(top);
+                	op.pop();
+
                     if (!op.size()) {
                         throw std::invalid_argument("Bad Expression");
                     }
-                    top = op.top();
                 }
 
                 op.pop();
             } else {
-                output.push(token);
+                outstack.push(token);
             }
 
         } else {
@@ -91,44 +134,45 @@ std::string SimpleMathEvaluator::evaluate(const std::string& expr)
         }
     }
 
+    // pop op stack and push into outstack queue
     while(op.size()) {
-        output.push(op.top());
+        outstack.push(op.top());
         op.pop();
     }
 
-    /*if (output.back().type == kSimpleMathEvaluatorTokenTypeParenthesisLeft) {
-        throw();
-    }*/
+    while(outstack.size()) {
+    	auto t  = outstack.front();
+    	std::coutstack << "Token: " << t.value << " Type: " << t.type << std::endl;
+    	outstack.pop();
+    }
+    std::coutstack << std::endl;
+    return std::to_string(0);
 
-    int total = 0;
-    while(output.size()) {
-        int l;
-        int r;
+    /*
+    float total = 0;
 
-        auto left  = output.front();
+    while(outstack.size()) {
+        float l;
+        float r;
+
+        auto left  = outstack.front();
         
-        output.pop(); 
+        outstack.pop(); 
         
-        if (left.type == kSimpleMathEvaluatorTokenTypeInt) {
-            if (left.value.find("0x") != std::string::npos) {
-                l = std::strtoul(left.value.c_str(), nullptr, 16);
-            } else {
-                l = std::strtoul(left.value.c_str(), nullptr, 10);
-            }            
+        if (left.type == kSimpleMathEvaluatorTokenTypeInt) {            
+            l = std::stof(left.value.c_str(), nullptr);
         } else if (left.type == kSimpleMathEvaluatorTokenTypeOperator) {
-            throw std::invalid_argument("Invalid Expression");
+        	std::stringstream ss;
+        	ss << "Invalid Left Expression for token " << left.value << std::endl;
+            throw std::invalid_argument(ss.str());
         }
 
-        auto right = output.front();
+        auto right = outstack.front();
         
-        output.pop(); 
+        outstack.pop(); 
 
         if (right.type == kSimpleMathEvaluatorTokenTypeInt) {
-            if (right.value.find("0x") != std::string::npos) {
-                r = std::strtoul(right.value.c_str(), nullptr, 16);
-            } else {
-                r = std::strtoul(right.value.c_str(), nullptr, 10);
-            }    
+            r = std::stof(right.value.c_str(), nullptr);
         } else if (right.type == kSimpleMathEvaluatorTokenTypeOperator) {
             r = l;
             l = total;
@@ -140,12 +184,14 @@ std::string SimpleMathEvaluator::evaluate(const std::string& expr)
             op = right;
         } else {
              
-            op = output.front();   
-            output.pop();   
+            op = outstack.front();   
+            outstack.pop();   
         }
     
         if (op.type != kSimpleMathEvaluatorTokenTypeOperator) {
-            throw std::invalid_argument("Invalid Expression");
+        	std::stringstream ss;
+        	ss << "Invalid Expression for token " << op.value << std::endl;
+            throw std::invalid_argument(ss.str());
         }
         
         switch(getOperatorType(op.value[0])) {
@@ -161,11 +207,15 @@ std::string SimpleMathEvaluator::evaluate(const std::string& expr)
             case kSimpleMathEvaluatorOperatorTypeDivide:
                 total = l / r;
                 break;
+            case kSimpleMathEvaluatorOperatorTypePow:
+            	total = pow(l, r);
+            	break;
         }
     }
     
-    return std::to_string(total);  
+    return std::to_string(total);  */
 }
+
 
 SimpleMathEvaluatorToken SimpleMathEvaluator::readNextToken(std::string::iterator& cur, std::string::iterator& end)
 {
@@ -180,20 +230,12 @@ SimpleMathEvaluatorToken SimpleMathEvaluator::readNextToken(std::string::iterato
             ret.type   = kSimpleMathEvaluatorTokenTypeOperator;
             ret.value.append(&v, sizeof(v));
             cur++;
-            break;
-        } else if (v == ')' || v == '(') {            
-            if (ret.value.size()) {
-                break;
-            }
-            ret.type = v == '(' ? kSimpleMathEvaluatorTokenTypeParenthesisLeft : kSimpleMathEvaluatorTokenTypeParenthesisRight;
-            ret.value.append(&v, sizeof(v));
-            cur++;
-            break;
+            break;        
         } else {
-            ret.type = kSimpleMathEvaluatorTokenTypeInt;
+            ret.type = kSimpleMathEvaluatorTokenTypeValue;
         }
 
-        if (v != ' ') {
+        if (!std::isspace(v)) {
             ret.value.append(&v, sizeof(v));
         } 
         cur++;
@@ -202,34 +244,49 @@ SimpleMathEvaluatorToken SimpleMathEvaluator::readNextToken(std::string::iterato
     return ret;
 }
 
+std::vector<SimpleMathEvaluatorToken> SimpleMathEvaluator::tokenize(const std::string& expr)
+{
+	std::string e = expr;
+	std::vector<SimpleMathEvaluatorToken>  ret;
+
+	std::string::iterator cur = e.begin();
+    std::string::iterator end = e.end();
+
+    // parse the string, token by token
+    while (cur != end) {
+    	auto token = readNextToken(cur, end);
+        
+        if (!token.value.size()) {
+    		throw std::invalid_argument("Empty Token");
+    	}
+
+    	ret.push_back(token);
+    }
+
+    return ret;
+}
 
 bool SimpleMathEvaluator::isOperator(char v)
 {   
-    std::string operators = "*/+-";
-    for (int i = 0; i < operators.size(); i++) {
-        char c = operators[i];
-        if (c == v) {
-            return true;
-        }
+    for (int i = 0; i < sizeof(operators); i++) {
+    	if (v == operators[i].op) {
+    		return true;
+    	}
     }
     return false;
 }
 
-int SimpleMathEvaluator::getOperatorType(char v)
-{   
-    switch(v) {
-        case '+':
-            return kSimpleMathEvaluatorOperatorTypeAdd;
-            break;
-        case '-':
-            return kSimpleMathEvaluatorOperatorTypeSubtract;
-            break;
-        case '*':
-            return kSimpleMathEvaluatorOperatorTypeMultiply;
-            break;
-        case '/':
-            return kSimpleMathEvaluatorOperatorTypeDivide;
-            break;
+SimpleMathEvaluatorOp* SimpleMathEvaluator::getOperator(const SimpleMathEvaluatorToken& token)
+{
+	if (!token.value.size() || !isOperator(token.value[0])) {
+		throw std::invalid_argument("Token is not an operator");
+	}
+
+    for (int i = 0; i < sizeof(operators); i++) {
+    	if (token.value[0] == operators[i].op) {
+    		return &operators[i];
+    	}
     }
-    return kSimpleMathEvaluatorOperatorTypeNone;
+
+    throw std::invalid_argument("Operator not found");
 }
