@@ -13,18 +13,18 @@
 #include <vector>
 #include "definitions.h"
 #include "util/string_helper.h"
-#include "util/simple_math_evaluator.h"
+#include "util/math_string_evaluator.h"
 #include "pugixml.hpp"
 
 using OpenPST::StringHelper;
-using OpenPST::SimpleMathEvaluator;
+using OpenPST::MathStringEvaluator;
 
 namespace OpenPST {
 	namespace QC {
 
 		struct RawProgramXmlEntry {
 			size_t sectorSize;
-			size_t fileSectorOffset;
+			off_t fileSectorOffset;
 			int numPartitionSectors;
 			bool partOfSingleImage;
 			int physicalPartitionNumber;
@@ -41,7 +41,7 @@ namespace OpenPST {
 		{
 			protected:
 				StringHelper stringHelper;
-				SimpleMathEvaluator evaluator;
+				MathStringEvaluator evaluator;
 
 			public:
 				RawProgramXmlReader();
@@ -50,8 +50,6 @@ namespace OpenPST {
 				
 			protected:
 				bool requiresEvaluation(const std::string& v);
-				std::string evaluate(const std::string& expr);
-				std::string readNextToken(std::string::iterator it);
 		};
 	}
 }

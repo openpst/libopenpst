@@ -33,7 +33,8 @@ CONFIG(debug, debug|release){
 }
 
 INCLUDEPATH  += $$BASE_DIR/include \
-                $$BASE_DIR/lib/serial/include
+                $$BASE_DIR/lib/serial/include \
+                $$BASE_DIR/lib/pugixml/src \
 DEPENDPATH   += $$BASE_DIR
 VPATH        += $$BASE_DIR
 OBJECTS_DIR  += $$BUILD_DIR/obj
@@ -60,6 +61,7 @@ SOURCES += \
     $$BASE_DIR/lib/serial/src/serial.cc \
     $$BASE_DIR/lib/serial/src/impl/unix.cc \
     $$BASE_DIR/lib/serial/src/impl/list_ports/list_ports_linux.cc \
+    $$BASE_DIR/lib/pugixml/src/pugixml.cpp \
     #$$BASE_DIR/src/android/adb_device_manager.cpp \
     $$BASE_DIR/src/lg/laf_serial.cpp \
     $$BASE_DIR/src/qualcomm/mbn_parser.cpp \
@@ -70,9 +72,13 @@ SOURCES += \
     $$BASE_DIR/src/qualcomm/qcdm_serial.cpp \
     $$BASE_DIR/src/qualcomm/sahara_serial.cpp \
     $$BASE_DIR/src/qualcomm/streaming_dload_serial.cpp \
+    $$BASE_DIR/src/qualcomm/raw_program_xml_reader.cpp \
+    $$BASE_DIR/src/qualcomm/sahara_xml_reader.cpp \
     $$BASE_DIR/src/samsung/akseed_calculator.cpp \
     $$BASE_DIR/src/serial/generic_serial.cpp \
     $$BASE_DIR/src/util/gpt_parser.cpp \
+    $$BASE_DIR/src/util/math_string_evaluator.cpp \
+    $$BASE_DIR/src/util/string_helper.cpp \
     $$BASE_DIR/src/util/convert.cpp \
     $$BASE_DIR/src/util/endian.cpp \
     $$BASE_DIR/src/util/hexdump.cpp \
