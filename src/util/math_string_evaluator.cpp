@@ -33,15 +33,29 @@ std::string MathStringEvaluator::evaluate(const std::string& expr)
     outstack.empty();
     opstack.empty();
     
-    for (auto &token : tokens) {
+    MathStringEvaluatorToken lastToken;
+
+    for (auto &token : tokens) {    	
+
     	if (token.type == kMathStringEvaluatorTokenTypeValue) {
-            int v = std::stoul(token.value.c_str(), nullptr, 10);
-    		pushOut(v);
+    		pushOut(std::strtoul(token.value.c_str(), nullptr, 10));
+            lastToken = token;
     		continue;
     	} else if (token.type == kMathStringEvaluatorTokenTypeOperator) {
     		
+    		auto op = getOperator(token);
+				
+
+    		if (
+    			(lastToken.value.size() && isOperator(lastToken.value[0]) && opstack.top()->op !=')' && op->op == '-' ) ||
+    			(!opstack.size() && op->op == '-')
+    		) {
+    			op = getOperator('_');    			
+            }
+
             if (token.value[0] == '(') {
-                pushOp(getOperator(token));
+                pushOp(op);
+                lastToken = token;
     			continue;
     		} else if (token.value[0] == ')') {
                 if (!opstack.size()) {
@@ -54,8 +68,6 @@ std::string MathStringEvaluator::evaluate(const std::string& expr)
                 continue;			
     		}
 
-            auto op = getOperator(token);
-
             if(opstack.size() && op->associativity == kMathStringEvaluatorAssociativityRight) {
                 while(opstack.size() && op->precedence < opstack.top()->precedence) {
                     execOp(popOp());
@@ -67,6 +79,7 @@ std::string MathStringEvaluator::evaluate(const std::string& expr)
             }
 
             pushOp(op);
+            lastToken = token;
     	}
     }
 
@@ -74,7 +87,12 @@ std::string MathStringEvaluator::evaluate(const std::string& expr)
         execOp(popOp());
     }
 
-    return std::to_string(popOut());
+    float result = popOut();
+
+    if (result == (int)result) {
+    	return std::to_string((int)result);
+    }
+    return std::to_string(result);
 }
 
 void MathStringEvaluator::execOp(MathStringEvaluatorOp* op)
@@ -83,12 +101,12 @@ void MathStringEvaluator::execOp(MathStringEvaluatorOp* op)
         return;
     }
 
-    int a1 = popOut();
+    float a1 = popOut();
 
     if(op->unary) {
         pushOut(op->evaluate(a1, 0));
     } else {        
-        int a2 = popOut();
+        float a2 = popOut();
         pushOut(op->evaluate(a2, a1));
     }
 }
@@ -167,6 +185,17 @@ MathStringEvaluatorOp* MathStringEvaluator::getOperator(const MathStringEvaluato
     throw std::invalid_argument("Operator not found");
 }
 
+MathStringEvaluatorOp* MathStringEvaluator::getOperator(char v)
+{
+    for (int i = 0; i < sizeof(operators)/sizeof(MathStringEvaluatorOp); i++) {
+    	if (v == operators[i].op) {
+    		return &operators[i];
+    	}
+    }
+
+    throw std::invalid_argument("Operator not found");
+}
+
 MathStringEvaluatorOp* MathStringEvaluator::popOp()
 {
     
@@ -184,53 +213,53 @@ size_t MathStringEvaluator::pushOp(MathStringEvaluatorOp* op)
     return opstack.size();
 }
 
-int MathStringEvaluator::popOut()
+float MathStringEvaluator::popOut()
 {
     if (!outstack.size()) {
         throw std::invalid_argument("Empty output stack");
     }
-    int ret = outstack.top();
+    float ret = outstack.top();
     outstack.pop();
     return ret;
 }
 
-size_t MathStringEvaluator::pushOut(int v)
+size_t MathStringEvaluator::pushOut(float v)
 {
     outstack.push(v);
     return outstack.size();
 }
 
-int MathStringEvaluator::evalAdd(int a, int b) {
+float MathStringEvaluator::evalAdd(float a, float b) {
     return a + b;
 }
 
-int MathStringEvaluator::evalSubtract(int a, int b) {
+float MathStringEvaluator::evalSubtract(float a, float b) {
     return a - b;
 }
 
-int MathStringEvaluator::evalMultiply(int a, int b) {
+float MathStringEvaluator::evalMultiply(float a, float b) {
     return a * b;
 }
 
-int MathStringEvaluator::evalDivide(int a, int b) {
+float MathStringEvaluator::evalDivide(float a, float b) {
     if (b == 0) {
         throw std::invalid_argument("Division by zero");
     }
     return a / b;
 }
 
-int MathStringEvaluator::evalPow(int a, int b) {
+float MathStringEvaluator::evalPow(float a, float b) {
     return pow(a,b);
 }
 
-int MathStringEvaluator::evalMod(int a, int b) {
+float MathStringEvaluator::evalMod(float a, float b) {
     if (b == 0) {
         throw std::invalid_argument("Division by zero");
     }
-    return a % b;
+    return fmod(a, b);
 }
 
-int MathStringEvaluator::evalUminus(int a, int b) {
+float MathStringEvaluator::evalUminus(float a, float b) {
     return -a;
 }
 

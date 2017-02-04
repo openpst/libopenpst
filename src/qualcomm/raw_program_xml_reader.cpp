@@ -94,19 +94,11 @@ std::vector<RawProgramXmlEntry> RawProgramXmlReader::parse(const std::string& fi
     return ret;
 }
 
-bool RawProgramXmlReader::requiresEvaluation(const std::string& v) {
-    std::string c = v;
-    
-    stringHelper.toUpper(c);
-    
-    if (c.find("NUM_DISK_SECTORS") != std::string::npos) {
-        return true;
-    } else if (
-        c.find("*") != std::string::npos ||
-        c.find("/") != std::string::npos || 
-        c.find("+") != std::string::npos ||
-        c.find("-") != std::string::npos) {
-        return true;
+bool RawProgramXmlReader::requiresEvaluation(const std::string& v) {   
+    for (auto &c : v) {
+    	if (evaluator.isOperator(c)) {
+    		return true;
+    	}
     }
     return false;
 }

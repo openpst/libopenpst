@@ -14,6 +14,7 @@ int main(int argc, char** argv) {
 	tests.push_back("(512*128)/16896");
 	tests.push_back("3+4*2/(1-5)^2^3");
 	tests.push_back("3+4*2/(1-5)");
+	tests.push_back("-1 + 2");
 
 	for (auto &test : tests) {
 		std::string res;

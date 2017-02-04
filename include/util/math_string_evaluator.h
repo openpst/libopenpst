@@ -35,7 +35,7 @@ namespace OpenPST {
 		int precedence;
 		int associativity;
 		int unary;
-		int (*evaluate)(int, int);
+		float (*evaluate)(float, float);
 	};
 
 	struct MathStringEvaluatorToken {
@@ -48,7 +48,7 @@ namespace OpenPST {
 		protected:			
 			
 			MathStringEvaluatorOp operators[9] = {
-				{'_', 8, kMathStringEvaluatorAssociativityRight,  1,  MathStringEvaluator::evalUminus},
+				{'_', 8,  kMathStringEvaluatorAssociativityRight, 1,  MathStringEvaluator::evalUminus},
 				{'^', 6,  kMathStringEvaluatorAssociativityRight, 0,  MathStringEvaluator::evalPow},
 				{'*', 4,  kMathStringEvaluatorAssociativityLeft,  0,  MathStringEvaluator::evalMultiply},
 				{'/', 4,  kMathStringEvaluatorAssociativityLeft,  0,  MathStringEvaluator::evalDivide},
@@ -59,14 +59,14 @@ namespace OpenPST {
 				{')', 0,  kMathStringEvaluatorAssociativityNone,  0,  nullptr}
 			};
 			std::stack<MathStringEvaluatorOp*> opstack;
-			std::stack<int> outstack;
+			std::stack<float> outstack;
 		public:
 			MathStringEvaluator();
 			~MathStringEvaluator();
 			
 			std::string evaluate(const std::string& expr);
 
-		
+			bool isOperator(char v);
 		protected:			
 			std::vector<MathStringEvaluatorToken> tokenize(const std::string& expr);
 
@@ -74,30 +74,32 @@ namespace OpenPST {
 			
 			void execOp(MathStringEvaluatorOp* op);
 			
-			bool isOperator(char v);
+			
 						
 			MathStringEvaluatorOp* getOperator(const MathStringEvaluatorToken& token);
+
+			MathStringEvaluatorOp* getOperator(char v);
 			
 			MathStringEvaluatorOp* popOp();
 
 			size_t pushOp(MathStringEvaluatorOp* op);
 
-			int popOut();
+			float popOut();
 
-			size_t pushOut(int v);
+			size_t pushOut(float v);
 
-			static int evalAdd(int a, int b);
+			static float evalAdd(float a, float b);
 
-			static int evalSubtract(int a, int b);
+			static float evalSubtract(float a, float b);
 
-			static int evalMultiply(int a, int b);
+			static float evalMultiply(float a, float b);
 
-			static int evalDivide(int a, int b);
+			static float evalDivide(float a, float b);
 
-			static int evalPow(int a, int b);
+			static float evalPow(float a, float b);
 
-			static int evalMod(int a, int b);
+			static float evalMod(float a, float b);
 
-			static int evalUminus(int a, int b);
+			static float evalUminus(float a, float b);
 	};
 }
