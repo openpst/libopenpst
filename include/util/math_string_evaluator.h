@@ -102,4 +102,18 @@ namespace OpenPST {
 
 			static float evalUminus(float a, float b);
 	};
+
+		class MathStringEvaluatorError : public std::exception
+		{
+			const MathStringEvaluatorError& operator=(MathStringEvaluatorError);
+			std::string _what;
+			public:
+				MathStringEvaluatorError(std::string message) : _what(message)  { }
+				MathStringEvaluatorError(const MathStringEvaluatorError& second) : _what(second._what) {}
+				virtual ~MathStringEvaluatorError() throw() {}
+				virtual const char* what() const throw () {
+					return _what.c_str();
+				}
+
+		};	
 }

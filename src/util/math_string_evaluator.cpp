@@ -28,6 +28,8 @@ MathStringEvaluator::~MathStringEvaluator()
 std::string MathStringEvaluator::evaluate(const std::string& expr)
 {   
     // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+    //std::cout << "Evaluating: " << expr << std::endl;
+
     auto tokens = tokenize(expr);
 
     outstack.empty();
@@ -46,12 +48,14 @@ std::string MathStringEvaluator::evaluate(const std::string& expr)
     		auto op = getOperator(token);
 				
 
-    		if (
+    		/*
+            TODO: Fix unary negate
+            if (
     			(lastToken.value.size() && isOperator(lastToken.value[0]) && opstack.top()->op !=')' && op->op == '-' ) ||
     			(!opstack.size() && op->op == '-')
     		) {
     			op = getOperator('_');    			
-            }
+            }*/
 
             if (token.value[0] == '(') {
                 pushOp(op);
@@ -59,7 +63,7 @@ std::string MathStringEvaluator::evaluate(const std::string& expr)
     			continue;
     		} else if (token.value[0] == ')') {
                 if (!opstack.size()) {
-                    throw std::invalid_argument("Bad expression");
+                    throw MathStringEvaluatorError("Bad expression");
                 }
 
                 while(opstack.size() && opstack.top()->op != '(') {                    
@@ -88,6 +92,8 @@ std::string MathStringEvaluator::evaluate(const std::string& expr)
     }
 
     float result = popOut();
+
+    //std::cout << "Result: " << result << std::endl;
 
     if (result == (int)result) {
     	return std::to_string((int)result);
@@ -124,7 +130,7 @@ std::vector<MathStringEvaluatorToken> MathStringEvaluator::tokenize(const std::s
         auto token = nextToken(cur, end);
         
         if (!token.value.size()) {
-            throw std::invalid_argument("Empty Token");
+            throw MathStringEvaluatorError("Empty Token");
         }
 
         ret.push_back(token);
@@ -173,7 +179,7 @@ bool MathStringEvaluator::isOperator(char v)
 MathStringEvaluatorOp* MathStringEvaluator::getOperator(const MathStringEvaluatorToken& token)
 {
 	if (!token.value.size() || !isOperator(token.value[0])) {
-		throw std::invalid_argument("Token is not an operator");
+		throw MathStringEvaluatorError("Token is not an operator");
 	}
 
     for (int i = 0; i < sizeof(operators)/sizeof(MathStringEvaluatorOp); i++) {
@@ -182,7 +188,7 @@ MathStringEvaluatorOp* MathStringEvaluator::getOperator(const MathStringEvaluato
     	}
     }
 
-    throw std::invalid_argument("Operator not found");
+    throw MathStringEvaluatorError("Operator not found");
 }
 
 MathStringEvaluatorOp* MathStringEvaluator::getOperator(char v)
@@ -193,14 +199,14 @@ MathStringEvaluatorOp* MathStringEvaluator::getOperator(char v)
     	}
     }
 
-    throw std::invalid_argument("Operator not found");
+    throw MathStringEvaluatorError("Operator not found");
 }
 
 MathStringEvaluatorOp* MathStringEvaluator::popOp()
 {
     
     if (!opstack.size()) {
-        throw std::invalid_argument("Empty output stack");
+        throw MathStringEvaluatorError("Empty output stack");
     }
     auto op = opstack.top();
     opstack.pop();
@@ -216,7 +222,7 @@ size_t MathStringEvaluator::pushOp(MathStringEvaluatorOp* op)
 float MathStringEvaluator::popOut()
 {
     if (!outstack.size()) {
-        throw std::invalid_argument("Empty output stack");
+        throw MathStringEvaluatorError("Empty output stack");
     }
     float ret = outstack.top();
     outstack.pop();
@@ -243,7 +249,7 @@ float MathStringEvaluator::evalMultiply(float a, float b) {
 
 float MathStringEvaluator::evalDivide(float a, float b) {
     if (b == 0) {
-        throw std::invalid_argument("Division by zero");
+        throw MathStringEvaluatorError("Division by zero");
     }
     return a / b;
 }
@@ -254,7 +260,7 @@ float MathStringEvaluator::evalPow(float a, float b) {
 
 float MathStringEvaluator::evalMod(float a, float b) {
     if (b == 0) {
-        throw std::invalid_argument("Division by zero");
+        throw MathStringEvaluatorError("Division by zero");
     }
     return fmod(a, b);
 }

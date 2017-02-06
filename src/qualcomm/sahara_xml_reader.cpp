@@ -30,41 +30,50 @@ std::vector<SaharaXmlEntry> SaharaXmlReader::parse(const std::string& filePath)
 	std::vector<SaharaXmlEntry> ret;
 
     if (!doc.load_file(filePath.c_str())) {
-    	throw std::invalid_argument("Unable to load XML file");
+    	throw SaharaXmlReaderError("Unable to load XML file");
     }
-	
-	pugi::xpath_query query_images("/sahara_config/images/image");
 
-    pugi::xpath_node_set images = query_images.evaluate_node_set(doc);
+	try {
+    	pugi::xpath_query query_images("/sahara_config/images/image");
 
-    for (auto &image : images) {
-    	SaharaXmlEntry e;
+        pugi::xpath_node_set images = query_images.evaluate_node_set(doc);
 
-        for (auto &attribute : image.node().attributes()) {
-            std::string name(attribute.name());
-            std::string value(attribute.value());
-            
-            stringHelper.toUpper(name);
+        for (auto &image : images) {
+        	SaharaXmlEntry e;
 
-            if (name.compare("IMAGE_ID") == 0){
-                if (!value.size()) {
-                    continue;
+            for (auto &attribute : image.node().attributes()) {
+                std::string name(attribute.name());
+                std::string value(attribute.value());
+                
+                stringHelper.toUpper(name);
+
+                if (name.compare("IMAGE_ID") == 0){
+                    if (!value.size()) {
+                        continue;
+                    }
+                    e.imageId = stringHelper.toInt<uint32_t>(value);
+                } else if (name.compare("IMAGE_PATH") == 0) {
+                    if (!value.size()) {
+                        continue;
+                    }
+                    e.imagePath = value;
+                } else if (name.compare("PROGRAMMER") == 0) {
+                    stringHelper.toUpper(value);
+
+                    e.programmer = value.compare("TRUE") == 0;
                 }
-                e.imageId = std::strtoul(value.c_str(), nullptr, 10);
-            } else if (name.compare("IMAGE_PATH") == 0) {
-                if (!value.size()) {
-                    continue;
-                }
-                e.imagePath = value;
-            } else if (name.compare("PROGRAMMER") == 0) {
-                stringHelper.toUpper(value);
-
-                e.programmer = value.compare("TRUE") == 0;
             }
+
+        	ret.push_back(e);
         }
 
-    	ret.push_back(e);
+    } catch (std::out_of_range& e) {
+        std::stringstream ss;
+        ss << "A numeric value failed conversion: " << e.what();
+        throw SaharaXmlReaderError(ss.str());
+    } catch (...) {
+        throw SaharaXmlReaderError("Unhandled Exception Encountered");
     }
-
+    
     return ret;
 }

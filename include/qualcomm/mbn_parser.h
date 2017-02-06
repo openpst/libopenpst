@@ -145,14 +145,14 @@ namespace OpenPST {
 
 		};
 
-		class MbnParserException : public std::exception
+		class MbnParserError : public std::exception
 		{
-			const MbnParserException& operator=(MbnParserException);
+			const MbnParserError& operator=(MbnParserError);
 			std::string _what;
 			public:
-				MbnParserException(std::string message) : _what(message)  { }
-				MbnParserException(const MbnParserException& second) : _what(second._what) {}
-				virtual ~MbnParserException() throw() {}
+				MbnParserError(std::string message) : _what(message)  { }
+				MbnParserError(const MbnParserError& second) : _what(second._what) {}
+				virtual ~MbnParserError() throw() {}
 				virtual const char* what() const throw () {
 					return _what.c_str();
 				}

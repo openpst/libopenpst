@@ -64,3 +64,15 @@ void StringHelper::replaceAll(std::string& haystack, const std::string& needle, 
 		pos = haystack.find(needle);
 	}
 }
+
+bool StringHelper::isHex(const std::string& s)
+{
+    try {
+        toInt<int>(s, true);
+        return true;
+    } catch (...) {
+        return false;
+    }
+
+    return false;
+}

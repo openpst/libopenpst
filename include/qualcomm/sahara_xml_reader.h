@@ -35,5 +35,19 @@ namespace OpenPST {
 				~SaharaXmlReader();
 				std::vector<SaharaXmlEntry> parse(const std::string& filePath); 
 		};
+
+		class SaharaXmlReaderError : public std::exception
+		{
+			const SaharaXmlReaderError& operator=(SaharaXmlReaderError);
+			std::string _what;
+			public:
+				SaharaXmlReaderError(std::string message) : _what(message)  { }
+				SaharaXmlReaderError(const SaharaXmlReaderError& second) : _what(second._what) {}
+				virtual ~SaharaXmlReaderError() throw() {}
+				virtual const char* what() const throw () {
+					return _what.c_str();
+				}
+
+		};
 	}
 }

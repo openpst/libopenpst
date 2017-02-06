@@ -204,7 +204,7 @@ std::unique_ptr<Mbn> MbnParser::parse(std::string filePath, int flags)
 
 	if (!file.is_open()) {
 		ss << "Could Not Open File " << filePath;
-		throw MbnParserException(ss.str());
+		throw MbnParserError(ss.str());
 	}
 
 	std::unique_ptr<Mbn> ret(new Mbn(filePath, flags));
@@ -215,7 +215,7 @@ std::unique_ptr<Mbn> MbnParser::parse(std::string filePath, int flags)
 
 	if (ret->getFileSize() < MBN_HEADER_MAX_SIZE) {
 		ss << "Invalid File Type. File " << filePath << " is smaller than max header size";
-		throw MbnParserException(ss.str());
+		throw MbnParserError(ss.str());
 	}
 
 	// read codeword and magic
@@ -228,10 +228,10 @@ std::unique_ptr<Mbn> MbnParser::parse(std::string filePath, int flags)
 
 	if (codeword == 0x464C457F) {
 		ss << "Invalid File Type. File " << filePath << " appears to be an elf binary";
-		throw MbnParserException(ss.str());	
+		throw MbnParserError(ss.str());	
 	} else if (codeword > kMbnImageLast && magic != MBN_EIGHTY_BYTE_MAGIC) {
 		ss << "Invalid File Type. File " << filePath << " does not seem to be an mbn";
-		throw MbnParserException(ss.str());		
+		throw MbnParserError(ss.str());		
 	}
 
 	bool is80ByteHeader = magic == MBN_EIGHTY_BYTE_MAGIC;
@@ -315,7 +315,7 @@ size_t MbnParser::readSegment(std::ifstream& file, int offset, int size, size_t 
 	if (size > maxSize) {
 		std::stringstream ss;
 		ss  << "Requested offset exceeds max size for segment at " << offset << " but max size is " << maxSize << std::endl;
-		throw MbnParserException(ss.str());
+		throw MbnParserError(ss.str());
 	}
 
 	char* tmp = new char[size];

@@ -18,6 +18,7 @@
 
 using OpenPST::StringHelper;
 using OpenPST::MathStringEvaluator;
+using OpenPST::MathStringEvaluatorError;
 
 namespace OpenPST {
 	namespace QC {
@@ -33,6 +34,7 @@ namespace OpenPST {
 			size_t startByte;
 			size_t startSector;
 			size_t size;
+			float sizeInKb;
 			std::string fileName;
 			std::string label;
 		};
@@ -51,5 +53,19 @@ namespace OpenPST {
 			protected:
 				bool requiresEvaluation(const std::string& v);
 		};
+
+		class RawProgramXmlReaderError : public std::exception
+		{
+			const RawProgramXmlReaderError& operator=(RawProgramXmlReaderError);
+			std::string _what;
+			public:
+				RawProgramXmlReaderError(std::string message) : _what(message)  { }
+				RawProgramXmlReaderError(const RawProgramXmlReaderError& second) : _what(second._what) {}
+				virtual ~RawProgramXmlReaderError() throw() {}
+				virtual const char* what() const throw () {
+					return _what.c_str();
+				}
+
+		};	
 	}
 }
