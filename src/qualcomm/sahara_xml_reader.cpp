@@ -1,5 +1,21 @@
 /**
-* LICENSE PLACEHOLDER
+*
+* (c) Gassan Idriss <ghassani@gmail.com>
+* 
+* This file is part of libopenpst.
+* 
+* libopenpst is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* libopenpst is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with libopenpst. If not, see <http://www.gnu.org/licenses/>.
 *
 * @file sahara_xml_reader.cpp
 * @class SaharaXmlReader
@@ -45,20 +61,20 @@ std::vector<SaharaXmlEntry> SaharaXmlReader::parse(const std::string& filePath)
                 std::string name(attribute.name());
                 std::string value(attribute.value());
                 
-                stringHelper.toUpper(name);
+                StringHelper::toUpper(name);
 
                 if (name.compare("IMAGE_ID") == 0){
                     if (!value.size()) {
                         continue;
                     }
-                    e.imageId = stringHelper.toInt<uint32_t>(value);
+                    e.imageId = StringHelper::toInt<uint32_t>(value);
                 } else if (name.compare("IMAGE_PATH") == 0) {
                     if (!value.size()) {
                         continue;
                     }
                     e.imagePath = value;
                 } else if (name.compare("PROGRAMMER") == 0) {
-                    stringHelper.toUpper(value);
+                    StringHelper::toUpper(value);
 
                     e.programmer = value.compare("TRUE") == 0;
                 }

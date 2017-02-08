@@ -1,3 +1,29 @@
+/**
+*
+* (c) Gassan Idriss <ghassani@gmail.com>
+* 
+* This file is part of libopenpst.
+* 
+* libopenpst is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* libopenpst is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with libopenpst. If not, see <http://www.gnu.org/licenses/>.
+*
+* @file meid_converter.cpp
+* @package openpst/libopenpst
+* @brief Converts MEID from hex and dec 
+*
+* @author Gassan Idriss <ghassani@gmail.com>
+*/
+
 #include "util/meid_converter.h"
 
 using namespace OpenPST;
@@ -31,20 +57,20 @@ MeidInfo MeidConverter::convert(const std::string& input)
 
 	switch(type) {
 		case kMeidInputMeidDec:
-			meid.p1 = strtoul(input.substr(0,10).c_str(), nullptr, 10);
-			meid.p2 = strtoul(input.substr(10).c_str(), nullptr, 10);			
+			meid.p1 = StringHelper::toInt<uint32_t>(input.substr(0,10));
+			meid.p2 = StringHelper::toInt<uint32_t>(input.substr(10));			
 			break;
 		case kMeidInputMeidHex:
-			meid.p1 = strtoul(input.substr(0,8).c_str(), nullptr, 16);
-			meid.p2 = strtoul(input.substr(8).c_str(), nullptr, 16);
+			meid.p1 = StringHelper::toInt<uint32_t>(input.substr(0,8), true);
+			meid.p2 = StringHelper::toInt<uint32_t>(input.substr(8), true);
 			break;
 		case kMeidInputEsnDec:
-			esn.p1 = strtoul(input.substr(0,8).c_str(), nullptr, 10);
-			esn.p2 = strtoul(input.substr(8).c_str(), nullptr, 10);
+			esn.p1 = StringHelper::toInt<uint32_t>(input.substr(0,8));
+			esn.p2 = StringHelper::toInt<uint32_t>(input.substr(8));
 			break;
 		case kMeidInputEsnHex:
-			esn.p1 = strtoul(input.substr(0,2).c_str(), nullptr, 16);
-			esn.p2 = strtoul(input.substr(2).c_str(), nullptr, 16);
+			esn.p1 = StringHelper::toInt<uint32_t>(input.substr(0,2), true);
+			esn.p2 = StringHelper::toInt<uint32_t>(input.substr(2), true);
 			break;
 	}
 
@@ -59,44 +85,13 @@ MeidInfo MeidConverter::convert(const std::string& input)
 
 Esn MeidConverter::calculatePesn(const std::string& meidHex)
 {
-#ifdef _WIN32
-    /*//https://msdn.microsoft.com/en-us/library/windows/desktop/aa382380.aspx
-	HCRYPTPROV hProv = 0;
-    HCRYPTHASH hHash = 0;
-    uint32_t dwStatus = 0;
-    uint8_t hash[SHA_DIGEST_LENGTH];
-
-    if (!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
-        dwStatus = GetLastError();
-        throw std::runtime_error("Error acquiring crypto context");
-    }
-    if (!CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash)) {
-        dwStatus = GetLastError();
-        CryptReleaseContext(hProv, 0);
-        throw std::runtime_error("Error creating hash");
-    }
-
-    if (!CryptHashData(hHash, reinterpret_cast<const uint8_t*>(data.c_str()), data.size(), 0)) {
-        dwStatus = GetLastError();
-        CryptReleaseContext(hProv, 0);
-        CryptDestroyHash(hHash);
-        throw std::runtime_error("Error hasing data");
-    }
-	
-	hashSize = SHA_DIGEST_LENGTH;
-    if (CryptGetHashParam(hHash, HP_HASHVAL, hash, &hashSize, 0))  {
-        for (DWORD i = 0; i < hashSize; i++) {
-
-        }
-    }*/
-#else
 	std::stringstream ss;
 	uint32_t hash[5];
 	uint8_t  data[7];
 	Esn 	 ret = {};
 
 	for(int i = 0, k = 0; i < meidHex.size(); i+=2, k++){
-		data[k] = strtol(meidHex.substr(i, 2).c_str(), nullptr, 16);
+		data[k] = StringHelper::toInt<uint32_t>(meidHex.substr(i, 2), true);
 	}
 	
 	boost::uuids::detail::sha1 sha1;
@@ -109,11 +104,10 @@ Esn MeidConverter::calculatePesn(const std::string& meidHex)
 
 	pesn.replace(pesn.begin(), pesn.begin() + 2, "80");
 
-	ret.p1 = strtoul(pesn.substr(0,2).c_str(), nullptr, 16);
-	ret.p2 = strtoul(pesn.substr(2).c_str(), nullptr, 16);
+	ret.p1 = StringHelper::toInt<uint32_t>(pesn.substr(0,2), true);
+	ret.p2 = StringHelper::toInt<uint32_t>(pesn.substr(2), true);
 
 	return ret;
-#endif
 }
 
 
