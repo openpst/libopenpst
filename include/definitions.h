@@ -45,15 +45,3 @@
 
 #define LOGE(...) fprintf(stderr, __VA_ARGS__); 
 #define LOGI(...) fprintf(stdout, __VA_ARGS__); 
-
-#ifndef sleep
-#ifdef _WIN32
-void sleep(int milliseconds) {
-	Sleep(milliseconds);
-}
-#else
-void sleep(int milliseconds) {
-	usleep(milliseconds * 1000);
-}
-#endif
-#endif

@@ -62,7 +62,6 @@ SOURCES += \
     $$BASE_DIR/lib/serial/src/impl/unix.cc \
     $$BASE_DIR/lib/serial/src/impl/list_ports/list_ports_linux.cc \
     $$BASE_DIR/lib/pugixml/src/pugixml.cpp \
-    #$$BASE_DIR/src/android/adb_device_manager.cpp \
     $$BASE_DIR/src/lg/laf_serial.cpp \
     $$BASE_DIR/src/qualcomm/mbn_parser.cpp \
     $$BASE_DIR/src/qualcomm/hdlc_encoder.cpp \
@@ -78,8 +77,7 @@ SOURCES += \
     $$BASE_DIR/src/serial/generic_serial.cpp \
     $$BASE_DIR/src/util/gpt_parser.cpp \
     $$BASE_DIR/src/util/math_string_evaluator.cpp \
+    $$BASE_DIR/src/util/meid_converter.cpp \
     $$BASE_DIR/src/util/string_helper.cpp \
     $$BASE_DIR/src/util/convert.cpp \
-    $$BASE_DIR/src/util/endian.cpp \
-    $$BASE_DIR/src/util/hexdump.cpp \
-    $$BASE_DIR/src/util/sleep.cpp
+    $$BASE_DIR/src/util/hexdump.cpp

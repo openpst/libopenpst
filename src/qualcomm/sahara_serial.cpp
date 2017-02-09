@@ -92,8 +92,12 @@ SaharaState SaharaSerial::sendHello(uint32_t mode, uint32_t version, uint32_t mi
 		*/
 		close();
 
-		sleep(5000); // give it some time to come back
-
+		#ifdef _WIN32
+			Sleep(5000);
+		#else
+			usleep(5 * 1000000);
+		#endif
+		
 		open();
 
 		readHello();
