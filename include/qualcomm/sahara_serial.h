@@ -137,9 +137,13 @@ namespace OpenPST {
 				 * @param std::string filePath
 				 * @param SaharaReadDataRequest initialReadRequest - The initial read request data to process the request
 				 *
-				 * @return size_t - The total amount of bytes sent
+				 * @return SaharaReadDataRequest - The last read request received. You will need to send another image if:
+				 * 										imageId is not equal to what it was when we starter sending an image.
+				 * 										If size and offset is 0 and imageId is the same as when we started
+				 * 										then you can sendDone() and end the session
+				 * 										
 				 */
-				size_t sendImage(std::string filePath, SaharaReadDataRequest initialReadRequest);
+				SaharaReadDataRequest sendImage(std::string filePath, SaharaReadDataRequest initialReadRequest);
 				
 				/**
 				* @brief sendImage - Send a specific offset and size of an image to the device

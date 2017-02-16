@@ -37,7 +37,7 @@ using namespace OpenPST::QC;
 DmEfsManager::DmEfsManager(QcdmSerial& port) : 
 	port(port),
 	subsystemCommand(kDiagSubsysCmd),
-	subsystemId(kDiagSubsyss)
+	subsystemId(kDiagSubsysEfs)
 {
 
 }
@@ -96,15 +96,15 @@ QcdmEfsHelloResponse DmEfsManager::hello()
 
 	QcdmEfsHelloRequest packet = {
 		getHeader(kDiagEfsHello),
-		DIAG_EFS_DEFAULT_WINDOW_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_SIZE,
-		DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE,
-		DIAG_EFS_VERSION,
-		DIAG_EFS_MIN_VERSION,
-		DIAG_EFS_MAX_VERSION,
+		DM_EFS_DEFAULT_WINDOW_SIZE,
+		DM_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+		DM_EFS_DEFAULT_WINDOW_SIZE,
+		DM_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+		DM_EFS_DEFAULT_WINDOW_SIZE,
+		DM_EFS_DEFAULT_WINDOW_BYTE_SIZE,
+		DM_EFS_VERSION,
+		DM_EFS_MIN_VERSION,
+		DM_EFS_MAX_VERSION,
 		0x000000
 	};
 	
@@ -373,7 +373,7 @@ std::string DmEfsManager::readSimlink(std::string path)
 	packet		= (QcdmEfsReadLinkRequest*) new uint8_t[packetSize]();
 	response	= (QcdmEfsReadLinkResponse*) new uint8_t[DIAG_MAX_PACKET_SIZE]();
 	
-	packet->header = getHeader(kDiagEfsReadLINK);
+	packet->header = getHeader(kDiagEfsReadLink);
 	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
@@ -539,7 +539,7 @@ uint32_t DmEfsManager::openDir(std::string path)
 	packetSize	= sizeof(QcdmEfsOpenDirRequest) + path.size();
 	packet		= (QcdmEfsOpenDirRequest*) new uint8_t[packetSize]();
 
-	packet->header = getHeader(kDiagEfsOpenDIR);
+	packet->header = getHeader(kDiagEfsOpenDir);
 	std::memcpy(packet->path, path.c_str(), path.size());
 
 	try {
@@ -588,7 +588,7 @@ std::vector<DmEfsNode> DmEfsManager::readDir(std::string path, bool recursive)
 
 	response = (QcdmEfsReadDirResponse*) new uint8_t[DIAG_MAX_PACKET_SIZE]();
 
-	packet.header = getHeader(kDiagEfsReadDIR);
+	packet.header = getHeader(kDiagEfsReadDir);
 	packet.dp = dp;
 	packet.sequenceNumber = 1;
 
@@ -661,7 +661,7 @@ std::vector<DmEfsNode> DmEfsManager::readDir(uint32_t dp)
 	
 	response = (QcdmEfsReadDirResponse*) new uint8_t[DIAG_MAX_PACKET_SIZE]();
 
-	packet.header = getHeader(kDiagEfsReadDIR);
+	packet.header = getHeader(kDiagEfsReadDir);
 	packet.dp = dp;
 	packet.sequenceNumber = 1;
 			
@@ -715,7 +715,7 @@ void DmEfsManager::closeDir(uint32_t dp)
 		throw DmEfsManagerInvalidArgument("Invalid directory pointer");
 	}
 
-	packet.header	= getHeader(kDiagEfsCloseDIR);
+	packet.header	= getHeader(kDiagEfsCloseDir);
 	packet.dp		= dp;
 	
 	sendCommand(

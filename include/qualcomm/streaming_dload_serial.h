@@ -85,7 +85,7 @@ namespace OpenPST {
 			*
 			* @return int
 			*/
-			StreamingDloadHelloResponse sendHello(std::string magic, uint8_t version, uint8_t compatibleVersion, uint8_t featureBits);
+			StreamingDloadHelloResponse sendHello(std::string magic = "", uint8_t version = 0x05, uint8_t compatibleVersion = 0x02, uint8_t featureBits = 0x19);
 
 			/**
 			* @brief sendUnlock - send the unlock command for implementations that require it
@@ -208,6 +208,17 @@ namespace OpenPST {
 			* @return uint8_t - The status reported back by the device.
 			*/
 			uint8_t writePartitionTable(std::string filePath, bool overwrite = false);
+			
+			/**
+			* @brief writeFlash - Stream write data starting at specified address. Writes hdlc encoded chunks
+			*                   of max block size specified by device. Try writeFlashUnframed first, its faster
+			*
+			* @param uint32_t address - The starting address to write to
+			* @param std::vector<uint8_t>& data - A vector to write
+			*
+			* @return int
+			*/
+			size_t writeFlash(uint32_t address, std::vector<uint8_t>& data);
 
 			/**
 			* @brief writeFlash - Stream write data starting at specified address. Writes hdlc encoded chunks

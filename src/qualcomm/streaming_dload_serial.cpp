@@ -547,6 +547,11 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 	return reinterpret_cast<StreamingDloadPartitionTableResponse*>(&buffer[0])->status;    
 }
 
+size_t StreamingDloadSerial::writeFlash(uint32_t address, std::vector<uint8_t>& data)
+{
+	return writeFlash(address, &data[0], data.size());
+}
+
 size_t StreamingDloadSerial::writeFlash(uint32_t address, uint8_t* data, size_t length)
 {
 	size_t step = length;

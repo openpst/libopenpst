@@ -207,7 +207,7 @@ std::vector<uint8_t> SaharaSerial::sendClientCommand(uint32_t command)
 }
 
 
-size_t SaharaSerial::sendImage(std::string filePath, SaharaReadDataRequest initialReadRequest)
+SaharaReadDataRequest SaharaSerial::sendImage(std::string filePath, SaharaReadDataRequest initialReadRequest)
 {
 	size_t fileSize;
 	size_t totalSent = 0;
@@ -245,6 +245,8 @@ size_t SaharaSerial::sendImage(std::string filePath, SaharaReadDataRequest initi
 		}
 	}
 
+	LOGD("Sent %lu bytes\n", totalSent);
+
 	file.close();
 
 	if (initialReadRequest.imageId != nextOffset.imageId) {
@@ -255,7 +257,7 @@ size_t SaharaSerial::sendImage(std::string filePath, SaharaReadDataRequest initi
 		);
 	}
 
-	return totalSent;
+	return nextOffset;
 }
 
 SaharaReadDataRequest SaharaSerial::sendImage(std::ifstream& file, uint32_t offset, size_t size)
@@ -293,6 +295,8 @@ SaharaReadDataRequest SaharaSerial::readNextImageOffset()
 
 	validateResponse(kSaharaCommandReadData, reinterpret_cast<SaharaHeader*>(&ret), rxSize);
 
+	// sahara sends a packet that is also an error packet, but it is actually end of image transfers
+	// meaning no more images
 	if (ret.header.command == kSaharaCommandEndImageTransfer) {
 		ret.header.command = kSaharaCommandReadData; 
 		ret.size   = sizeof(ret);

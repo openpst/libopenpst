@@ -19,7 +19,7 @@
 
  - QT5 [https://www.qt.io/developers/]
  - Serial Communication Library [https://github.com/wjwwood/serial]
- - Boost UUID module (*nix only)
+ - Boost UUID module
 
 On ubuntu you can install everything you should need with:
 
@@ -35,3 +35,20 @@ This will build both debug and release libs. You can build just debug or release
 ### Compiling on Windows
 
 Todo
+
+
+### Project Include Folders
+
+You will need to add the following include search folders for your project:
+
+These are relative to the root directory of `libopenpst`.
+
+ - include/
+ - lib/serial/include/
+ - lib/pugixml/src/
+
+### Docs & Examples
+
+Documenattion is not complete but will come at some point.
+
+For now, you can reference any of the GUI applications which implement this library, or you can check out the few examples available in the `examples` directory.
