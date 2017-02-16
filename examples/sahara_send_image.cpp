@@ -30,7 +30,7 @@
 using OpenPST::QC::SaharaSerial;
 using OpenPST::QC::SaharaSerialError;
 using OpenPST::QC::SaharaState;
-
+using OpenPST::Serial::SerialError;
 
 int main(int argc, char**argv) {
 
@@ -125,8 +125,8 @@ int main(int argc, char**argv) {
 		if (nextImageRequest.imageId && nextImageRequest.imageId != readRequest.imageId) {
 			// device is requesting another image
 			std::cerr << "Error encounted. This example only supports sendng one file but the device requested a 2nd" << std::endl;
-			std::cerr << "First Image: " << port.getNamedRequestedImage(readRequest.imageId);
-			std::cerr << "Second Image: " << port.getNamedRequestedImage(nextImageRequest.imageId);
+			std::cerr << "First Image: " << port.getNamedRequestedImage(readRequest.imageId) << std::endl;
+			std::cerr << "Second Image: " << port.getNamedRequestedImage(nextImageRequest.imageId) << std::endl;
 			return 0;
 		}
 
@@ -142,6 +142,9 @@ int main(int argc, char**argv) {
 	} catch(SaharaSerialError& e) {
 		std::cerr << e.what() << std::endl;
 		port.close();
+	} catch(SerialError& e) {
+		std::cerr << e.what() << std::endl;
+		port.close();	
 	}
 
 	return 0;

@@ -29,7 +29,7 @@
 
 using OpenPST::QC::StreamingDloadSerial;
 using OpenPST::QC::StreamingDloadSerialError;
-
+using OpenPST::Serial::SerialError;
 
 int main(int argc, char**argv) {
 
@@ -154,6 +154,9 @@ int main(int argc, char**argv) {
 	} catch(StreamingDloadSerialError& e) {
 		std::cerr << e.what() << std::endl;
 		port.close();
+	} catch(SerialError& e) {
+		std::cerr << e.what() << std::endl;
+		port.close();	
 	}
 
 	return 0;
