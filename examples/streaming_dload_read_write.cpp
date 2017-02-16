@@ -145,6 +145,12 @@ int main(int argc, char**argv) {
 
 		port.close();
 
+		// this example just shows the process of reading and writing
+		// but what you would typically do is write each partition required to boot
+		// like: sbl1, rpmb, tz, modem, etc
+		// you can use the RawProgramXmlReader to read a XML file cotaining information
+		// about the device flash partition layout and automate the write process
+
 	} catch(StreamingDloadSerialError& e) {
 		std::cerr << e.what() << std::endl;
 		port.close();
