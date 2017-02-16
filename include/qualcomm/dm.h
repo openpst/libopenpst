@@ -175,7 +175,7 @@ enum DiagSubsysCmD {
 	kDiagSubsysHs = 16,      /* Handset */
 	kDiagSubsysAudioSettings = 17,      /* Audio Settings */
 	kDiagSubsysDiagServ = 18,      /* DIAG Services */
-	kDiagSubsyss = 19,      /* File System - EFS2 */
+	kDiagSubsysEfs = 19,      /* File System - EFS2 */
 	kDiagSubsysPortMapSettings = 20,      /* Port Map Settings */
 	kDiagSubsysMediaplayer = 21,      /* QCT Mediaplayer */
 	kDiagSubsysQcamera = 22,      /* QCT QCamera */
@@ -220,7 +220,7 @@ enum DiagSubsysCmD {
 	kDiagSubsysDm = 59,      /* Device Management */
 	kDiagSubsysc = 60,      /* Flow Controller */
 	kDiagSubsysMemory = 61,      /* Malloc Manager */
-	kDiagSubsyssAlternate = 62,      /* Alternate File System */
+	kDiagSubsysEfsAlternate = 62,      /* Alternate File System */
 	kDiagSubsysRegression = 63,      /* Regression Test Commands */
 	kDiagSubsysSensors = 64,      /* The sensors subsystem */
 	kDiagSubsyslute = 65,      /* FLUTE */
@@ -305,6 +305,7 @@ enum QcdmRuimConfigType : uint8_t {
 	kQcdmRuimConfigTypeGsm1x = 0x03
 };
 
+#ifndef NO_POD_PACKET_STRUCTURES
 
 PACKED(typedef struct QcdmRequestHeader{
 	uint8_t command;
@@ -509,3 +510,5 @@ PACKED(typedef struct QcdmTestStruct {
 	QcdmSubsysHeader header;
 	uint8_t processorId;
 }) QcdmTestStruct;
+
+#endif

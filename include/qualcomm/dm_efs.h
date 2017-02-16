@@ -28,14 +28,14 @@
 
 #include "qualcomm/dm.h"
 
-#define DIAG_EFS_DEFAULT_WINDOW_SIZE  0x100000
-#define DIAG_EFS_DEFAULT_WINDOW_BYTE_SIZE 0x100000
+#define DM_EFS_DEFAULT_WINDOW_SIZE  0x100000
+#define DM_EFS_DEFAULT_WINDOW_BYTE_SIZE 0x100000
 
-#define DIAG_EFS_VERSION     0x0001
-#define DIAG_EFS_MIN_VERSION 0x0001
-#define DIAG_EFS_MAX_VERSION 0x0001
+#define DM_EFS_VERSION     0x0001
+#define DM_EFS_MIN_VERSION 0x0001
+#define DM_EFS_MAX_VERSION 0x0001
 
-enum DIAG_EFS_COMMAND {
+enum DmEfsCommand {
 	kDiagEfsHello = 0,  // Parameter negotiation packet               
 	kDiagEfsQuery = 1,  // Send information about EFS2 params         
 	kDiagEfsOpen = 2,  // Open a file                                
@@ -43,13 +43,13 @@ enum DIAG_EFS_COMMAND {
 	kDiagEfsRead = 4,  // Read a file                                
 	kDiagEfsWrite = 5,  // Write a file                               
 	kDiagEfsSymlink = 6,  // Create a symbolic link                     
-	kDiagEfsReadLINK = 7,  // Read a symbolic link                       
+	kDiagEfsReadLink = 7,  // Read a symbolic link                       
 	kDiagEfsUnlink = 8,  // Remove a symbolic link or file             
 	kDiagEfsMkdir = 9,  // Create a directory                         
 	kDiagEfsRmdir = 10,  // Remove a directory                         
-	kDiagEfsOpenDIR = 11,  // Open a directory for reading               
-	kDiagEfsReadDIR = 12,  // Read a directory                           
-	kDiagEfsCloseDIR = 13,  // Close an open directory                    
+	kDiagEfsOpenDir = 11,  // Open a directory for reading               
+	kDiagEfsReadDir = 12,  // Read a directory                           
+	kDiagEfsCloseDir = 13,  // Close an open directory                    
 	kDiagEfsRename = 14,  // Rename a file or directory                 
 	kDiagEfsStat = 15,  // Obtain information about a named file      
 	kDiagEfsLstat = 16,  // Obtain information about a symbolic link   
@@ -95,7 +95,7 @@ enum DIAG_EFS_COMMAND {
 	kDiagEfsFsImageClose = 56,  // Close File System Image.      
 };
 
-enum kDiagEfsError {
+enum DmEfsError {
 	kDiagEfsErrorInconsistentState  = 0x40000001,
 	kDiagEfsErrorInvalidSequence      = 0x40000002,
 	kDiagEfsErrorDirNotOpen        = 0x40000003,
@@ -111,22 +111,24 @@ enum kDiagEfsError {
 };
 
 
-enum DIAG_EFS_FILE_TYPES {
+enum DmEfsFileType {
 	kDiagEfsFileTypeFile         = 0x00,
 	kDiagEfsFileTypeDir          = 0x01,
 	kDiagEfsFileTypeLink         = 0x02,
 	kDiagEfsFileTypeImmovable    = 0x03,
 };
 
-enum DIAG_EFS_DEVICE_TYPES {
+enum DmEfsDeviceType {
 	kDiagEfsDeviceTypeNor  = 0x00,
 	kDiagEfsDeviceTypeNand = 0x01
 };
 
-enum DIAG_EFS_FILESYSTEM_IMAGE_TYPES {
+enum DmEfsFsType {
 	kDiagEfsFsTypeTar = 0,  
 	kDiagEfsFsTypeZip = 1
 };
+
+#ifndef NO_POD_PACKET_STRUCTURES
 
 PACKED(typedef struct QcdmEfsHelloRequest{
 	QcdmSubsysHeader header;
@@ -542,6 +544,7 @@ PACKED(typedef struct QcdmEfsFactoryImageEndResponse{
 	int32_t error;
 }) QcdmEfsFactoryImageEndResponse;
 
+
 /**
 * Factory Image Prepare
 */
@@ -915,3 +918,5 @@ PACKED(typedef struct QcdmEfsFsImageCloseResponse{
 	uint16_t sequence;
 	int32_t error;
 }) QcdmEfsFsImageCloseResponse;
+
+#endif

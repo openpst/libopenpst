@@ -28,6 +28,7 @@
 #include "definitions.h"
 #include "qualcomm/dm.h"
 
+#ifndef NO_POD_PACKET_STRUCTURES
 /**
 * SSM Open File Request
 */
@@ -87,3 +88,4 @@ PACKED(typedef struct QcdmSsmReadResponse{
 	uint8_t  data[0];
 }) QcdmSsmReadResponse;
 
+#endif
