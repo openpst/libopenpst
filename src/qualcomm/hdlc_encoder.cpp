@@ -150,18 +150,22 @@ size_t HdlcEncoder::decode(std::vector<uint8_t> &data) {
 		}
 	}
 
-	// check the crc
+	// remove begin frame character if it exists
 	if (data[0] == HDLC_CONTROL_CHAR) {
 		data.erase(data.begin());
 	}
 
-	uint16_t crc = crc16(reinterpret_cast<const char*>(&data[0]), data.size() - HDLC_TRAILER_LENGTH);
-	uint16_t chk = *((uint16_t*)&data[data.size() - HDLC_TRAILER_LENGTH]);
+	// check the crc
+
+	int trailer = (*data.end() == HDLC_CONTROL_CHAR) ? HDLC_TRAILER_LENGTH : (HDLC_TRAILER_LENGTH - 1) ;
+
+	uint16_t crc = crc16(reinterpret_cast<const char*>(&data[0]), data.size() - trailer);
+	uint16_t chk = *((uint16_t*)&data[data.size() - trailer]);
 
 	if (crc != chk) {
 		printf("Invalid Response CRC Expected: %04X - Received: %04X\n", crc, chk);
-	} else {
-		data.erase(data.end() - HDLC_TRAILER_LENGTH, data.end());
+	} else {	
+		data.erase(data.end() - trailer, data.end());	
 	}	
 
 	return data.size();
