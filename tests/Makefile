@@ -4,7 +4,7 @@
 
 all: default
 
-default: hdlc meid gpt sahara_xml raw_program_xml math_string_evaluator
+default: hdlc meid gpt sahara_xml raw_program_xml math_string_evaluator partition_txt_reader
 	
 hdlc:
 	if [ ! -d "./build" ]; then mkdir -p build;  fi
@@ -48,6 +48,12 @@ math_string_evaluator:
 	$(CXX)  -I./../include -I./../lib/pugixml/src -std=gnu++11 $(CXX_FLAGS) \
 		./../src/util/math_string_evaluator.cpp \
 		./math_string_evaluator_test.cpp -o build/math_string_evaluator_test 
+
+partition_txt_reader:
+	if [ ! -d "./build" ]; then mkdir -p build;  fi
+	$(CXX)  -I./../include -std=gnu++11 $(CXX_FLAGS) \
+		./../src/lg/partition_txt_reader.cpp \
+		./partition_txt_test.cpp -o build/partition_txt_test 
 
 clean:
 	rm -rf build/*
