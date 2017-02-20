@@ -29,13 +29,13 @@ int main(int argc, char** argv)
 
 	int i = 0;
 	for (auto &e : entries) {
-		std::cout << "Entry " << std::dec <<  (i+1) << std::endl;
-		std::cout << "\taddress: " << std::dec << e.address << " " << swapEndian<uint32_t>(e.address) << " 0x" << std::hex << e.address << " 0x" << swapEndian<uint32_t>(e.address) << std::endl;
-		std::cout << "\tunk1: " << std::dec << e.unk1 << " " << swapEndian<uint32_t>(e.unk1) << " 0x" << std::hex << e.unk1 << " 0x" << swapEndian<uint32_t>(e.unk1) << std::endl;
-		std::cout << "\tunk2: " << std::dec << e.unk2 << " 0x" << std::hex << e.unk2 << std::endl;
-		std::cout << "\tunk3: " << std::dec << e.unk3 << " 0x" << std::hex << e.unk3 << std::endl;
-		std::cout << "\tname: " << (const char*)&e.name << std::endl;
-		std::cout << "\tfile: " << (const char*)&e.file << std::endl;
+		std::cout << "Entry " 		<< std::dec <<  (i+1) << std::endl;
+		std::cout << "\tlba: " 		<< std::dec << e.lba << " 0x" << std::hex << e.lba << std::endl;
+		std::cout << "\tsectors: " 	<< std::dec << e.sectors << " 0x" << std::hex << e.sectors << std::endl;
+		std::cout << "\tunk1: " 	<< std::dec << e.unk1 << " 0x" << std::hex << e.unk1 << std::endl;
+		std::cout << "\tunk2: " 	<< std::dec << e.unk2 << " 0x" << std::hex << e.unk2 << std::endl;
+		std::cout << "\tname: " 	<< (const char*)&e.name << std::endl;
+		std::cout << "\tfile: " 	<< (const char*)&e.file << std::endl;
 		i++;
 	}
 

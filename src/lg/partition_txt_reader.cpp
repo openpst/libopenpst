@@ -57,26 +57,11 @@ std::vector<PartitionTxtEntry> PartitionTxtReader::parse(const std::string& file
 	file.seekg(0, file.beg);
 
 
-	std::cout << "File Size " << fileSize << std::endl;
-	std::cout << "File appears to have " << (fileSize/sizeof(PartitionTxtEntry)) << " entries" << std::endl;
-
-	// check endian
-	//uint16_t test = 0x0102;
-	//bool isLE =  reinterpret_cast<uint8_t*>(&test)[0] == 0x02 ?  true : false;
-
 	for (int i = 0; i < (fileSize/sizeof(PartitionTxtEntry)) && i <= 1024; i++) {
 		PartitionTxtEntry e = {};
 		file.read(reinterpret_cast<char*>(&e), sizeof(e));       
-      
-        //if (isLE) {
-        	//e.address = swapEndian<uint32_t>(e.address);
-        	//e.unk1 = swapEndian<uint32_t>(e.unk1);
-        //}
-
 		ret.push_back(e);
 	}
-
-	std::cout << "Read " << ret.size() << " entries" << std::endl;
 
 	file.close();
 

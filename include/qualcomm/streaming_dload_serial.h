@@ -171,29 +171,30 @@ namespace OpenPST {
 
 
 			/**
-			* @brief readFlash - Read x bytes from starting address
+			* @brief readFlash - Read x bytes from starting LBA to
 			*                      into a std::vector<uint8_t> container
 			*
-			* @param uint32_t address - The starting address
+			* @param uint32_t lba - The starting LBA (Logical Block Address) to read from
 			* @param size_t amount - The amount to read from address
 			* @param std::vector<uint8_t> &out - The populated vector containing the read data until success or error encountered.
+			* @param size_t blockSize - The size of a block of data on the target flash device. Defaults to 512
 			*
 			* @return int
 			*/
-			size_t readFlash(uint32_t address, size_t amount, std::vector<uint8_t> &out);
+			size_t readFlash(uint32_t lba, size_t amount, std::vector<uint8_t> &out, size_t blockSize = 512);
 
 			/**
-			* @brief readAddress - Read x bytes from starting address
+			* @brief readAddress - Read x bytes from starting LBA
 			*                      into a file pointer
 			*
-			* @param uint32_t address - The starting address
+			* @param uint32_t lba - The starting LBA (Logical Block Address) to read from
 			* @param size_t amount - The amount to read from address
 			* @param std::ofstream& out - The file pointer to write the data to
-			* @param size_t& outSize - The amount of bytes written to the file until success or error encountered.
+			* @param size_t blockSize - The size of a block of data on the target flash device. Defaults to 512
 			*
 			* @return size_t
 			*/
-			size_t readFlash(uint32_t address, size_t amount, std::ofstream& out);
+			size_t readFlash(uint32_t lba, size_t amount, std::ofstream& out, size_t blockSize = 512);
 
 			/**
 			* @brief writePartitionTable - Writes partition table for sessions that require it.
@@ -210,27 +211,28 @@ namespace OpenPST {
 			uint8_t writePartitionTable(std::string filePath, bool overwrite = false);
 			
 			/**
-			* @brief writeFlash - Stream write data starting at specified address. Writes hdlc encoded chunks
-			*                   of max block size specified by device. Try writeFlashUnframed first, its faster
+			* @brief writeFlash - Stream write data starting at specified LBA. Writes hdlc encoded chunks
+			*                   of max block size specified by device.
 			*
-			* @param uint32_t address - The starting address to write to
+			* @param uint32_t address - The starting LBA (Logical Block Address) to write to
 			* @param std::vector<uint8_t>& data - A vector to write
 			*
 			* @return int
 			*/
-			size_t writeFlash(uint32_t address, std::vector<uint8_t>& data);
+			size_t writeFlash(uint32_t lba, std::vector<uint8_t>& data, size_t blockSize = 512);
 
 			/**
 			* @brief writeFlash - Stream write data starting at specified address. Writes hdlc encoded chunks
 			*                   of max block size specified by device. Try writeFlashUnframed first, its faster
 			*
-			* @param uint32_t address - The starting address to write to
+			* @param uint32_t lba - The starting LBA (Logical Block Address) to write to
 			* @param uint8_t data - A pointer to the data to be written
-			* @param size_t length - The amount of data to write.
+			* @param size_t amount - The amount of data to write.
+			* @param size_t blockSize - The size of a block of data on the target flash device. Defaults to 512
 			*
 			* @return int
 			*/
-			size_t writeFlash(uint32_t address, uint8_t* data, size_t length);
+			size_t writeFlash(uint32_t lba, uint8_t* data, size_t amount, size_t blockSize = 512);
 
 			/**
 			* @brief writeFlash - Stream write unframed data starting at specified address. 
@@ -241,7 +243,7 @@ namespace OpenPST {
 			*
 			* @return size_t
 			*/
-			size_t writeFlashUnframed(uint32_t address, uint8_t* data, size_t length);
+			//size_t writeFlashUnframed(uint32_t address, uint8_t* data, size_t length);
 
 			/**
 			* @brief getNamedError - Get a named error from an error code

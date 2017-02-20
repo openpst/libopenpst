@@ -39,10 +39,10 @@ namespace OpenPST {
 	namespace LG {
 
 		struct PartitionTxtEntry {
-			uint32_t address;
+			uint32_t lba;
+			uint32_t sectors;
 			uint32_t unk1;
 			uint32_t unk2;
-			uint32_t unk3;
 			char name[32];
 			char file[32];
 		};

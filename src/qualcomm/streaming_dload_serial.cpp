@@ -310,111 +310,8 @@ bool StreamingDloadSerial::openMultiImage(uint8_t imageType)
 	return isValidResponse(kStreamingDloadOpenedMultiImage, buffer);
 }
 
-/**
-* @brief readAddress - Read x bytes from starting address
-*                      into a memory allocated array
-*
-* @param uint32_t address - The starting address
-* @param size_t length - The length to read from address
-* @param uint8_t** - The memory allocated array containing the read data until success or error encountered.
-* @param size_t& - The size of the memory allocated data
-* @param size_t stepSize - The amount to request per read operation. The max size is 1024.
-*
-* @return int
-*//*
-int StreamingDloadSerial::readAddress(uint32_t address, size_t length, uint8_t** data, size_t& dataSize, size_t stepSize)
-{
-	if (!isOpen()) {
-		LOGE("Port Not Open\n");
-		return kStreamingDloadIOError;
-	}
 
-	size_t txSize, rxSize;
-
-	uint8_t* out = new uint8_t[length];
-	size_t outSize = length;
-
-	uint8_t buffer[STREAMING_DLOAD_MAX_RX_SIZE];
-
-	dataSize = 0;
-
-	StreamingDloadReadRequest packet;
-	packet.command = kStreamingDloadRead;
-
-	StreamingDloadReadResponse* readRx;
-
-	if (stepSize > state.hello.maxPreferredBlockSize) {
-		stepSize = state.hello.maxPreferredBlockSize;
-	}
-
-	do {
-		packet.address = address + dataSize;
-		packet.length = length <= stepSize ? length : stepSize;
-
-		LOGE("Requesting %lu bytes from %08X\n", packet.length, packet.address);
-
-		txSize = write((uint8_t*)&packet, sizeof(packet));
-
-		if (!txSize) {
-			LOGE("Wrote 0 bytes requesting to read %lu bytes from 0x%08X\n", packet.length, packet.address);
-			return kStreamingDloadIOError;
-		}
-
-		rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE);
-
-		if (!rxSize) {
-			LOGE("Device did not respond\n");
-			delete out;
-			return kStreamingDloadIOError;
-		}
-
-		if (!isValidResponse(kStreamingDloadReadData, buffer, rxSize)) {
-			LOGE("Invalid Response\n");
-			delete out;
-			return kStreamingDloadError;
-		}
-		
-		size_t newSize = dataSize + rxSize;
-		if (newSize > outSize) {             
-			out = (uint8_t*)realloc(out, newSize);
-			outSize = newSize;
-		}
-
-		readRx = (StreamingDloadReadResponse*)&buffer[0];
-
-		if (readRx->address != packet.address) {
-			LOGE("Packet address and response address differ\n");
-			return kStreamingDloadError;
-		}
-		
-		memcpy(&out[dataSize], readRx->data, rxSize - sizeof(packet));
-		dataSize += (rxSize - sizeof(packet));
-		
-		if (length <= dataSize) {
-			break; //done
-		}
-			
-	} while (true);
-
-	*data = out;
-	
-	LOGI("\n\n\nFinal Data Size: %lu bytes\n", dataSize);
-	hexdump(out, dataSize);
-
-	return kStreamingDloadSuccess;
-}*/
-
-/**
-* @brief readAddress - Read x bytes from starting address
-*                      into a std::vector<uint8_t> container
-*
-* @param uint32_t address - The starting address
-* @param size_t amount - The amount to read from address
-* @param std::vector<uint8_t> &out - The populated vector containing the read data until success or error encountered.
-*
-* @return size_t
-*/
-size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::vector<uint8_t> &out)
+size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::vector<uint8_t> &out, size_t blockSize)
 {
 	size_t rx;
 	size_t total = 0;
@@ -453,8 +350,7 @@ size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::vec
 			throw StreamingDloadSerialError("Packet address and response address differ");
 		}
 
-		// remove the command code, address, and length to only
-		// keep the real data
+		// remove the command code, address to only keep the real data
 		temp.erase(temp.end() - rx, ((temp.end() - rx) + sizeof(packet.command) + sizeof(packet.address)));
 
 		out.reserve(out.size() + temp.size());
@@ -471,7 +367,7 @@ size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::vec
 }
 
 
-size_t StreamingDloadSerial::readFlash(uint32_t address, size_t amount, std::ofstream& out)
+size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::ofstream& out, size_t blockSize)
 {
 	size_t total  	  = 0;
 	size_t step   	  = amount;
@@ -520,9 +416,8 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 	file.seekg(0, file.beg);
 	
 	if (fileSize > 512) {
-		LOGE("File can\'t exceed 512 bytes");
 		file.close();
-		return kStreamingDloadError;
+		throw StreamingDloadSerialError("File can\'t exceed 512 bytes");
 	}
 
 	size_t rxSize;
@@ -547,12 +442,12 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 	return reinterpret_cast<StreamingDloadPartitionTableResponse*>(&buffer[0])->status;    
 }
 
-size_t StreamingDloadSerial::writeFlash(uint32_t address, std::vector<uint8_t>& data)
+size_t StreamingDloadSerial::writeFlash(uint32_t lba, std::vector<uint8_t>& data, size_t blockSize)
 {
-	return writeFlash(address, &data[0], data.size());
+	return writeFlash(lba, &data[0], data.size(), blockSize);
 }
 
-size_t StreamingDloadSerial::writeFlash(uint32_t address, uint8_t* data, size_t length)
+size_t StreamingDloadSerial::writeFlash(uint32_t lba, uint8_t* data, size_t amount, size_t blockSize)
 {
 	size_t step = length;
 	size_t written = 0;
