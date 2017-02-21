@@ -39,16 +39,16 @@
 
 namespace OpenPST {
 	struct GptMbr {
-		uint8_t     bootIndicator; /* unused by EFI, set to 0x80 for bootable */
-		uint8_t     startHead;     /* unused by EFI, pt start in CHS */
-		uint8_t     startSector;   /* unused by EFI, pt start in CHS */
+		uint8_t     bootIndicator;  /* unused by EFI, set to 0x80 for bootable */
+		uint8_t     startHead;      /* unused by EFI, pt start in CHS */
+		uint8_t     startSector;    /* unused by EFI, pt start in CHS */
 		uint8_t     startTrack;
-		uint8_t     osType;        /* EFI and legacy non-EFI OS types */
-		uint8_t     endHead;       /* unused by EFI, pt end in CHS */
-		uint8_t     endSector;     /* unused by EFI, pt end in CHS */
-		uint8_t     endTrack;      /* unused by EFI, pt end in CHS */
-		uint32_t  	startingLba;   /* used by EFI - start addr of the on disk pt */
-	 	uint32_t  	lbaSize;    /* used by EFI - size of pt in LBA */
+		uint8_t     osType;         /* EFI and legacy non-EFI OS types */
+		uint8_t     endHead;        /* unused by EFI, pt end in CHS */
+		uint8_t     endSector;      /* unused by EFI, pt end in CHS */
+		uint8_t     endTrack;       /* unused by EFI, pt end in CHS */
+		uint32_t  	startingLba;    /* used by EFI - start addr of the on disk pt */
+	 	uint32_t  	lbaSize;    	/* used by EFI - size of pt in LBA */
 	} __attribute__ ((packed));
 
 	struct LegacyMbr {

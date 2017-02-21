@@ -63,6 +63,7 @@ SOURCES += \
     $$BASE_DIR/lib/serial/src/impl/list_ports/list_ports_linux.cc \
     $$BASE_DIR/lib/pugixml/src/pugixml.cpp \
     $$BASE_DIR/src/lg/laf_serial.cpp \
+    $$BASE_DIR/src/lg/partition_txt_reader.cpp \
     $$BASE_DIR/src/qualcomm/mbn_parser.cpp \
     $$BASE_DIR/src/qualcomm/hdlc_encoder.cpp \
     $$BASE_DIR/src/qualcomm/dm_efs_manager.cpp \

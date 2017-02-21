@@ -311,32 +311,41 @@ bool StreamingDloadSerial::openMultiImage(uint8_t imageType)
 }
 
 
-size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::vector<uint8_t> &out, size_t blockSize)
+size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::vector<uint8_t> &out, size_t sectorSize)
 {
 	size_t rx;
-	size_t total = 0;
-	size_t step = amount;
+	size_t total 	= 0;
+	size_t step 	= amount;
+	int blocksRead  = 0;
+
 	std::vector<uint8_t> temp;
 	StreamingDloadReadRequest packet = {};	
 
 	out.reserve(out.size() + amount);	
 	temp.reserve(STREAMING_DLOAD_MAX_RX_SIZE);
 
-	if (step > state.hello.maxPreferredBlockSize) {
+	if (state.negotiated && state.hello.maxPreferredBlockSize && step > state.hello.maxPreferredBlockSize) {
 		step = state.hello.maxPreferredBlockSize;
+	} else if (step > STREAMING_DLOAD_MAX_DATA_SIZE) {
+		step = STREAMING_DLOAD_MAX_DATA_SIZE;
+	}
+
+	// align the requested amount to block size
+	while(amount % sectorSize != 0) {
+		amount++;
 	}
 
 	while (total < amount) {
 		
-		if ((amount - total) < step) {
-			step = amount - total;
-		}
-
 		packet.command = kStreamingDloadRead;
-		packet.address = address + total;
+		packet.address = lba + blocksRead;
 		packet.length  = step;
 
-		LOGD("Requesting %lu bytes from %08X\n", packet.length, packet.address);
+		LOGD("Requesting %lu bytes starting from LBA %08X (%d sectors)\n", 
+			packet.length, 
+			packet.address,
+			(packet.length / sectorSize)
+		);
 		
 		write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
 
@@ -350,6 +359,7 @@ size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::vector<
 			throw StreamingDloadSerialError("Packet address and response address differ");
 		}
 
+
 		// remove the command code, address to only keep the real data
 		temp.erase(temp.end() - rx, ((temp.end() - rx) + sizeof(packet.command) + sizeof(packet.address)));
 
@@ -359,6 +369,8 @@ size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::vector<
 
 		total += temp.size();
 
+		blocksRead += temp.size() / sectorSize;
+
 		temp.clear();
 	    		
 	}
@@ -367,16 +379,22 @@ size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::vector<
 }
 
 
-size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::ofstream& out, size_t blockSize)
+size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::ofstream& out, size_t sectorSize)
 {
 	size_t total  	  = 0;
 	size_t step   	  = amount;
 	std::vector<uint8_t> temp;
+	int blocksRead  = 0;
 
 	if (state.negotiated && state.hello.maxPreferredBlockSize && step > state.hello.maxPreferredBlockSize) {
 		step = state.hello.maxPreferredBlockSize;
 	} else if (step > STREAMING_DLOAD_MAX_DATA_SIZE) {
 		step = STREAMING_DLOAD_MAX_DATA_SIZE;
+	}
+
+	// align the requested amount to block size
+	while(amount % sectorSize != 0) {
+		amount++;
 	}
 
 	temp.reserve(STREAMING_DLOAD_MAX_RX_SIZE);
@@ -387,14 +405,15 @@ size_t StreamingDloadSerial::readFlash(uint32_t lba, size_t amount, std::ofstrea
 			step = amount - total;
 		}
 
-		readFlash(address+total, step, temp);
+		readFlash(lba+blocksRead, step, temp);
 
 		out.write(reinterpret_cast<char *>(&temp[0]), temp.size());
 
 		total += temp.size();
 
+		blocksRead += temp.size() / sectorSize;
+
 		temp.clear();
-		
 	}
 
 	return total;
@@ -442,21 +461,23 @@ uint8_t StreamingDloadSerial::writePartitionTable(std::string fileName, bool ove
 	return reinterpret_cast<StreamingDloadPartitionTableResponse*>(&buffer[0])->status;    
 }
 
-size_t StreamingDloadSerial::writeFlash(uint32_t lba, std::vector<uint8_t>& data, size_t blockSize)
+size_t StreamingDloadSerial::writeFlash(uint32_t lba, std::vector<uint8_t>& data, size_t sectorSize)
 {
-	return writeFlash(lba, &data[0], data.size(), blockSize);
+	return writeFlash(lba, &data[0], data.size(), sectorSize);
 }
 
-size_t StreamingDloadSerial::writeFlash(uint32_t lba, uint8_t* data, size_t amount, size_t blockSize)
+size_t StreamingDloadSerial::writeFlash(uint32_t lba, uint8_t* data, size_t amount, size_t sectorSize)
 {
-	size_t step = length;
+	size_t step = amount;
 	size_t written = 0;
 	size_t rx = 0;
+	int blocksWritten = 0;
+
 	StreamingDloadStreamWriteRequest* request = nullptr;
 	uint8_t readbuff[STREAMING_DLOAD_MAX_RX_SIZE];
 	StreamingDloadStreamWriteResponse* response = reinterpret_cast<StreamingDloadStreamWriteResponse*>(&readbuff);
 
-	if (data == nullptr || !length) {
+	if (data == nullptr || !amount) {
 		throw StreamingDloadSerialError("No data to write");
 	}
 
@@ -472,17 +493,17 @@ size_t StreamingDloadSerial::writeFlash(uint32_t lba, uint8_t* data, size_t amou
 		throw StreamingDloadSerialError("Error allocating memory for write");
 	}
 
-	while (written < length) {
+	while (written < amount) {
 		request->command = kStreamingDloadStreamWrite;
-		request->address = address + written;
+		request->address = lba + blocksWritten;
 
-		if ((length - written) < step) {
-			step = length - written;
+		if ((amount - written) < step) {
+			step = amount - written;
 		}
 		
 		std::copy((data + written), (data + written + step), request->data);
 
-		write(reinterpret_cast<uint8_t*>(request), step);
+		write(reinterpret_cast<uint8_t*>(request), step + sizeof(request->command) + sizeof(request->address));
 
 		if (!(rx = read(readbuff, sizeof(readbuff)))) {
 			delete[] request;
@@ -497,6 +518,7 @@ size_t StreamingDloadSerial::writeFlash(uint32_t lba, uint8_t* data, size_t amou
 		}
 
 		written += step;
+		blocksWritten += step/sectorSize;
 	}
 	
 	delete[] request;
@@ -504,7 +526,8 @@ size_t StreamingDloadSerial::writeFlash(uint32_t lba, uint8_t* data, size_t amou
 	return written;
 }
 
-size_t StreamingDloadSerial::writeFlashUnframed(uint32_t address, uint8_t* data, size_t length)
+/*
+size_t StreamingDloadSerial::writeFlashUnframed(uint32_t address, uint8_t* data, size_t length, size_t sectorSize)
 {
 	size_t  rx = 0;
 	size_t  total = sizeof(StreamingDloadUnframedStreamWriteRequest) + length;
@@ -543,6 +566,23 @@ size_t StreamingDloadSerial::writeFlashUnframed(uint32_t address, uint8_t* data,
 	delete[] request;
 
 	return total;
+}*/
+
+void StreamingDloadSerial::eraseFlash()
+{
+	size_t  rxSize;
+	std::vector<uint8_t> buffer; 
+	StreamingDloadEraseFlashRequest packet = {};
+
+	packet.command = kStreamingDloadEraseFlash;
+
+	write(reinterpret_cast<uint8_t*>(&packet), sizeof(packet));
+
+	if (!(rxSize = read(buffer, STREAMING_DLOAD_MAX_RX_SIZE))){
+		throw StreamingDloadSerialError("Device did not respond");
+	}
+
+	validateResponse(kStreamingDloadFlashErased, buffer);
 }
 
 bool StreamingDloadSerial::isValidResponse(uint8_t expectedCommand, uint8_t* response, size_t responseSize)

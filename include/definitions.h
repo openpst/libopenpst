@@ -36,6 +36,9 @@
 	#include <unistd.h>
 	#define PACKED( __Declaration__ ) __Declaration__ __attribute__((__packed__))
 #endif
+#include <cassert>
+#include <type_traits>
+#include <algorithm>
 
 #ifdef DEBUG
 #define LOGD(...) fprintf(stderr, __VA_ARGS__); 
@@ -45,3 +48,16 @@
 
 #define LOGE(...) fprintf(stderr, __VA_ARGS__); 
 #define LOGI(...) fprintf(stdout, __VA_ARGS__); 
+
+template <class T> inline T swapEndian(T i) {
+    assert(std::is_fundamental<T>::value);
+    
+    T ret = i;        
+
+    std::reverse(
+        reinterpret_cast<unsigned char*>(&ret), 
+        reinterpret_cast<unsigned char*>(&ret) + sizeof(T)
+    );
+
+    return ret;
+}
