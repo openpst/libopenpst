@@ -15,7 +15,7 @@ int main(int argc, char**argv) {
 		GptInfo info = parser.parse(argv[1], kGptParserFlagAll, 0);
 
 		for (auto &entry : info.entries) {
-			std::cout << parser.getEntryUUID(&entry) << std::endl;
+			std::cout << parser.getEntryName(&entry) << " - 0x" << std::hex << entry.startingLba << std::endl;
 		}
 
 	} catch (std::invalid_argument& e) {

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "qualcomm/raw_program_xml_reader.h"
+#include <vector>
 
 using OpenPST::QC::RawProgramXmlReader;
 using OpenPST::QC::RawProgramXmlEntry;
