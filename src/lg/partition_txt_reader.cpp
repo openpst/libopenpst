@@ -54,12 +54,26 @@ std::vector<PartitionTxtEntry> PartitionTxtReader::parse(const std::string& file
 
 	size_t fileSize = static_cast<size_t>(file.tellg());
 
-	file.seekg(0, file.beg);
+	if (fileSize < sizeof(PartitionTxtEntry) || fileSize % sizeof(PartitionTxtEntry) != 0) {
+		std::stringstream ss;
+		ss << "File " << filePath << " does not appear to be a partition.txt file";
+		throw PartitionTxtReaderError(ss.str());
+	}
 
+	file.seekg(0, file.beg);
 
 	for (int i = 0; i < (fileSize/sizeof(PartitionTxtEntry)) && i <= 1024; i++) {
 		PartitionTxtEntry e = {};
-		file.read(reinterpret_cast<char*>(&e), sizeof(e));       
+		file.read(reinterpret_cast<char*>(&e), sizeof(e));      
+
+		if (i == 0 && e.lba != 0x00) {
+			// there is no magic or anything to identify it but I guess we can assume
+			// the first entry must be mapped to the first LBA
+			std::stringstream ss;
+			ss << "File " << filePath << " does not appear to be a partition.txt file";
+			throw PartitionTxtReaderError(ss.str());
+		}
+
 		ret.push_back(e);
 	}
 
