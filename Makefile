@@ -1,6 +1,8 @@
 ####
 ## Makefile for openpst/libopenpst
 ####
+QMAKE = qmake
+
 all: default
 
 default: check debug release
@@ -14,12 +16,12 @@ check:
 	if [ ! -d "./lib/serial/include" ]; then git submodule init && git submodule update;  fi
 
 _debug:
-	qmake -makefile -o ./build/Makefile libopenpst.pro  "CONFIG+=debug" "CONFIG-=release"
+	$(QMAKE) -makefile -o ./build/Makefile libopenpst.pro  "CONFIG+=debug" "CONFIG-=release"
 	$(MAKE) -C build
 
 
 _release:
-	qmake -makefile -o ./build/Makefile libopenpst.pro  "CONFIG-=debug" "CONFIG+=release"
+	$(QMAKE) -makefile -o ./build/Makefile libopenpst.pro  "CONFIG-=debug" "CONFIG+=release"
 	$(MAKE) -C build
 
 clean:
