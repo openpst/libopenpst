@@ -174,13 +174,13 @@ namespace OpenPST {
 				* @brief write - Write to a file
 				*
 				* @param int32_t - fp of file
-				* @param uint8_t* - data to write
+				* @param const uint8_t* - data to write
 				* @param size_t amount - amount of data to write
 				* @paramuint32_t offset - offset in file to start writing at
 				*
 				* @return size_t - Amount written
 				*/
-				size_t write(int32_t fp, uint8_t* data, size_t amount, uint32_t offset);
+				size_t write(int32_t fp, const uint8_t* data, size_t amount, uint32_t offset);
 			
 				/**
 				* @brief symlink - Create a symlink

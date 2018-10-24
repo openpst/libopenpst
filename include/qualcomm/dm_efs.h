@@ -230,7 +230,7 @@ PACKED(typedef struct QcdmEfsWriteFileRequest{
 	QcdmSubsysHeader header;
 	int32_t fp;
 	uint32_t offset;
-	uint8_t data[1];
+	uint8_t data[0];
 }) QcdmEfsWriteFileRequest;
 
 PACKED(typedef struct QcdmEfsWriteFileResponse{
@@ -654,18 +654,18 @@ PACKED(typedef struct QcdmEfsTruncateResponse{
 /**
 * Ftruncate
 */
-PACKED(typedef struct QcdmEfsFtncateRequest{
+PACKED(typedef struct QcdmEfsFtruncateRequest{
 	QcdmSubsysHeader header;
 	uint16_t sequence;
 	uint32_t length;
 	int32_t fp;
-}) QcdmEfsFtncateRequest;
+}) QcdmEfsFtruncateRequest;
 
-PACKED(typedef struct QcdmEfsFtncateResponse{
+PACKED(typedef struct QcdmEfsFtruncateResponse{
 	QcdmSubsysHeader header;
 	uint16_t sequence;
 	int32_t error;
-}) QcdmEfsFtncateResponse;
+}) QcdmEfsFtruncateResponse;
 
 /**
 * Statfs V2

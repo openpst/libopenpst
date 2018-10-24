@@ -102,7 +102,10 @@ size_t HdlcSerial::write (uint8_t *data, size_t size, bool encapsulate)
 */
 size_t HdlcSerial::read (uint8_t* data, size_t size, bool unescape )
 {
-	size_t rxSize = GenericSerial::read(data, size);
+	auto line = GenericSerial::readline(65536, { HDLC_CONTROL_CHAR });
+	line.push_back(HDLC_CONTROL_CHAR);
+	size_t rxSize = line.size();
+	memcpy(data, line.data(), std::min(line.size(), size));
 
 	if (!unescape || !rxSize) {
 		return rxSize;
@@ -163,10 +166,11 @@ size_t HdlcSerial::write(std::vector<uint8_t> &data, bool encapsulate)
 */
 size_t HdlcSerial::read(std::vector<uint8_t> &buffer, size_t size, bool unescape)
 {
-
-	buffer.reserve(buffer.size() + (size + HDLC_OVERHEAD_LENGTH));
-	
-	size_t rxSize = GenericSerial::read(buffer, size + HDLC_OVERHEAD_LENGTH);
+	auto line = GenericSerial::readline(65536, { HDLC_CONTROL_CHAR });
+	line.push_back(HDLC_CONTROL_CHAR);
+	size_t rxSize = line.size();
+	buffer.resize(line.size());
+	memcpy(buffer.data(), line.data(), std::min(line.size(), buffer.size()));
 
 	if (!unescape || !rxSize) {
 		return rxSize;

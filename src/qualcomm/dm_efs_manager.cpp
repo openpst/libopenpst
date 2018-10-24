@@ -192,7 +192,7 @@ void DmEfsManager::close(int32_t fp)
 	QcdmEfsCloseFileRequest packet   = {};
 	QcdmEfsCloseFileReponse response = {};
 
-	if (!fp) {
+	if (fp < 0) {
 		throw DmEfsManagerInvalidArgument("Invalid file pointer");
 	}
 
@@ -228,11 +228,11 @@ std::vector<uint8_t> DmEfsManager::read(int32_t fp, size_t size, uint32_t offset
 	QcdmEfsReadFileResponse* response;
 	std::vector<uint8_t> data;
 
-	if (!fp) {
+	if (fp < 0) {
 		throw DmEfsManagerInvalidArgument("Invalid file pointer");
 	} else if (size <= 0) {
 		throw DmEfsManagerInvalidArgument("Invalid size");
-	} else if (size < 0) {
+	} else if (offset < 0) {
 		throw DmEfsManagerInvalidArgument("Invalid offset");
 	}
 	
@@ -284,7 +284,7 @@ size_t DmEfsManager::read(std::string path, std::string outPath)
 
 	fp = open(path, O_RDONLY, 0x00);
 
-	if (!fp) {
+	if (fp < 0) {
 		return 0;
 	}
 
@@ -313,9 +313,50 @@ size_t DmEfsManager::read(std::string path, std::string outPath)
 	return data.size();
 }
 
-size_t DmEfsManager::write(int32_t fp, uint8_t* data, size_t amount, uint32_t offset)
+size_t DmEfsManager::write(int32_t fp, const uint8_t* data, size_t amount, uint32_t offset)
 {
-	return 0;
+	QcdmEfsWriteFileResponse response = {};
+
+	if (fp < 0) {
+		throw DmEfsManagerInvalidArgument("Invalid file pointer");
+	} else if (amount <= 0) {
+		throw DmEfsManagerInvalidArgument("Invalid size");
+	} else if (offset < 0) {
+		throw DmEfsManagerInvalidArgument("Invalid offset");
+	}
+
+	amount = std::min<size_t>(amount, 1024);
+
+	size_t packetSize = sizeof(QcdmEfsWriteFileRequest) + amount;
+	QcdmEfsWriteFileRequest* packet = (QcdmEfsWriteFileRequest*) new uint8_t[packetSize]();
+	packet->header	= getHeader(kDiagEfsWrite);
+	packet->fp		= fp;
+	packet->offset	= offset;
+	memcpy(packet->data, data, amount);
+
+	try {
+
+		sendCommand(
+			packet->header.subsysCommand,
+			reinterpret_cast<uint8_t*>(packet),
+			packetSize,
+			reinterpret_cast<uint8_t*>(&response),
+			sizeof(response)
+		);
+
+	} catch (...) {
+		delete packet;
+		throw;
+	}
+	
+	delete packet;
+
+	if (isError(response.error)) {
+		DmEfsManagerResponseError e = DmEfsManagerResponseError(getErrorString(response.error), response.error);
+		throw e;
+	}
+
+	return response.bytesWritten;
 }
 
 void DmEfsManager::symlink(std::string path, std::string linkPath)
@@ -851,7 +892,7 @@ QcdmEfsFstatResponse DmEfsManager::fstat(int32_t fp)
 	QcdmEfsFstatRequest packet		= {};
 	QcdmEfsFstatResponse response	= {};
 
-	if (!fp) {
+	if (fp < 0) {
 		throw DmEfsManagerInvalidArgument("Invalid file pointer");
 	}
 
@@ -1119,10 +1160,10 @@ void DmEfsManager::truncate(std::string path, size_t amount, int32_t sequence)
 
 void DmEfsManager::ftruncate(int32_t fp, size_t amount, int32_t sequence)
 {
-	QcdmEfsFtncateRequest packet = {};
-	QcdmEfsFtncateResponse response = {};
+	QcdmEfsFtruncateRequest packet = {};
+	QcdmEfsFtruncateResponse response = {};
 
-	if (!fp) {
+	if (fp < 0) {
 		throw DmEfsManagerInvalidArgument("Invalid file pointer");
 	} else if (amount <= 0) {
 		throw DmEfsManagerInvalidArgument("Invalid amount");

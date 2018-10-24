@@ -72,22 +72,22 @@ DmEfsNode::DmEfsNode(const DmEfsNode& org) :
 
 }
 
-bool DmEfsNode::isDir()
+bool DmEfsNode::isDir() const
 {
 	return type == kDiagEfsFileTypeDir;
 }
 
-bool DmEfsNode::isFile()
+bool DmEfsNode::isFile() const
 {
 	return type == kDiagEfsFileTypeFile;
 }
 
-bool DmEfsNode::isLink()
+bool DmEfsNode::isLink() const
 {
 	return type == kDiagEfsFileTypeLink;
 }
 
-bool DmEfsNode::isImmovable()
+bool DmEfsNode::isImmovable() const
 {
 	return type == kDiagEfsFileTypeImmovable;
 }
