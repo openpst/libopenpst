@@ -71,28 +71,28 @@ namespace OpenPST {
 				*
 				* @return bool
 				*/
-				bool isDir();
+				bool isDir() const;
 
 				/**
 				* @brief isFile
 				*
 				* @return bool
 				*/
-				bool isFile();
+				bool isFile() const;
 
 				/**
 				* @brief isLink
 				*
 				* @return bool
 				*/
-				bool isLink();
+				bool isLink() const;
 
 				/**
 				* @brief isImmovable
 				*
 				* @return bool
 				*/
-				bool isImmovable();
+				bool isImmovable() const;
 
 		};
 	}
