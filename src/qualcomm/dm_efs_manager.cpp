@@ -1119,8 +1119,8 @@ void DmEfsManager::truncate(std::string path, size_t amount, int32_t sequence)
 
 void DmEfsManager::ftruncate(int32_t fp, size_t amount, int32_t sequence)
 {
-	QcdmEfsFtncateRequest packet = {};
-	QcdmEfsFtncateResponse response = {};
+	QcdmEfsFtruncateRequest packet = {};
+	QcdmEfsFtruncateResponse response = {};
 
 	if (!fp) {
 		throw DmEfsManagerInvalidArgument("Invalid file pointer");
