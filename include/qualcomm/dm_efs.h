@@ -230,7 +230,7 @@ PACKED(typedef struct QcdmEfsWriteFileRequest{
 	QcdmSubsysHeader header;
 	int32_t fp;
 	uint32_t offset;
-	uint8_t data[1];
+	uint8_t data[0];
 }) QcdmEfsWriteFileRequest;
 
 PACKED(typedef struct QcdmEfsWriteFileResponse{
