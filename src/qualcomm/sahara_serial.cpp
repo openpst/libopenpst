@@ -253,7 +253,7 @@ SaharaReadDataRequest SaharaSerial::sendImage(std::string filePath, SaharaReadDa
 		LOGD("Device is now requesting %lu bytes from image %02X - %s",
 			nextOffset.size,
 			nextOffset.imageId,
-			getNamedRequestedImage(nextOffset.imageId)
+			getNamedRequestedImage(nextOffset.imageId).c_str()
 		);
 	}
 

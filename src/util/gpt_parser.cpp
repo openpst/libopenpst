@@ -82,7 +82,7 @@ GptInfo GptParser::parse(std::string filePath, int flags, off_t start)
     }
 
  	if (flags & kGptParserFlagEntries) {
-	    if ((file.tellg() + (gpt.header.numPartitionEntries * sizeof(GptEntry))) > fileSize) {
+	    if (( (int)file.tellg() + (gpt.header.numPartitionEntries * sizeof(GptEntry))) > fileSize) {
 	    	throw std::out_of_range("File is too small for the amount of declared entries");
 	    }
 

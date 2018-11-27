@@ -43,6 +43,12 @@ RCC_DIR      += $$BUILD_DIR/rcc
 UI_DIR       += $$BUILD_DIR/ui
 DESTDIR      += $$BUILD_DIR
 
+macx {
+    QMAKE_CXXFLAGS  +=  -Wno-c++11-narrowing 
+    INCLUDEPATH     += /usr/local/include
+    LIBS            += -L/usr/local/lib
+}
+
 message("------------ $$TARGET ------------ !!!")
 message("ARC         $$QT_ARCH")
 message("BASE_DIR    $$BASE_DIR")
