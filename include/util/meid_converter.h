@@ -29,7 +29,12 @@
 #include "definitions.h"
 #include <iostream>
 #include <sstream>
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 106600
 #include <boost/uuid/detail/sha1.hpp>
+#else
+#include <boost/uuid/sha1.hpp>
+#endif
 #include "util/string_helper.h"
 
 enum MeidConverterInputType {
