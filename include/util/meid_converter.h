@@ -29,7 +29,7 @@
 #include "definitions.h"
 #include <iostream>
 #include <sstream>
-#include <boost/uuid/sha1.hpp>
+#include <boost/uuid/detail/sha1.hpp>
 #include "util/string_helper.h"
 
 enum MeidConverterInputType {
